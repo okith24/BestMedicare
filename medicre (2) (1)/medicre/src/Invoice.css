@@ -1,0 +1,648 @@
+.invPage {
+  padding-top: 22px;
+}
+
+.invWrap {
+  display: grid;
+  gap: 14px;
+}
+
+.invTop {
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.invHospital {
+  font-size: 36px;
+  font-weight: 950;
+  letter-spacing: -0.6px;
+}
+
+.invSub {
+  color: rgba(28,46,66,0.72);
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.invTopRight {
+  text-align: right;
+  color: rgba(28,46,66,0.72);
+  font-weight: 700;
+  display: grid;
+  gap: 6px;
+}
+
+.invBadge {
+  justify-self: end;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(31, 113, 191, 0.45);
+  background: rgba(31, 113, 191, 0.16);
+  color: rgba(28,46,66,0.9);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.invCard {
+  padding: 22px;
+}
+
+.invMetaGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.invMetaBlock {
+  display: grid;
+  gap: 8px;
+}
+
+.invKicker {
+  color: rgba(52, 143, 219, 0.95);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 2px;
+}
+
+.invLabel {
+  color: rgba(28,46,66,0.62);
+  font-size: 12px;
+  font-weight: 800;
+  margin-top: 4px;
+}
+
+.invInput {
+  width: 100%;
+  border: 1px solid rgba(127, 149, 171, 0.32);
+  background: rgba(255,255,255,0.78);
+  color: rgba(28,46,66,0.92);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 800;
+  outline: none;
+}
+
+.invInput:focus {
+  border-color: rgba(52, 143, 219, 0.78);
+  box-shadow: 0 0 0 3px rgba(52, 143, 219, 0.18);
+}
+.invLookup {
+  color: rgba(28,46,66,0.62);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.invTable {
+  margin-top: 16px;
+}
+
+.invHead {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  color: rgba(28,46,66,0.66);
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 900;
+}
+
+.invRow {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.invDescCol {
+  display: grid;
+  gap: 10px;
+}
+
+.invNote {
+  color: rgba(28,46,66,0.75);
+}
+
+.invAmtCol {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.invCurrency {
+  display: grid;
+  place-items: center;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid rgba(127, 149, 171, 0.32);
+  background: rgba(255,255,255,0.78);
+  font-weight: 900;
+  color: rgba(28,46,66,0.86);
+}
+
+.invAmount {
+  text-align: right;
+}
+
+.invActions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.invTotal {
+  font-size: 42px;
+  font-weight: 950;
+  color: rgba(28,46,66,0.95);
+}
+
+.invTotalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  border-top: 2px solid rgba(31, 113, 191, 0.35);
+  padding-top: 6px;
+}
+
+.invTotals {
+  display: grid;
+  gap: 4px;
+  text-align: right;
+  color: rgba(28,46,66,0.86);
+  font-weight: 800;
+}
+
+.invBottom {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.invTerms {
+  color: rgba(28,46,66,0.62);
+  max-width: 680px;
+  font-weight: 700;
+}
+
+.invButtons {
+  display: flex;
+  gap: 10px;
+}
+
+.invPrintSheet {
+  display: none;
+}
+
+.invPrintTopBar {
+  height: 20px;
+  background: #1f3f7a;
+  border-radius: 4px 4px 0 0;
+}
+
+.invPrintHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 14px 0 10px;
+  border-bottom: 2px solid #c2d4e6;
+}
+
+.invPrintHeaderLeft {
+  display: grid;
+  gap: 10px;
+}
+
+.invPrintBrand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.invPrintBrand img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.invPrintHospital {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.2px;
+  color: #1f3f7a;
+}
+
+.invPrintSub {
+  margin-top: 2px;
+  color: #49607b;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.invPrintTitle {
+  font-size: 40px;
+  line-height: 1;
+  font-weight: 950;
+  color: #1f3f7a;
+}
+
+.invPrintRef {
+  font-size: 20px;
+  font-weight: 800;
+  color: #20374e;
+}
+
+.invPrintMeta {
+  display: grid;
+  gap: 10px;
+  font-size: 13px;
+  color: #22384d;
+  min-width: 240px;
+}
+
+.invPrintMetaGroup {
+  display: grid;
+  gap: 2px;
+}
+
+.invPrintMetaGroup strong {
+  font-size: 22px;
+  line-height: 1;
+  color: #1f3f7a;
+  margin-bottom: 3px;
+}
+
+.invPrintMeta span {
+  font-weight: 800;
+}
+
+.invPrintInfoGrid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.invPrintInfoCard {
+  border: 1px solid #c4d2df;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.invPrintLabel {
+  font-size: 12px;
+  font-weight: 900;
+  color: #3f5f7c;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.invPrintValue {
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: 900;
+  color: #10283f;
+}
+
+.invPrintMuted {
+  margin-top: 4px;
+  color: #4b6076;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.invPrintTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.invPrintTable th,
+.invPrintTable td {
+  border: none;
+  padding: 8px 10px;
+  color: #1d3349;
+  vertical-align: top;
+}
+
+.invPrintTable th {
+  background: transparent;
+  border-bottom: 2px solid #c2d4e6;
+  letter-spacing: 0.3px;
+  font-size: 12px;
+  font-weight: 900;
+  text-align: left;
+  color: #1f3f7a;
+}
+
+.invPrintTable .num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.invPrintTableSample tbody tr:nth-child(odd) {
+  background: #e8eef4;
+}
+
+.invPrintTableSample tbody tr:nth-child(even) {
+  background: #f5f8fb;
+}
+
+.invPrintFillerRow td {
+  color: transparent;
+}
+
+.invPrintBody {
+  display: flex;
+  flex-direction: column;
+}
+
+.invPrintBottomGrid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 16px;
+}
+
+.invPrintNote {
+  border: 1px solid #c2d4e6;
+  border-radius: 8px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.invPrintNoteTitle {
+  font-size: 24px;
+  line-height: 1;
+  color: #1f3f7a;
+  font-weight: 900;
+}
+
+.invPrintNote p {
+  margin: 6px 0 0;
+  color: #2a435b;
+  font-size: 12px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.invPrintTotals {
+  display: grid;
+  gap: 5px;
+  align-content: start;
+}
+
+.invPrintTotals > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: #1d3349;
+}
+
+.invPrintTotals .grand {
+  margin-top: 2px;
+  border-top: 2px solid #0f3d66;
+  padding-top: 8px;
+  font-size: 19px;
+}
+
+.invPrintTotalLast {
+  margin-top: 2px;
+  border-top: 2px solid #0f3d66;
+  padding-top: 6px;
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.invPrintFooter {
+  margin-top: 14px;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  background: #1aa4c4;
+  color: #fff;
+  border-radius: 0 0 4px 4px;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+}
+
+@media (max-width: 980px) {
+  .invMetaGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .invHead,
+  .invRow {
+    grid-template-columns: 1fr;
+  }
+
+  .invTop {
+    flex-direction: column;
+  }
+
+  .invTopRight {
+    text-align: left;
+  }
+
+  .invBadge {
+    justify-self: start;
+  }
+
+  .invTotal {
+    font-size: 34px;
+  }
+}
+
+@media print {
+  html,
+  body {
+    width: 210mm;
+    height: 297mm;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .invPrintSheet,
+  .invPrintSheet * {
+    visibility: visible !important;
+  }
+
+  .invNoPrint {
+    display: none !important;
+  }
+
+  .invPrintSheet {
+    display: block !important;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 297mm;
+    box-sizing: border-box;
+    margin: 0 !important;
+    padding: 8mm;
+    border: none;
+    border-radius: 0;
+    background: linear-gradient(165deg, #ffffff 0%, #f4f9fc 68%, #d9f1fb 100%);
+    color: #111;
+    font-size: 13px;
+    line-height: 1.32;
+    overflow: hidden;
+    display: flex !important;
+    flex-direction: column;
+    gap: 2mm;
+  }
+
+  .invPrintTopBar {
+    height: 10mm;
+    margin-bottom: 3mm;
+  }
+
+  .invPrintHeader {
+    gap: 12mm;
+    padding: 0 0 3mm;
+  }
+
+  .invPrintHospital {
+    font-size: 24px;
+  }
+
+  .invPrintSub {
+    font-size: 12px;
+  }
+
+  .invPrintTitle {
+    font-size: 48px;
+  }
+
+  .invPrintRef {
+    font-size: 19px;
+  }
+
+  .invPrintMeta {
+    min-width: 52mm;
+    font-size: 12px;
+    gap: 2.5mm;
+  }
+
+  .invPrintMetaGroup strong {
+    font-size: 22px;
+  }
+
+  .invPrintTable {
+    margin-top: 2mm;
+    table-layout: fixed;
+  }
+
+  .invPrintBody {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .invPrintTable th,
+  .invPrintTable td {
+    padding: 2.1mm 2.4mm;
+    font-size: 12px;
+  }
+
+  .invPrintTable tbody tr {
+    height: 7mm;
+  }
+
+  .invPrintTable th:nth-child(1),
+  .invPrintTable td:nth-child(1) {
+    width: 54%;
+  }
+
+  .invPrintTable th:nth-child(2),
+  .invPrintTable td:nth-child(2),
+  .invPrintTable th:nth-child(3),
+  .invPrintTable td:nth-child(3),
+  .invPrintTable th:nth-child(4),
+  .invPrintTable td:nth-child(4) {
+    width: 15.33%;
+  }
+
+  .invPrintBottomGrid {
+    margin-top: 2mm;
+    grid-template-columns: 1fr 62mm;
+    gap: 4mm;
+    align-items: start;
+  }
+
+  .invPrintNote {
+    padding: 3.2mm;
+  }
+
+  .invPrintNoteTitle {
+    font-size: 20px;
+  }
+
+  .invPrintNote p {
+    font-size: 12px;
+    margin-top: 1mm;
+  }
+
+  .invPrintTotals {
+    gap: 1mm;
+  }
+
+  .invPrintTotals > div {
+    font-size: 16px;
+    font-weight: 800;
+  }
+
+  .invPrintTotals .grand {
+    font-size: 28px;
+    padding-top: 2mm;
+  }
+
+  .invPrintTotalLast {
+    font-size: 22px;
+    padding-top: 1.4mm;
+  }
+
+  .invPrintFooter {
+    margin-top: 3mm;
+    padding: 2.8mm 3mm;
+    font-size: 11px;
+    line-height: 1.2;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}

@@ -1,0 +1,393 @@
+/* split text */
+.splitWrap{ display:inline-block; }
+.splitWord{ display:inline-block; white-space: pre; }
+
+.echPage{
+  padding-bottom: 40px;
+}
+
+/* Hero background matches your purple glow theme */
+.echHero{
+  padding: 46px 0 34px;
+  position: relative;
+}
+.echHero::before{
+  content:"";
+  position:absolute;
+  inset:-200px;
+  background:
+    radial-gradient(900px 520px at 18% 18%, rgba(31,113,191,0.22), transparent 62%),
+    radial-gradient(900px 520px at 82% 86%, rgba(31,113,191,0.18), transparent 62%);
+  pointer-events:none;
+  opacity: 0.95;
+}
+
+.echKicker{
+  display:inline-flex;
+  align-items:center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(127, 149, 171, 0.32);
+  color: rgba(52,143,219,0.95);
+  font-weight: 950;
+  width: fit-content;
+}
+.echDot{
+  width: 10px; height: 10px;
+  border-radius: 999px;
+  background: rgba(52,143,219,0.95);
+  box-shadow: 0 0 0 6px rgba(31,113,191,0.18);
+}
+.echHeart{ filter: drop-shadow(0 10px 20px rgba(31,113,191,0.35)); }
+
+.echTitle{
+  margin: 16px 0 0;
+  font-size: 48px;
+  font-weight: 950;
+  letter-spacing: -1px;
+}
+@media (max-width: 650px){
+  .echTitle{ font-size: 34px; }
+}
+
+.echSub{
+  margin-top: 10px;
+  color: rgba(28,46,66,0.62);
+  font-weight: 700;
+}
+
+/* Layout grid */
+.echGrid{
+  margin-top: 22px;
+  display:grid;
+  grid-template-columns: 1.35fr 0.85fr;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 980px){
+  .echGrid{ grid-template-columns: 1fr; }
+}
+
+/* Form card */
+.echCard{
+  padding: 18px;
+  border-radius: 22px;
+}
+
+.echForm{
+  display:grid;
+  gap: 14px;
+}
+
+.echTwo{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 720px){
+  .echTwo{ grid-template-columns: 1fr; }
+}
+
+.echField label{
+  display:block;
+  font-weight: 900;
+  color: rgba(28,46,66,0.82);
+  margin-bottom: 8px;
+}
+
+.echInput{
+  width:100%;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(127, 149, 171, 0.32);
+  background: rgba(255,255,255,0.78);
+  color: rgba(28,46,66,0.92);
+  outline: none;
+  font-weight: 800;
+}
+.echInput::placeholder{
+  color: rgba(28,46,66,0.45);
+}
+.echInput:focus{
+  border-color: rgba(52,143,219,0.55);
+  box-shadow: 0 0 0 5px rgba(31,113,191,0.16);
+}
+
+.echTextarea{
+  width:100%;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(127, 149, 171, 0.32);
+  background: rgba(255,255,255,0.78);
+  color: rgba(28,46,66,0.92);
+  outline: none;
+  font-weight: 750;
+  resize: vertical;
+}
+.echTextarea:focus{
+  border-color: rgba(52,143,219,0.55);
+  box-shadow: 0 0 0 5px rgba(31,113,191,0.16);
+}
+
+/* Tips mini card */
+.echTips{
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(31,113,191,0.08);
+  border: 1px solid rgba(31,113,191,0.18);
+  height: 100%;
+}
+.echTipsTitle{
+  font-weight: 950;
+  color: rgba(52,143,219,0.95);
+}
+.echTipsList{
+  margin: 8px 0 0;
+  padding-left: 16px;
+  color: rgba(28,46,66,0.66);
+  line-height: 1.7;
+  font-weight: 750;
+}
+
+/* Alerts */
+.echAlert{
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-weight: 900;
+  border: 1px solid rgba(127, 149, 171, 0.32);
+  background: rgba(255,255,255,0.78);
+}
+.echAlert.ok{
+  border-color: rgba(21,196,126,0.35);
+  background: rgba(21,196,126,0.10);
+}
+.echAlert.bad{
+  border-color: rgba(255,99,99,0.35);
+  background: rgba(255,99,99,0.10);
+}
+
+/* Submit button like your design */
+.echSubmit{
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(31,113,191,0.55);
+  background: linear-gradient(90deg, #1F71BF, rgba(52,143,219,0.95));
+  color: white;
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow: 0 18px 40px rgba(31,113,191,0.22);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.echSubmit:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 24px 60px rgba(31,113,191,0.32);
+}
+
+/* Right side info */
+.echRight{ display:grid; gap: 14px; }
+
+.echInfo{
+  padding: 16px;
+  border-radius: 22px;
+}
+
+.echInfoHead{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  font-weight: 950;
+  color: rgba(28,46,66,0.86);
+  margin-bottom: 8px;
+}
+.echIcon{
+  width: 30px; height: 30px;
+  display:grid;
+  place-items:center;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(127, 149, 171, 0.32);
+}
+.echInfoText{
+  color: rgba(28,46,66,0.62);
+  font-weight: 750;
+  margin-top: 4px;
+}
+
+.echDivider{
+  height: 1px;
+  background: rgba(255,255,255,0.78);
+  margin: 14px 0;
+}
+
+/* Why card */
+.echWhy{
+  padding: 16px;
+  border-radius: 22px;
+  background: rgba(31,113,191,0.08);
+  border: 1px solid rgba(31,113,191,0.18);
+}
+.echWhyTitle{
+  font-weight: 950;
+  color: rgba(28,46,66,0.90);
+  margin-bottom: 10px;
+}
+.echWhyItem{
+  color: rgba(28,46,66,0.70);
+  font-weight: 800;
+  margin-top: 8px;
+}
+
+/* FIX: Select dropdown (Service) background + readable text */
+select.echInput{
+  background: rgba(255,255,255,0.88) !important;
+  color: rgba(28,46,66,0.92) !important;
+  border: 1px solid rgba(127, 149, 171, 0.32);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Dropdown list items */
+select.echInput option{
+  background: #e9eff6;          /* dark list background */
+  color: rgba(28,46,66,0.92); /* white text */
+}
+
+/* optional: hover (some browsers support) */
+select.echInput option:hover{
+  background: rgba(31,113,191,0.35);
+}
+
+/* Optional: add a nice arrow icon to the right */
+select.echInput{
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(255,255,255,0.7) 50%),
+    linear-gradient(135deg, rgba(255,255,255,0.7) 50%, transparent 50%),
+    linear-gradient(to right, transparent, transparent);
+  background-position:
+    calc(100% - 18px) calc(50% - 3px),
+    calc(100% - 12px) calc(50% - 3px),
+    calc(100% - 40px) 50%;
+  background-size: 6px 6px, 6px 6px, 1px 22px;
+  background-repeat: no-repeat;
+  padding-right: 42px;
+}
+
+/* Disabled input style (looks clean, still readable) */
+.echInput:disabled{
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: grayscale(0.25);
+}
+
+/* small hint under doctor select */
+.echHint{
+  margin-top: 8px;
+  color: rgba(28,46,66,0.62);
+  font-weight: 750;
+  font-size: 12.5px;
+}
+
+.echSlotsWrap{
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 10px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 4px 2px 4px 0;
+}
+
+.echSlotButton{
+  min-height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(127, 149, 171, 0.32);
+  background: rgba(255,255,255,0.88);
+  color: rgba(28,46,66,0.9);
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+
+.echSlotButton:hover{
+  transform: translateY(-1px);
+  border-color: rgba(52,143,219,0.55);
+  box-shadow: 0 10px 24px rgba(31,113,191,0.12);
+}
+
+.echSlotButton.active{
+  border-color: rgba(31,113,191,0.78);
+  background: linear-gradient(135deg, rgba(31,113,191,0.96), rgba(52,143,219,0.9));
+  color: #fff;
+  box-shadow: 0 14px 32px rgba(31,113,191,0.22);
+}
+
+.echSlotButton.disabled{
+  background: rgba(216,225,235,0.72);
+  color: rgba(28,46,66,0.42);
+  cursor: not-allowed;
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.echFeeBox{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(31,113,191,0.12), rgba(255,255,255,0.88));
+  border: 1px solid rgba(31,113,191,0.22);
+}
+
+.echFeeLabel{
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(28,46,66,0.56);
+  font-weight: 900;
+}
+
+.echFeeValue{
+  margin-top: 4px;
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 950;
+  color: rgba(28,46,66,0.92);
+}
+
+.echFeeMeta{
+  margin-top: 6px;
+  color: rgba(28,46,66,0.62);
+  font-weight: 800;
+}
+
+.echFeeBadge{
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.88);
+  color: rgba(52,143,219,0.96);
+  border: 1px solid rgba(31,113,191,0.22);
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.echCardRow{
+  margin-top: 12px;
+}
+
+@media (max-width: 720px){
+  .echFeeBox{
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .echSlotsWrap{
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  }
+}
+

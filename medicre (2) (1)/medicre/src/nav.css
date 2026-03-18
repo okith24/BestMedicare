@@ -1,0 +1,169 @@
+/* Sticky top glass bar */
+.nb-wrap{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.78);
+  border-bottom: 1px solid rgba(127, 149, 171, 0.32);
+}
+
+/* Layout */
+.nb{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 12px;
+}
+
+/* Brand */
+.nb-brand{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  min-width: 260px;
+}
+
+.nb-logoImg{
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(127, 149, 171, 0.32);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+  display: grid;
+  place-items: center;
+}
+
+.nb-logoImg img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nb-brandText{ line-height: 1.1; }
+.nb-title{
+  font-weight: 950;
+  letter-spacing: 0.3px;
+  font-size: 14px;
+  color: rgba(28,46,66,0.92);
+}
+.nb-subtitle{
+  margin-top: 4px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: rgba(28,46,66,0.62);
+}
+
+/* Center links */
+.nb-links{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(127, 149, 171, 0.32);
+}
+
+.nb-link{
+  text-decoration: none;
+  color: rgba(28,46,66,0.72);
+  font-weight: 900;
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  transition: 0.2s ease;
+}
+
+/* White shade hover */
+.nb-link:hover{
+  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(127, 149, 171, 0.32);
+  color: rgba(28,46,66,0.95);
+}
+
+/* White shade when active (selected page) */
+.nb-link.active{
+  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(127, 149, 171, 0.32);
+  color: rgba(28,46,66,0.98);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.28);
+}
+
+/* Right side buttons */
+.nb-actions{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nb-btn{
+  text-decoration: none;
+  font-weight: 950;
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  transition: 0.2s ease;
+  border: 1px solid transparent;
+}
+
+/* Ghost button */
+.nb-btnGhost{
+  color: rgba(28,46,66,0.90);
+  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(127, 149, 171, 0.32);
+}
+.nb-btnGhost:hover{
+  background: rgba(255,255,255,0.78);
+  border-color: rgba(28,46,66,0.18);
+}
+
+.nb-btnLogout:hover{
+  color: #fff;
+  background: #e74c3c;
+  border-color: #e74c3c;
+}
+
+/* Primary button (your purple) */
+.nb-btnPrimary{
+  color: white;
+  background: linear-gradient(135deg, #1F71BF, #348FDB);
+  border: 1px solid rgba(31,113,191,0.55);
+  box-shadow: 0 18px 40px rgba(31,113,191,0.25);
+}
+.nb-btnPrimary:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 22px 55px rgba(31,113,191,0.33);
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  .nb{
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .nb-brand{ min-width: unset; }
+  .nb-subtitle{ display: none; }
+}
+
+/* Animated subtitle area */
+.nb-subtitleWrap{
+  position: relative;
+  height: 16px;          /* keeps navbar height stable */
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.nb-subtitleAnim{
+  display: inline-block;
+  white-space: nowrap;
+  color: rgba(52,143,219,0.95);
+  font-size: 11.5px;
+  font-weight: 850;
+}
+

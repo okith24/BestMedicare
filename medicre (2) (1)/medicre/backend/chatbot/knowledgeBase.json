@@ -1,0 +1,24 @@
+[
+  {
+    "id": "visiting-hours",
+    "title": "Visiting Hours",
+    "content": "Visiting hours are from 10:00 AM to 8:00 PM daily. Please check in at the front desk before visiting a patient.",
+    "keywords": [
+      "visiting hours",
+      "visiting time",
+      "visitor hours",
+      "visit hours"
+    ]
+  },
+  {
+    "id": "help-desk",
+    "title": "Help Desk",
+    "content": "For administrative assistance, please contact the hospital help desk.",
+    "keywords": [
+      "help desk",
+      "support",
+      "assistance",
+      "contact"
+    ]
+  }
+]

@@ -1,0 +1,146 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* MAIN CONTAINER */
+.signup-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+}
+
+/* LEFT PANEL */
+.left-section {
+  width: 40%;
+  background: linear-gradient(180deg, #1F71BF, #348FDB);
+  padding: 20px;
+}
+
+.hospital-logo {
+  color: white;
+  font-size: 14px;
+}
+
+/* RIGHT PANEL */
+.right-section {
+  width: 60%;
+  padding: 50px 70px;
+  background: white;
+  text-align: left !important; 
+}
+
+.title {
+  margin-bottom: 30px;
+}
+
+/* FORM */
+.form {
+  width: 100%;
+  text-align: left !important;
+}
+
+.form label {
+  font-size: 14px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.form input,
+.form select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  margin-bottom: 15px;
+  background: #f3f3f3;
+}
+
+/* AGE ERROR */
+.input-error {
+  border: 1px solid red !important;
+}
+
+.error {
+  color: red;
+  font-size: 13px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+/* ROW LAYOUT */
+.row {
+  display: flex;
+  gap: 25px;
+  margin-bottom: 18px;
+}
+
+.row > div {
+  flex: 1;
+}
+
+/* FULL-WIDTH INPUTS */
+.long-input {
+  width: 100%;
+}
+
+/* TERMS ALIGNMENT */
+.terms {
+  width: 100%;
+  margin: 20px 0 10px 0;
+  display: flex;
+  justify-content: flex-start !important;
+  align-items: center;
+}
+
+.terms-label {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.terms-checkbox {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  vertical-align: middle;
+  position: relative;
+  top: 1px;
+}
+
+.terms-text {
+  line-height: 1.2;
+}
+
+.terms-text a {
+  color: #1F71BF;
+  text-decoration: none;
+}
+
+/* BUTTON ALIGNMENT */
+.btn-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.signup-btn {
+  background: #1F71BF;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.back-button {
+  background: transparent;
+  color: white;
+  border: 1px solid white;
+  padding: 8px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+}

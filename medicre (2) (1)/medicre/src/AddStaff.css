@@ -1,0 +1,181 @@
+/* 
+   MAIN BACKGROUND
+ */
+.addstaff-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #eaf3fb 0%, #cfe3f7 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 60px;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* 
+   GLASS CARD (BIGGER)
+ */
+.addstaff-card {
+  width: 100%;
+  max-width: 1100px; /* bigger */
+  padding: 70px 80px;
+  border-radius: 28px;
+
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 255, 255, 0.85)
+  );
+
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+
+  transition: 0.3s ease;
+}
+
+.addstaff-card:hover {
+  transform: translateY(-4px);
+}
+
+/* 
+   HEADER
+ */
+.addstaff-card h1 {
+  font-size: 38px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #1f2d3d;
+}
+
+.addstaff-card p {
+  font-size: 16px;
+  color: #5f6c7b;
+  margin-bottom: 50px;
+}
+
+/*
+   GRID (MORE SPACED)
+*/
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 35px 40px;
+}
+
+/* 
+   INPUTS (BIGGER + EYE CATCHING)
+ */
+.form-grid input,
+.form-grid select {
+  padding: 18px 20px;          /* bigger */
+  border-radius: 16px;
+  border: 1px solid #d9e6f5;
+  background: #ffffff;
+  font-size: 16px;             /* larger text */
+  font-weight: 500;
+  transition: all 0.25s ease;
+  outline: none;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Focus Effect (Blue Glow) */
+.form-grid input:focus,
+.form-grid select:focus {
+  border-color: #2b7cd3;
+  box-shadow:
+    0 0 0 4px rgba(43, 124, 211, 0.15),
+    0 8px 20px rgba(43, 124, 211, 0.1);
+  transform: scale(1.02);
+}
+
+/* Hover Effect */
+.form-grid input:hover,
+.form-grid select:hover {
+  border-color: #a9c7e8;
+}
+
+.addstaff-error {
+  margin-top: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #d64541;
+}
+
+/* 
+   BUTTON AREA (SPACIOUS)
+ */
+.form-actions {
+  margin-top: 60px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 25px;
+}
+
+/* Cancel Button */
+.cancel-btn {
+  font-size: 15px;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  color: #6c7a89;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.cancel-btn:hover {
+  color: #2b7cd3;
+}
+
+/* Save Button (Premium Gradient) */
+.save-btn {
+  padding: 16px 30px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+
+  background: linear-gradient(135deg, #2b7cd3, #1e63b0);
+  color: white;
+
+  box-shadow: 0 15px 35px rgba(43, 124, 211, 0.35);
+  transition: all 0.25s ease;
+}
+
+.save-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px rgba(43, 124, 211, 0.45);
+}
+
+.save-btn:active {
+  transform: translateY(0);
+}
+
+/* Disabled */
+.save-btn:disabled {
+  background: #a9c7e8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* 
+   RESPONSIVE
+*/
+@media (max-width: 950px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .addstaff-card {
+    padding: 50px 40px;
+  }
+}

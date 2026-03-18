@@ -1,0 +1,512 @@
+/**
+ * Security Dashboard Styles
+ */
+
+.security-dashboard {
+  background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+  color: #e0e0e0;
+  min-height: 100vh;
+  padding: 2rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.dashboard-header h1 {
+  font-size: 2.5rem;
+  color: #00ffff;
+  margin: 0;
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+.header-subtitle {
+  color: #aaa;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* Tabs Navigation */
+.dashboard-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #333;
+  padding-bottom: 0;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: #888;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+
+.tab-btn:hover {
+  color: #00ffff;
+}
+
+.tab-btn.active {
+  color: #00ffff;
+  border-bottom-color: #00ffff;
+  box-shadow: 0 -2px 10px rgba(0, 255, 255, 0.2);
+}
+
+/* Dashboard Content */
+.dashboard-content {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Overview Section */
+.security-overview {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.security-overview h2 {
+  color: #00ffff;
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+}
+
+.overview-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.overview-cards .card {
+  background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
+  border: 1px solid #00ffff;
+  border-radius: 10px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.overview-cards .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 255, 255, 0.2);
+}
+
+.overview-cards .card h3 {
+  color: #00ffff;
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+
+.overview-cards .card .large-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 1rem 0;
+  color: #00ffff;
+}
+
+.overview-cards .card p {
+  color: #999;
+  margin: 0;
+}
+
+/* Buttons */
+.btn {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #00ffff 0%, #00cccc 100%);
+  color: #000;
+}
+
+.btn-primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+}
+
+/* Audit Logs Section */
+.audit-logs-section,
+.alerts-section,
+.statistics-section {
+  background: rgba(16, 22, 40, 0.8);
+  border: 1px solid #00ffff;
+  border-radius: 10px;
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.audit-logs-section h2,
+.alerts-section h2,
+.statistics-section h2 {
+  color: #00ffff;
+  margin-top: 0;
+  font-size: 1.8rem;
+}
+
+.subtitle {
+  color: #888;
+  margin-bottom: 1.5rem;
+}
+
+/* Logs Table */
+.logs-table {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+.logs-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.logs-table th {
+  background: rgba(0, 255, 255, 0.1);
+  color: #00ffff;
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 2px solid #00ffff;
+  font-weight: 600;
+}
+
+.logs-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #333;
+}
+
+.logs-table tr:hover {
+  background: rgba(0, 255, 255, 0.05);
+}
+
+.timestamp {
+  color: #aaa;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.action {
+  color: #00ffff;
+  font-weight: 500;
+}
+
+.severity {
+  font-weight: 600;
+  padding: 0.3rem 0.8rem;
+  border-radius: 3px;
+}
+
+.severity-CRITICAL {
+  background: #ff0000;
+  color: white;
+}
+
+.severity-HIGH {
+  background: #dd0000;
+  color: white;
+}
+
+.severity-MEDIUM {
+  background: #ff6600;
+  color: white;
+}
+
+.severity-LOW {
+  background: #ffa500;
+  color: white;
+}
+
+.details summary {
+  cursor: pointer;
+  color: #00ffff;
+  font-weight: 500;
+  padding: 0.5rem;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.details summary:hover {
+  background: rgba(0, 255, 255, 0.1);
+}
+
+.details pre {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+  border-radius: 5px;
+  overflow-x: auto;
+  color: #0fa;
+  font-size: 0.85rem;
+}
+
+/* Alerts Section */
+.alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.alert-item {
+  border-left: 5px solid;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1.5rem;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.alert-item:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.alert-item.severity-CRITICAL {
+  border-left-color: #ff0000;
+  background: rgba(255, 0, 0, 0.05);
+}
+
+.alert-item.severity-HIGH {
+  border-left-color: #dd0000;
+  background: rgba(221, 0, 0, 0.05);
+}
+
+.alert-item.severity-MEDIUM {
+  border-left-color: #ff6600;
+  background: rgba(255, 102, 0, 0.05);
+}
+
+.alert-item.severity-LOW {
+  border-left-color: #ffa500;
+  background: rgba(255, 165, 0, 0.05);
+}
+
+.alert-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.alert-action {
+  color: #00ffff;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.alert-severity {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.alert-timestamp {
+  color: #aaa;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.alert-user {
+  color: #ccc;
+  margin: 0.5rem 0 0 0;
+}
+
+.alert-details summary {
+  cursor: pointer;
+  color: #00ffff;
+  margin-top: 0.5rem;
+}
+
+.no-alerts {
+  text-align: center;
+  color: #888;
+  padding: 2rem;
+}
+
+/* Statistics Section */
+.date-range-selector {
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.date-range-selector select {
+  padding: 0.6rem 1rem;
+  background: #0f3460;
+  color: #00ffff;
+  border: 1px solid #00ffff;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid #00ffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.stat-card h3 {
+  color: #00ffff;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #00ffff;
+  margin: 0.5rem 0;
+}
+
+.stat-label {
+  color: #888;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.stat-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.stat-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #333;
+}
+
+.stat-list li:last-child {
+  border-bottom: none;
+}
+
+.type-name {
+  color: #ccc;
+  font-weight: 500;
+}
+
+.type-count {
+  color: #00ffff;
+  font-weight: 600;
+}
+
+/* Daily Trend */
+.daily-trend {
+  margin-top: 2rem;
+}
+
+.daily-trend h3 {
+  color: #00ffff;
+  margin-bottom: 1rem;
+}
+
+.trend-chart {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1.5rem;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.trend-chart table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.trend-chart th,
+.trend-chart td {
+  padding: 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+
+.trend-chart th {
+  background: rgba(0, 255, 255, 0.1);
+  color: #00ffff;
+  font-weight: 600;
+}
+
+.bar {
+  width: 100%;
+  height: 30px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00ffff 0%, #00cccc 100%);
+  transition: width 0.3s ease;
+}
+
+/* Error Message */
+.error-message {
+  background: #ff0000;
+  color: white;
+  padding: 1rem;
+  border-radius: 5px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .security-dashboard {
+    padding: 1rem;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .dashboard-tabs {
+    flex-wrap: wrap;
+  }
+
+  .overview-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .logs-table {
+    font-size: 0.85rem;
+  }
+
+  .logs-table th,
+  .logs-table td {
+    padding: 0.5rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
