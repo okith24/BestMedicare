@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./auth/AuthContext.jsx";
-import "./whyus.css";
+import "./Whyus.css";
 
 const ease = [0.22, 1, 0.36, 1];
 

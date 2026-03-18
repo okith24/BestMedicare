@@ -1,4 +1,43 @@
-require("dotenv").config({ path: require("path").join(__dirname, ".env") });
+const fs = require("fs");
+const path = require("path");
+const dotenv = require("dotenv");
+
+function loadEnvironment() {
+  const candidates = [
+    path.join(__dirname, ".env"),
+    path.join(process.cwd(), ".env"),
+    path.join(process.cwd(), "backend", ".env"),
+    path.join(__dirname, "..", ".env"),
+  ];
+
+  for (const envPath of candidates) {
+    if (!fs.existsSync(envPath)) continue;
+    const result = dotenv.config({ path: envPath, override: false });
+    if (!result.error) {
+      console.log(`[env] Loaded environment from ${envPath}`);
+      return envPath;
+    }
+  }
+
+  console.warn("[env] No .env file found in expected locations");
+  return null;
+}
+
+loadEnvironment();
+
+function logFatalStartupError(kind, error) {
+  console.error(`\n[FATAL:${kind}]`, error?.stack || error?.message || error);
+}
+
+process.on("uncaughtException", (error) => {
+  logFatalStartupError("uncaughtException", error);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason) => {
+  logFatalStartupError("unhandledRejection", reason);
+  process.exit(1);
+});
 
 // ============================================================
 // CRITICAL: VALIDATE ALL SECRETS BEFORE STARTING SERVER
@@ -31,6 +70,9 @@ const { attachAuditContext } = require("./middleware/audit");
 const { initializeCookies, verify2FACookie } = require("./middleware/cookieConfig");
 
 const app = express();
+const paymentsEnabled = ["1", "true", "yes", "on"].includes(
+  String(process.env.PAYMENTS_ENABLED || "true").trim().toLowerCase()
+);
 
 /* 
    DATABASE CONNECTION
@@ -182,11 +224,6 @@ const { startAppointmentReminderService } = require("./echanneling/reminderServi
 const adminRoutes = require("./routes/adminRoutes");
 const chatbotRoutes = require("./chatbot/router");
 
-// Payment routes
-const paymentRoutes = require("./payments/routes/paymentRoutes");
-const tokenRoutes = require("./payments/routes/tokenRoutes");
-const webhookRoutes = require("./payments/routes/webhookRoutes");
-
 // Data retention & compliance
 const { startScheduler } = require("./dataRetention/DataRetentionScheduler");
 const dataRetentionRoutes = require("./dataRetention/routes");
@@ -207,9 +244,18 @@ app.use("/api/admin", adminRoutes); // SUPER ADMIN ROUTES
 app.use("/api/chatbot", chatbotRoutes);
 
 // Payment system routes with stricter rate limiting
-app.use("/api/payments", paymentLimiter, paymentRoutes);
-app.use("/api/tokens", paymentLimiter, tokenRoutes);
-app.use("/api/payments/webhooks", webhookRoutes);
+if (paymentsEnabled) {
+  const paymentRoutes = require("./payments/routes/paymentRoutes");
+  const tokenRoutes = require("./payments/routes/tokenRoutes");
+  const webhookRoutes = require("./payments/routes/webhookRoutes");
+
+  app.use("/api/payments", paymentLimiter, paymentRoutes);
+  app.use("/api/tokens", paymentLimiter, tokenRoutes);
+  app.use("/api/payments/webhooks", webhookRoutes);
+  console.log("Payment routes enabled");
+} else {
+  console.warn("Payment routes disabled because PAYMENTS_ENABLED=false");
+}
 
 // Data retention & compliance management routes
 app.use("/api/data-retention", dataRetentionRoutes);
@@ -250,7 +296,6 @@ app.use((err, req, res, next) => {
 */
 const PORT = process.env.PORT || 5000;
 const https = require('https');
-const fs = require('fs');
 
 // Try to load HTTPS certificates if in production
 let server;
@@ -285,7 +330,8 @@ server.on('error', (err) => {
 `);
     process.exit(1);
   }
-  throw err;
+  logFatalStartupError("server", err);
+  process.exit(1);
 });
 
 server.listen(PORT, () => {

@@ -8,6 +8,16 @@
  * Implements secret rotation best practices
  */
 
+function isFeatureEnabled(name, fallback = false) {
+  const raw = String(process.env[name] || "").trim().toLowerCase();
+  if (!raw) return fallback;
+  return ["1", "true", "yes", "on"].includes(raw);
+}
+
+const paymentsEnabled = isFeatureEnabled("PAYMENTS_ENABLED", true);
+const smsEnabled = isFeatureEnabled("SMS_ENABLED", false);
+const webhookEnabled = paymentsEnabled && Boolean(String(process.env.CYBERSOURCE_WEBHOOK_URL || "").trim());
+
 const requiredSecrets = {
   // Database
   MONGO_URI: {
@@ -18,32 +28,39 @@ const requiredSecrets = {
 
   // Payment Processing (Cybersource)
   CYBERSOURCE_API_KEY: {
-    required: true,
+    required: paymentsEnabled,
     type: 'string',
     description: 'Cybersource API key for payment processing'
   },
   CYBERSOURCE_SECRET_KEY: {
-    required: true,
+    required: paymentsEnabled,
     type: 'string',
     description: 'Cybersource secret key (64 hex chars minimum)'
   },
   CYBERSOURCE_MERCHANT_ID: {
-    required: true,
+    required: paymentsEnabled,
     type: 'string',
     description: 'Cybersource merchant ID'
   },
   CYBERSOURCE_WEBHOOK_SECRET: {
-    required: true,
+    required: webhookEnabled,
     type: 'string',
     description: 'Secret for verifying Cybersource webhooks'
   },
 
   // Encryption
   PAYMENT_TOKEN_ENCRYPTION_KEY: {
-    required: true,
+    required: paymentsEnabled,
     type: 'string',
     minLength: 64,
     description: 'AES-256 encryption key (32 bytes = 64 hex chars)'
+  },
+
+  COOKIE_SECRET: {
+    required: true,
+    type: 'string',
+    minLength: 32,
+    description: 'Secret used to sign secure cookies'
   },
 
   // Security
@@ -56,7 +73,7 @@ const requiredSecrets = {
 
   // SMS Gateway
   SMS_API_KEY: {
-    required: process.env.SMS_ENABLED === 'true',
+    required: smsEnabled,
     type: 'string',
     description: 'API key for SMS gateway'
   }
@@ -106,6 +123,10 @@ function validateSecrets() {
     if (!process.env.CSRF_COOKIE_HTTPONLY || process.env.CSRF_COOKIE_HTTPONLY !== 'true') {
       errors.push('❌ CSRF_COOKIE_HTTPONLY must be true in production');
     }
+  }
+
+  if (!paymentsEnabled) {
+    warnings.push('Payments are disabled (`PAYMENTS_ENABLED=false`), so Cybersource startup validation is skipped.');
   }
 
   // Report results
