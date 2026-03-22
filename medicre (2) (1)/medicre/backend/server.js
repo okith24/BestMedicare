@@ -70,6 +70,7 @@ const { attachAuditContext } = require("./middleware/audit");
 const { initializeCookies, verify2FACookie } = require("./middleware/cookieConfig");
 
 const app = express();
+app.set("etag", false);
 const paymentsEnabled = ["1", "true", "yes", "on"].includes(
   String(process.env.PAYMENTS_ENABLED || "true").trim().toLowerCase()
 );
@@ -124,6 +125,12 @@ try {
 }
 
 app.use("/api", limiter);
+app.use("/api", (req, res, next) => {
+  res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
+  res.set("Pragma", "no-cache");
+  res.set("Expires", "0");
+  next();
+});
 
 /* 
    CORS CONFIGURATION

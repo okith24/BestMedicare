@@ -14,6 +14,7 @@ const {
   getSlotAvailability,
   isDateWithinWindow,
   normalizeServiceName,
+  resolveServicePricing,
   resolveDoctorNameForBooking
 } = require('../echanneling/bookingRules');
 
@@ -62,6 +63,9 @@ function mapAppointment(appointment) {
     time: appointment.time,
     doctor: appointment.doctor,
     service: appointment.service,
+    doctorCharge: Number(appointment.doctorCharge || 0),
+    hospitalCharge: Number(appointment.hospitalCharge || 0),
+    totalCharge: Number(appointment.amount || appointment.fee || 0),
     amount: appointment.amount,
     paymentStatus: appointment.paymentStatus,
     paymentMethod: appointment.paymentMethod,
@@ -234,6 +238,7 @@ router.get('/echanneling/options', attachAuth, requireAuth, requirePatient, asyn
 
     return res.json({
       services: services.map((item) => ({
+        ...resolveServicePricing(item),
         name: item.service,
         fee: Number(item.fee || 0),
         doctorRequired: !!item.doctorRequired,
@@ -241,6 +246,7 @@ router.get('/echanneling/options', attachAuth, requireAuth, requirePatient, asyn
         bookingWindowDays: Number(item.bookingWindowDays || 30)
       })),
       service: {
+        ...resolveServicePricing(serviceConfig),
         name: serviceConfig.service,
         fee: Number(serviceConfig.fee || 0),
         doctorRequired: !!serviceConfig.doctorRequired,
@@ -354,7 +360,8 @@ router.post('/appointments', attachAuth, requireAuth, requirePatient, async (req
       });
     }
 
-    const fee = Number(serviceConfig.fee || 0);
+    const pricing = resolveServicePricing(serviceConfig);
+    const fee = Number(pricing.fee || 0);
 
     const appointment = await Appointment.create({
       name: req.authUser.name,
@@ -368,6 +375,8 @@ router.post('/appointments', attachAuth, requireAuth, requirePatient, async (req
       time,
       amount: fee,
       fee,
+      doctorCharge: Number(pricing.doctorCharge || 0),
+      hospitalCharge: Number(pricing.hospitalCharge || 0),
       paymentStatus: explicitPaymentStatus
         ? normalizePaymentStatus(explicitPaymentStatus)
         : (paymentMethod === 'card' ? 'PAID' : 'PENDING'),

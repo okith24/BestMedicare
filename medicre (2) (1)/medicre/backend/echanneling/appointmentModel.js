@@ -101,6 +101,8 @@ const AppointmentSchema = new mongoose.Schema(
     note: { type: String, trim: true, default: '' },
     fee: { type: Number, default: 1500 },
     amount: { type: Number, default: 1500 },
+    doctorCharge: { type: Number, default: 0 },
+    hospitalCharge: { type: Number, default: 0 },
     invoiceReferenceNumber: { type: String, trim: true, default: '' },
     paymentStatus: { type: String, enum: ['PENDING', 'PAID'], default: 'PENDING' },
     paymentMethod: { type: String, enum: ['cash', 'card'], default: 'cash' },

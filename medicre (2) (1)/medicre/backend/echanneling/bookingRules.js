@@ -17,6 +17,8 @@ const DEFAULT_CLINIC_SERVICES = [
   {
     service: "OPD",
     departmentKey: "opd",
+    doctorCharge: 1000,
+    hospitalCharge: 350,
     fee: 1350,
     slotMinutes: 10,
     bookingWindowDays: 30,
@@ -26,6 +28,8 @@ const DEFAULT_CLINIC_SERVICES = [
   {
     service: "Psychiatric",
     departmentKey: "psychiatric",
+    doctorCharge: 6000,
+    hospitalCharge: 1000,
     fee: 7000,
     slotMinutes: 10,
     bookingWindowDays: 30,
@@ -35,6 +39,8 @@ const DEFAULT_CLINIC_SERVICES = [
   {
     service: "Physiotherapy",
     departmentKey: "physiotherapy",
+    doctorCharge: 4000,
+    hospitalCharge: 1000,
     fee: 5000,
     slotMinutes: 10,
     bookingWindowDays: 30,
@@ -44,6 +50,8 @@ const DEFAULT_CLINIC_SERVICES = [
   {
     service: "Counselling",
     departmentKey: "counselling",
+    doctorCharge: 5000,
+    hospitalCharge: 1500,
     fee: 6500,
     slotMinutes: 10,
     bookingWindowDays: 30,
@@ -53,6 +61,8 @@ const DEFAULT_CLINIC_SERVICES = [
   {
     service: "Aesthetic",
     departmentKey: "aesthetic",
+    doctorCharge: 2500,
+    hospitalCharge: 350,
     fee: 2850,
     slotMinutes: 10,
     bookingWindowDays: 30,
@@ -60,6 +70,35 @@ const DEFAULT_CLINIC_SERVICES = [
     availability: [{ day: "*", start: "17:00", end: "21:00" }]
   }
 ];
+
+function getDefaultServicePricing(serviceName) {
+  const normalized = normalizeServiceName(serviceName);
+  const match = DEFAULT_CLINIC_SERVICES.find((item) => item.service === normalized);
+  return {
+    doctorCharge: Number(match?.doctorCharge || 0),
+    hospitalCharge: Number(match?.hospitalCharge || 0),
+    fee: Number(match?.fee || 0)
+  };
+}
+
+function resolveServicePricing(serviceConfig) {
+  const fallback = getDefaultServicePricing(serviceConfig?.service);
+  const doctorCharge = Number(
+    serviceConfig?.doctorCharge ?? fallback.doctorCharge ?? 0
+  );
+  const hospitalCharge = Number(
+    serviceConfig?.hospitalCharge ?? fallback.hospitalCharge ?? 0
+  );
+  const fee = Number(
+    serviceConfig?.fee ?? (doctorCharge + hospitalCharge) ?? fallback.fee ?? 0
+  );
+
+  return {
+    doctorCharge,
+    hospitalCharge,
+    fee: fee || doctorCharge + hospitalCharge
+  };
+}
 
 function normalizeServiceName(value) {
   const raw = String(value || "").trim().toLowerCase();
@@ -301,7 +340,10 @@ async function ensureClinicServices() {
     await Clinic.insertMany(
       missing.map((item) => ({
         ...item,
-        departmentKey: normalizeDepartmentKey(item.departmentKey || item.service)
+        departmentKey: normalizeDepartmentKey(item.departmentKey || item.service),
+        fee: Number(item.fee || 0),
+        doctorCharge: Number(item.doctorCharge || 0),
+        hospitalCharge: Number(item.hospitalCharge || 0)
       })),
       { ordered: false }
     ).catch(() => null);
@@ -312,6 +354,7 @@ async function ensureClinicServices() {
     .lean();
 
   return clinics.map((item) => ({
+    ...resolveServicePricing(item),
     ...item,
     service: normalizeServiceName(item.service),
     departmentKey: normalizeDepartmentKey(item.departmentKey || item.service),
@@ -353,12 +396,13 @@ async function getDoctorOptionsForService(serviceConfig) {
 
   return staffDoctors.map((staffDoc) => {
     const match = doctorLookup.get(normalizeName(staffDoc.name));
+    const pricing = resolveServicePricing(serviceConfig);
     return {
       doctorId: match?.doctorId || buildDoctorIdFromStaff(staffDoc),
       name: staffDoc.name,
       department: staffDoc.department,
       consultation: match?.consultation || serviceConfig.service,
-      consultationFee: Number(match?.consultationFee || serviceConfig.fee || 0),
+      consultationFee: Number(match?.consultationFee || pricing.doctorCharge || 0),
       availability: Array.isArray(match?.availability) ? match.availability : []
     };
   });
@@ -464,5 +508,6 @@ module.exports = {
   normalizeDepartmentKey,
   normalizeServiceName,
   parseDateOnly,
+  resolveServicePricing,
   resolveDoctorNameForBooking
 };

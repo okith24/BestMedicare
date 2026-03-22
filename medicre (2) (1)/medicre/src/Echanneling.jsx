@@ -8,11 +8,11 @@ import { apiFetch } from "./api.js";
 const ease = [0.22, 1, 0.36, 1];
 
 const fallbackServices = [
-  { name: "OPD", fee: 1350, doctorRequired: false, slotMinutes: 10, bookingWindowDays: 30 },
-  { name: "Psychiatric", fee: 7000, doctorRequired: true, slotMinutes: 10, bookingWindowDays: 30 },
-  { name: "Physiotherapy", fee: 5000, doctorRequired: true, slotMinutes: 10, bookingWindowDays: 30 },
-  { name: "Counselling", fee: 6500, doctorRequired: true, slotMinutes: 10, bookingWindowDays: 30 },
-  { name: "Aesthetic", fee: 2850, doctorRequired: true, slotMinutes: 10, bookingWindowDays: 30 }
+  { name: "OPD", doctorCharge: 1000, hospitalCharge: 350, fee: 1350, doctorRequired: false, slotMinutes: 10, bookingWindowDays: 30 },
+  { name: "Psychiatric", doctorCharge: 6000, hospitalCharge: 1000, fee: 7000, doctorRequired: true, slotMinutes: 10, bookingWindowDays: 30 },
+  { name: "Physiotherapy", doctorCharge: 4000, hospitalCharge: 1000, fee: 5000, doctorRequired: true, slotMinutes: 10, bookingWindowDays: 30 },
+  { name: "Counselling", doctorCharge: 5000, hospitalCharge: 1500, fee: 6500, doctorRequired: true, slotMinutes: 10, bookingWindowDays: 30 },
+  { name: "Aesthetic", doctorCharge: 2500, hospitalCharge: 350, fee: 2850, doctorRequired: true, slotMinutes: 10, bookingWindowDays: 30 }
 ];
 
 function SplitWords({ text, delay = 0 }) {
@@ -74,6 +74,18 @@ function formatCardExpiryInput(value) {
 function formatMoney(value) {
   const amount = Number(value || 0);
   return `LKR ${amount.toLocaleString()}`;
+}
+
+function getPricing(config) {
+  const doctorCharge = Number(config?.doctorCharge || 0);
+  const hospitalCharge = Number(config?.hospitalCharge || 0);
+  const fee = Number(config?.fee || doctorCharge + hospitalCharge || 0);
+
+  return {
+    doctorCharge,
+    hospitalCharge,
+    fee
+  };
 }
 
 export default function Echanneling() {
@@ -385,7 +397,9 @@ export default function Echanneling() {
           doctor: doctorDisabled ? "" : form.doctor,
           date: form.date,
           time: form.time,
-          fee: serviceConfig?.fee || 0,
+          fee: pricing.fee,
+          doctorCharge: pricing.doctorCharge,
+          hospitalCharge: pricing.hospitalCharge,
           paymentMethod: form.paymentMethod,
           paymentStatus: form.paymentMethod === "card" ? "PAID" : "PENDING",
           cardLast4: form.cardNumber.replace(/\D/g, "").slice(-4),
@@ -440,6 +454,7 @@ export default function Echanneling() {
     : slotOptions.length
     ? "Select one of the available 10-minute slots below."
     : "No slots are available for the selected date.";
+  const pricing = getPricing(serviceConfig);
 
   return (
     <div className="page echPage">
@@ -630,8 +645,17 @@ export default function Echanneling() {
 
                 <div className="glass echFeeBox">
                   <div>
-                    <div className="echFeeLabel">Echanneling Fee</div>
-                    <div className="echFeeValue">{formatMoney(serviceConfig?.fee)}</div>
+                    <div className="echFeeLabel">Charge Summary</div>
+                    <div className="echFeeMeta">
+                      Doctor fee: {formatMoney(pricing.doctorCharge)}
+                    </div>
+                    <div className="echFeeMeta">
+                      Channeling fee: {formatMoney(pricing.hospitalCharge)}
+                    </div>
+                    <div className="echFeeValue">{formatMoney(pricing.fee)}</div>
+                    <div className="echFeeMeta">
+                      Total: {formatMoney(pricing.fee)}
+                    </div>
                     <div className="echFeeMeta">
                       {serviceConfig?.name || form.service}
                       {doctorDisabled ? " | OPD duty doctor" : form.doctor ? ` | ${form.doctor}` : ""}

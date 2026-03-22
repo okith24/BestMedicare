@@ -17,6 +17,14 @@ const ClinicSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
+    doctorCharge: {
+      type: Number,
+      default: 0
+    },
+    hospitalCharge: {
+      type: Number,
+      default: 0
+    },
     slotMinutes: {
       type: Number,
       default: 10

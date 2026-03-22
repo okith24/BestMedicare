@@ -97,7 +97,8 @@ function tokenize(text) {
       normalizeText(text)
         .split(" ")
         .map((word) => word.replace(/[^a-z0-9]/gi, ""))
-        .filter((word) => word.length > 2 && !STOP_WORDS.has(word))
+        // FIX: was > 2 — this dropped "hi", "hey", "bye" (2 chars). Now >= 2.
+        .filter((word) => word.length >= 2 && !STOP_WORDS.has(word))
     )
   );
 }
@@ -124,66 +125,87 @@ function isDiagnosisRequest(question) {
   return patterns.some((p) => q.includes(p));
 }
 
+// Pick a random item from an array, or return null.
+function pickRandom(arr) {
+  if (!Array.isArray(arr) || arr.length === 0) return null;
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+// Resolve the best answer text from a knowledge entry.
+// Some entries use content (plain string), others use responses (array).
+function resolveAnswer(entry) {
+  if (entry.content && String(entry.content).trim()) {
+    return String(entry.content).trim();
+  }
+  if (Array.isArray(entry.responses) && entry.responses.length > 0) {
+    return pickRandom(entry.responses);
+  }
+  return null;
+}
+
 async function findKnowledgeMatch(question) {
   const q = normalizeText(question);
   const tokens = tokenize(q);
-  if (tokens.length === 0) return null;
 
-  const regexTokens = tokens.slice(0, 8).map((t) => new RegExp(t, "i"));
+  // FIX: was return null immediately when tokens empty.
+  // Now we do a broad scan so short phrases like "hi" still reach the DB.
+  const PROJECTION = { topic: 1, content: 1, responses: 1, tags: 1, category: 1 };
 
-  let candidates = await ChatbotKnowledge.find(
-    {
-      $or: [
-        { topic: { $in: regexTokens } },
-        { content: { $in: regexTokens } },
-        { tags: { $in: regexTokens } },
-        { category: { $in: regexTokens } }
-      ]
-    },
-    { topic: 1, content: 1, tags: 1, category: 1 }
-  ).limit(12);
+  let candidates;
 
-  if (!candidates.length) {
+  if (tokens.length > 0) {
+    const regexTokens = tokens.slice(0, 8).map((t) => new RegExp(t, "i"));
+
     candidates = await ChatbotKnowledge.find(
-      {},
-      { topic: 1, content: 1, tags: 1, category: 1 }
-    ).limit(200);
+      {
+        $or: [
+          { topic:    { $in: regexTokens } },
+          { content:  { $in: regexTokens } },
+          { tags:     { $in: regexTokens } },
+          { category: { $in: regexTokens } },
+          // FIX: also search inside responses array for short queries
+          { responses: { $in: regexTokens } }
+        ]
+      },
+      PROJECTION
+    ).limit(12);
+
+    if (!candidates.length) {
+      candidates = await ChatbotKnowledge.find({}, PROJECTION).limit(200);
+    }
+  } else {
+    // Zero tokens (e.g. pure punctuation) — scan everything
+    candidates = await ChatbotKnowledge.find({}, PROJECTION).limit(200);
   }
 
   if (!candidates.length) return null;
 
   const scoreEntry = (entry) => {
-    const topic = normalizeText(entry.topic);
-    const content = normalizeText(entry.content);
+    const topic    = normalizeText(entry.topic);
+    const content  = normalizeText(entry.content);
     const category = normalizeText(entry.category);
-    const tags = Array.isArray(entry.tags) ? entry.tags.map(normalizeText) : [];
-    let score = 0;
-    let topicTagHits = 0;
-    let contentHits = 0;
-    let domainHit = false;
+    const tags     = Array.isArray(entry.tags) ? entry.tags.map(normalizeText) : [];
+    // FIX: also score against responses text
+    const responsesText = Array.isArray(entry.responses)
+      ? entry.responses.map(normalizeText).join(" ")
+      : "";
 
-    if (topic && q.includes(topic)) score += 6;
-    if (content && q.includes(content)) score += 3;
+    let score       = 0;
+    let topicTagHits = 0;
+    let contentHits  = 0;
+    let domainHit    = false;
+
+    if (topic    && q.includes(topic))    score += 6;
+    if (content  && q.includes(content))  score += 3;
     if (category && q.includes(category)) score += 2;
 
     for (const token of tokens) {
-      if (topic.includes(token)) {
-        score += 2;
-        topicTagHits += 1;
-      }
-      if (content.includes(token)) {
-        score += 1;
-        contentHits += 1;
-      }
-      if (category.includes(token)) {
-        score += 1;
-        topicTagHits += 1;
-      }
-      if (tags.some((t) => t.includes(token))) {
-        score += 1;
-        topicTagHits += 1;
-      }
-      if (DOMAIN_KEYWORDS.has(token) && content.includes(token)) {
+      if (topic.includes(token))                        { score += 2; topicTagHits += 1; }
+      if (content.includes(token))                      { score += 1; contentHits  += 1; }
+      if (responsesText.includes(token))                { score += 1; contentHits  += 1; }
+      if (category.includes(token))                     { score += 1; topicTagHits += 1; }
+      if (tags.some((t) => t.includes(token)))          { score += 2; topicTagHits += 1; }
+      if (DOMAIN_KEYWORDS.has(token) && (content.includes(token) || responsesText.includes(token))) {
         domainHit = true;
       }
     }
@@ -196,14 +218,14 @@ async function findKnowledgeMatch(question) {
     return passesBoundary ? score : 0;
   };
 
-  let best = null;
+  let best      = null;
   let bestScore = -1;
 
   for (const entry of candidates) {
     const score = scoreEntry(entry);
     if (score > bestScore) {
       bestScore = score;
-      best = entry;
+      best      = entry;
     }
   }
 
@@ -303,8 +325,13 @@ router.post("/ask", attachAuth, requireAuth, async (req, res, next) => {
         return res.json({ answer: FALLBACK_MESSAGE, sources: [] });
       }
 
+      const answer = resolveAnswer(match);
+      if (!answer) {
+        return res.json({ answer: FALLBACK_MESSAGE, sources: [] });
+      }
+
       return res.json({
-        answer: match.content,
+        answer,
         sources: [{ id: String(match._id), title: match.topic }]
       });
     }
