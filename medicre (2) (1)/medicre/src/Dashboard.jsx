@@ -144,17 +144,6 @@ export default function Dashboard() {
 
         <div className="department-header">
             <p className="department-scope">Department summary</p>
-            <div className="date-filter">
-                <label htmlFor="dashboard-date">Select Date:</label>
-                <input 
-                    type="date" 
-                    id="dashboard-date"
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
-                    className="date-picker-input"
-                />
-                {isFetching && <span className="date-filter__spinner" aria-label="Loading" />}
-            </div>
         </div>
         {weeklyRangeLabel && (
           <p className="weekly-range-label">{weeklyRangeLabel}</p>
@@ -173,6 +162,8 @@ export default function Dashboard() {
         <div className="dashboard-grid">
           <AppointmentSearch
             appointments={appointments}
+            selectedDate={selectedDate}
+            onSelectedDateChange={setSelectedDate}
             onCancel={handleCancel}
             cancellingId={cancellingId}
           />

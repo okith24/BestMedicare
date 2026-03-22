@@ -214,6 +214,13 @@
   letter-spacing: 0.02em;
 }
 
+.appointment-search-scope {
+  margin: 8px 0 14px;
+  color: var(--textSecondary);
+  font-size: 0.88rem;
+  letter-spacing: 0.01em;
+}
+
 /* Spinner next to date picker */
 .date-filter__spinner {
   display: inline-block;

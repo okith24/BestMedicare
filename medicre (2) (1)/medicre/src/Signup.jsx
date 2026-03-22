@@ -6,6 +6,7 @@ import { useAuth } from "./auth/AuthContext.jsx";
 import "./auth-glass.css";
 
 const ease = [0.22, 1, 0.36, 1];
+const SIGNUP_VERIFY_STORAGE_KEY = "bmn_signup_verify";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -66,6 +67,23 @@ export default function SignUp() {
           password
         })
       });
+
+      if (result?.requiresOtp && result?.signupId && result?.signupToken) {
+        const verifyState = {
+          signupId: result.signupId,
+          signupToken: result.signupToken,
+          phone: result.phone || phone,
+          email: normalizedEmail,
+          fromPath,
+          message: result.message || "A verification code has been sent to your phone."
+        };
+        window.sessionStorage.setItem(SIGNUP_VERIFY_STORAGE_KEY, JSON.stringify(verifyState));
+        navigate("/signup/verify", {
+          replace: true,
+          state: verifyState
+        });
+        return;
+      }
 
       if (!result?.user || !result?.token) {
         throw new Error("Account created but login session was not started.");

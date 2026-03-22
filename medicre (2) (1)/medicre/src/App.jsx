@@ -8,6 +8,7 @@ import Whyus from "./Whyus.jsx";
 import Echanneling from "./Echanneling.jsx";
 import Signin from "./Signin.jsx";
 import Signup from "./Signup.jsx";
+import SignupVerify from "./SignupVerify.jsx";
 import ForgotPassword from "./ForgotPassword.jsx";
 import Dashboard from "./Dashboard.jsx";
 import Invoice from "./Invoice.jsx";
@@ -73,6 +74,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/signup/verify" element={<SignupVerify />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route
           path="/chatbot-control"
@@ -95,11 +97,7 @@ export default function App() {
 
         <Route
           path="/whyus"
-          element={
-            <RequireAuth>
-              <Whyus />
-            </RequireAuth>
-          }
+          element={<Whyus />}
         />
 
         {/* Staff Routes (doctor, nurse, staff allowed) */}

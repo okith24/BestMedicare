@@ -3,7 +3,6 @@ const router = express.Router();
 const util = require("util");
 const crypto = require("crypto");
 const mongoose = require("mongoose");
-const rateLimit = require("express-rate-limit");
 
 const User = require("./userModel"); // Patients
 const StaffUser = require("../models/StaffUser"); // Staff collection
@@ -42,19 +41,6 @@ const SIGNUP_OTP_MAX_ATTEMPTS = Math.max(1, Number(process.env.SIGNUP_OTP_MAX_AT
 const PASSWORD_RESET_OTP_TTL_MINUTES = Math.max(1, Number(process.env.PASSWORD_RESET_OTP_TTL_MINUTES || 10));
 const PASSWORD_RESET_OTP_MAX_ATTEMPTS = Math.max(1, Number(process.env.PASSWORD_RESET_OTP_MAX_ATTEMPTS || 5));
 const PASSWORD_RESET_RESPONSE = "If the phone number is registered, an SMS reset link has been sent.";
-
-/*
-RATE LIMITER (LOGIN SECURITY)
-*/
-const loginLimiter = rateLimit({
-  windowMs: 10 * 60 * 1000,
-  max: 5,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: {
-    message: "Too many login attempts. Please try again later."
-  }
-});
 
 /*
 SESSION CREATION
@@ -193,7 +179,7 @@ function buildPasswordResetLink({ resetId, resetToken }) {
 }
 
 function buildSignupWelcomeSmsMessage() {
-  return "Welcome to NAWALA Best Medicare! Your account has been successfully created. You can now easily book appointments, check schedules, and manage your health records online.";
+  return "Welcome to Best Medicare Nawala. Your account has been successfully created. You can now easily book appointments, check schedules, and manage your health records online.";
 }
 
 function buildSignupOtpSmsMessage(otp) {
@@ -300,12 +286,16 @@ router.post("/signup", async (req, res) => {
             role: "patient",
             passwordSalt: salt,
             passwordHash: hash,
-            isActive: true,
-            phoneVerifiedAt: new Date()
+            isActive: false,
+            phoneVerifiedAt: null
           }
         },
         { new: true, runValidators: true }
       );
+    } else if (existing) {
+      return res
+        .status(409)
+        .json({ message: "Email, National ID, or Patient ID already exists" });
     } else {
       user = await User.create({
         name,
@@ -317,18 +307,26 @@ router.post("/signup", async (req, res) => {
         role: "patient",
         passwordSalt: salt,
         passwordHash: hash,
-        isActive: true,
-        phoneVerifiedAt: new Date()
+        isActive: false,
+        phoneVerifiedAt: null
       });
     }
 
-    const { token, expiresAt } = await createSessionForUser(user, req);
+    if (!isSmsGatewayConfigured()) {
+      return res.status(503).json({
+        message: "SMS gateway is not configured. Add SMS credentials in backend .env"
+      });
+    }
 
-    return res.status(201).json({
-      user: sanitizeUser(user),
-      token,
-      tokenExpiresAt: expiresAt,
-      message: "Account created successfully."
+    const verification = await createSignupOtpForUser(user);
+
+    return res.status(202).json({
+      requiresOtp: true,
+      signupId: verification.signupId,
+      signupToken: verification.signupToken,
+      expiresAt: verification.expiresAt,
+      phone: user.phone || "",
+      message: "A 6-digit OTP has been sent to your mobile number."
     });
 
   } catch (err) {
@@ -397,9 +395,11 @@ router.post("/signup/verify", async (req, res) => {
       user.passwordSalt = signupRecord.pendingProfile.passwordSalt || user.passwordSalt;
       user.passwordHash = signupRecord.pendingProfile.passwordHash || user.passwordHash;
       user.role = "patient";
-      user.isActive = true;
     }
 
+    // OTP verification is the activation step for patient signup.
+    user.isActive = true;
+    user.role = user.role || "patient";
     user.phoneVerifiedAt = new Date();
     await user.save({ validateBeforeSave: false });
 
@@ -490,7 +490,7 @@ router.post("/signup/resend", async (req, res) => {
 /*
 LOGIN
 */
-router.post("/signin", loginLimiter, async (req, res) => {
+router.post("/signin", async (req, res) => {
   try {
 
     const email = normalizeEmail(req.body?.email);
@@ -861,5 +861,3 @@ router.post("/logout", attachAuth, requireAuth, async (req, res) => {
 router.use("/", twoFactorRouter);
 
 module.exports = router;
-
-

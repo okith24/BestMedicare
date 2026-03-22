@@ -2,13 +2,23 @@ import { useMemo, useState } from "react";
 
 export default function AppointmentSearch({
   appointments = [],
+  selectedDate = "",
+  onSelectedDateChange,
   onCancel,
   cancellingId = "",
 }) {
   const [searchText, setSearchText] = useState("");
   const [category, setCategory] = useState("");
   const [doctor, setDoctor] = useState("");
-  const [date, setDate] = useState("");
+
+  const formattedSelectedDate = useMemo(() => {
+    if (!selectedDate) return "";
+    return new Date(`${selectedDate}T00:00:00`).toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  }, [selectedDate]);
 
   const categories = useMemo(
     () => [...new Set(appointments.map((a) => a.service).filter(Boolean))],
@@ -26,16 +36,18 @@ export default function AppointmentSearch({
         return (
           (searchText.trim() === "" || key.includes(searchText.trim().toLowerCase())) &&
           (category === "" || a.service === category) &&
-          (doctor === "" || a.doctor === doctor) &&
-          (date === "" || a.date === date)
+          (doctor === "" || a.doctor === doctor)
         );
       }),
-    [appointments, searchText, category, doctor, date]
+    [appointments, searchText, category, doctor]
   );
 
   return (
     <div className="glass card appointmentSearchCard">
       <h3>Search Appointments</h3>
+      {formattedSelectedDate ? (
+        <p className="appointment-search-scope">Showing appointments for {formattedSelectedDate}</p>
+      ) : null}
 
       <div className="appointment-filters">
         <input
@@ -65,8 +77,8 @@ export default function AppointmentSearch({
 
         <input
           type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+          value={selectedDate}
+          onChange={(e) => onSelectedDateChange?.(e.target.value)}
         />
       </div>
 

@@ -1,5 +1,32 @@
 const AuditLog = require('../models/AuditLog');
 
+function normalizeAuditCategory(category) {
+  const raw = String(category || '').trim().toLowerCase();
+  if (!raw) return 'access';
+  if (raw === 'authentication') return 'auth';
+  if (['auth', 'payment', 'data', 'admin', 'access', 'error'].includes(raw)) {
+    return raw;
+  }
+  return 'access';
+}
+
+function defaultResourceTypeForCategory(category) {
+  switch (category) {
+    case 'auth':
+      return 'Session';
+    case 'payment':
+      return 'Payment';
+    case 'data':
+      return 'Patient';
+    case 'admin':
+      return 'AdminAction';
+    case 'access':
+    case 'error':
+    default:
+      return 'Config';
+  }
+}
+
 /**
  * ============================================================
  * AUDIT LOGGING MIDDLEWARE
@@ -40,16 +67,19 @@ async function logAudit(req, category, action, data = {}) {
       return null;
     }
 
+    const normalizedCategory = normalizeAuditCategory(category);
+    const resourceType = data.resourceType || defaultResourceTypeForCategory(normalizedCategory);
+
     const auditData = {
       userId: req.auditContext.userId,
       userRole: req.auditContext.userRole,
       userIdentifier: req.auditContext.userIdentifier,
-      category,
+      category: normalizedCategory,
       action,
       description: data.description || null,
       result: data.result || 'success',
       errorMessage: data.errorMessage || null,
-      resourceType: data.resourceType || null,
+      resourceType,
       resourceId: data.resourceId || null,
       changes: data.changes || null,
       cardLast4: data.cardLast4 || null,

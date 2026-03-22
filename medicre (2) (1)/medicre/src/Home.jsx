@@ -130,7 +130,7 @@ export default function Home() {
               <button className="btnPrimary" onClick={() => goToProtected("/echanneling")}>
                 Book Appointment
               </button>
-              <button className="btnGhost" onClick={() => goToProtected("/whyus")}>
+              <button className="btnGhost" onClick={() => navigate("/whyus")}>
                 Virtual Tour
               </button>
             </motion.div>

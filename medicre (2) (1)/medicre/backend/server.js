@@ -112,15 +112,6 @@ const paymentLimiter = rateLimit({
   message: "Too many payment requests. Please try again later.",
 });
 
-// Stricter rate limiting for auth endpoints
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Max 5 auth attempts per 15 min per IP
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: "Too many login attempts. Please try again later.",
-});
-
 // ============================================================
 // COOKIE & SESSION INITIALIZATION
 // ============================================================
@@ -133,8 +124,6 @@ try {
 }
 
 app.use("/api", limiter);
-app.use("/api/auth/signin", authLimiter);
-app.use("/api/auth/signup", authLimiter);
 
 /* 
    CORS CONFIGURATION
