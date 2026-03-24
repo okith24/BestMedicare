@@ -1,18 +1,17 @@
 html{ scroll-behavior: smooth; }
 
 :root{
-  --font-sans: "Segoe UI", "Inter", "Roboto", "Helvetica Neue", Arial, sans-serif;
-  --p:#1F71BF;
-  --p2:#348FDB;
-  --dark:#5f7185;
+  --p:#4200FF;
+  --p2:#6B4CFF;
+  --dark:#404040;
 
-  --bg0:#edf3f8;
-  --bg1:#dfe8f2;
-  --glass: rgba(255,255,255,0.78);
-  --stroke: rgba(127,149,171,0.32);
-  --text: rgba(28,46,66,0.94);
-  --muted: rgba(53,70,89,0.78);
-  --muted2: rgba(73,89,107,0.62);
+  --bg0:#06060A;
+  --bg1:#0B0B12;
+  --glass: rgba(255,255,255,0.06);
+  --stroke: rgba(255,255,255,0.10);
+  --text: rgba(255,255,255,0.92);
+  --muted: rgba(255,255,255,0.68);
+  --muted2: rgba(255,255,255,0.52);
 }
 
 /* Base */
@@ -21,21 +20,10 @@ html, body{ height:100%; }
 body{
   margin:0;
   color: var(--text);
-  background: radial-gradient(1200px 600px at 10% 10%, rgba(31,113,191,0.35), transparent 55%),
-              radial-gradient(1000px 540px at 90% 90%, rgba(31,113,191,0.25), transparent 55%),
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(66,0,255,0.35), transparent 55%),
+              radial-gradient(1000px 540px at 90% 90%, rgba(66,0,255,0.25), transparent 55%),
               linear-gradient(180deg, var(--bg0), var(--bg1));
-  font-family: var(--font-sans);
-}
-
-#root{
-  min-height: 100vh;
-}
-
-button,
-input,
-select,
-textarea{
-  font: inherit;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
 }
 
 /* Layout helpers */
@@ -56,8 +44,8 @@ textarea{
   inset: -200px;
   pointer-events:none;
   background:
-    radial-gradient(900px 420px at 18% 12%, rgba(31,113,191,0.22), transparent 60%),
-    radial-gradient(820px 380px at 85% 88%, rgba(31,113,191,0.18), transparent 60%);
+    radial-gradient(900px 420px at 18% 12%, rgba(66,0,255,0.22), transparent 60%),
+    radial-gradient(820px 380px at 85% 88%, rgba(66,0,255,0.18), transparent 60%);
   filter: blur(4px);
   opacity: 0.9;
 }
@@ -68,20 +56,20 @@ textarea{
   border: 1px solid var(--stroke);
   border-radius: 22px;
   box-shadow:
-    0 20px 52px rgba(70, 103, 136, 0.20),
-    inset 0 1px 0 rgba(255,255,255,0.55);
+    0 30px 80px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.06);
   backdrop-filter: blur(12px);
 }
 
 .btnPrimary{
-  border: 1px solid rgba(31,113,191,0.28);
+  border: 1px solid rgba(66,0,255,0.28);
   background: linear-gradient(135deg, var(--p), var(--p2));
   color: #fff;
   font-weight: 900;
   padding: 12px 16px;
   border-radius: 16px;
   cursor: pointer;
-  box-shadow: 0 18px 48px rgba(31,113,191,0.28);
+  box-shadow: 0 18px 48px rgba(66,0,255,0.28);
   transition: transform .12s ease, filter .12s ease;
 }
 .btnPrimary:hover{ filter: brightness(1.05); }
@@ -89,7 +77,7 @@ textarea{
 
 .btnGhost{
   border: 1px solid var(--stroke);
-  background: rgba(255,255,255,0.78);
+  background: rgba(255,255,255,0.04);
   color: var(--text);
   font-weight: 900;
   padding: 12px 16px;
@@ -97,7 +85,7 @@ textarea{
   cursor: pointer;
   transition: transform .12s ease, background .12s ease;
 }
-.btnGhost:hover{ background: rgba(255,255,255,0.78); }
+.btnGhost:hover{ background: rgba(255,255,255,0.07); }
 .btnGhost:active{ transform: translateY(1px); }
 
 .kicker{
@@ -106,8 +94,8 @@ textarea{
   gap: 8px;
   padding: 10px 12px;
   border-radius: 999px;
-  background: rgba(31,113,191,0.12);
-  border: 1px solid rgba(31,113,191,0.22);
+  background: rgba(66,0,255,0.12);
+  border: 1px solid rgba(66,0,255,0.22);
   color: var(--text);
   font-weight: 850;
   font-size: 13px;
@@ -138,8 +126,8 @@ textarea{
   gap: 10px;
   padding: 10px 12px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.78);
-  border: 1px solid rgba(127, 149, 171, 0.32);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
   color: var(--text);
   font-weight: 850;
   font-size: 13px;
@@ -149,7 +137,7 @@ textarea{
   width: 10px; height: 10px;
   border-radius: 999px;
   background: var(--p2);
-  box-shadow: 0 0 0 6px rgba(31,113,191,0.20);
+  box-shadow: 0 0 0 6px rgba(66,0,255,0.20);
 }
 
 .grid3{
@@ -179,7 +167,7 @@ textarea{
   border-radius: 14px;
   display:grid;
   place-items:center;
-  background: rgba(31,113,191,0.14);
-  border: 1px solid rgba(31,113,191,0.22);
+  background: rgba(66,0,255,0.14);
+  border: 1px solid rgba(66,0,255,0.22);
   font-size: 18px;
 }

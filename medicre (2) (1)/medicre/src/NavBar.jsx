@@ -1,15 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import "./nav.css";
-import { useAuth } from "./auth/AuthContext.jsx";
 
 export default function NavBar() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  // Only these 3 texts will animate
+  // ✅ Only these 3 texts will animate
   const subtitles = useMemo(
-    () => ["Trusted Care", "Modern Tech", "24/7 Support"],
+    () => ["Trusted Care 💙", "Modern Tech ⚡", "24/7 Support 🫶"],
     []
   );
 
@@ -21,19 +18,6 @@ export default function NavBar() {
     }, 2200); // timer speed (ms)
     return () => clearInterval(t);
   }, [subtitles.length]);
-
-  const handleLogout = async () => {
-    await logout();
-    navigate("/", { replace: true });
-  };
-
-  const dashboardPath = useMemo(() => {
-    if (!user?.role) return null;
-    if (user.role === "superadmin") return "/superadmin/managestaff";
-    if (user.role === "patient") return "/patientdashboard";
-    if (["staff", "doctor", "nurse"].includes(user.role)) return "/staffdashboard";
-    return null;
-  }, [user]);
 
   return (
     <header className="nb-wrap">
@@ -52,7 +36,7 @@ export default function NavBar() {
           <div className="nb-brandText">
             <div className="nb-title">BEST MEDICARE</div>
 
-            {/* Animated subtitle (only this part moves) */}
+            {/* ✅ Animated subtitle (only this part moves) */}
             <div className="nb-subtitle nb-subtitleWrap">
               <AnimatePresence mode="wait">
                 <motion.span
@@ -72,14 +56,6 @@ export default function NavBar() {
 
         {/* CENTER: Links */}
         <nav className="nb-links">
-          {user && dashboardPath ? (
-            <NavLink
-              to={dashboardPath}
-              className={({ isActive }) => (isActive ? "nb-link active" : "nb-link")}
-            >
-              Dashboard
-            </NavLink>
-          ) : null}
           <NavLink to="/" className={({ isActive }) => (isActive ? "nb-link active" : "nb-link")}>
             Home
           </NavLink>
@@ -94,28 +70,17 @@ export default function NavBar() {
           <NavLink to="/whyus" className={({ isActive }) => (isActive ? "nb-link active" : "nb-link")}>
             Why Us
           </NavLink>
-
         </nav>
 
         {/* RIGHT: Actions */}
         <div className="nb-actions">
-          {!user ? (
-            <>
-              <NavLink to="/signin" className="nb-btn nb-btnGhost">
-                Sign in
-              </NavLink>
+          <NavLink to="/signin" className="nb-btn nb-btnGhost">
+            Sign in
+          </NavLink>
 
-              <NavLink to="/signup" className="nb-btn nb-btnPrimary">
-                Sign up
-              </NavLink>
-            </>
-          ) : null}
-
-          {user ? (
-            <button type="button" className="nb-btn nb-btnGhost nb-btnLogout" onClick={handleLogout}>
-              Logout
-            </button>
-          ) : null}
+          <NavLink to="/signup" className="nb-btn nb-btnPrimary">
+            Sign up
+          </NavLink>
         </div>
       </motion.div>
     </header>

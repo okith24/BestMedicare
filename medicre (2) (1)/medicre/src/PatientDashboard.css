@@ -1,277 +1,373 @@
-.pdPage{ padding-top: 22px; }
+.pdPage{
+  min-height: 100vh;
+  padding: 26px 18px 80px;
+}
+
+.pdShell{
+  max-width: 1180px;
+  margin: 0 auto;
+}
 
 .pdTop{
   display:flex;
+  align-items:flex-start;
   justify-content: space-between;
-  align-items: stretch;
-  gap: 16px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-.pdIntro{
-  flex: 1 1 360px;
-  min-width: 280px;
+  gap: 14px;
+  margin-top: 14px;
 }
 
-.pdWelcome{
-  font-size: 28px;
+.pdHello{
   font-weight: 950;
+  font-size: 26px;
+  letter-spacing: -0.3px;
 }
-.pdName{ color: rgba(52,143,219,0.95); }
-.pdSub{ margin-top: 6px; color: rgba(28,46,66,0.62); font-weight: 750; }
-.pdTopCards{
-  display: grid;
-  grid-template-columns: repeat(2, minmax(160px, 1fr));
-  gap: 12px;
-  align-items: stretch;
-  flex: 1 1 420px;
+.pdHello span{ color: rgba(107,76,255,0.95); }
+
+.pdSub{
+  margin-top: 6px;
+  color: rgba(255,255,255,0.60);
+  font-weight: 750;
 }
 
-.pdLoyalty{
-  padding: 14px 16px;
+.pdPoints{
+  padding: 14px 18px;
   border-radius: 18px;
-  min-width: 220px;
+  min-width: 260px;
+  box-shadow: 0 18px 50px rgba(66,0,255,0.18);
 }
-.pdTopCard{
-  width: 100%;
-  min-height: 118px;
-}
-.pdLoyaltySmall{
+
+.pdPtsLabel{
   font-size: 11px;
-  letter-spacing: 1px;
-  color: rgba(28,46,66,0.55);
+  letter-spacing: 1.6px;
+  color: rgba(255,255,255,0.55);
   font-weight: 900;
 }
-.pdLoyaltyRow{
+
+.pdPtsRow{
+  margin-top: 6px;
   display:flex;
   align-items: baseline;
-  gap: 10px;
-  margin-top: 6px;
-}
-.pdPoints{ font-size: 30px; font-weight: 950; }
-.pdPointsTxt{ color: rgba(52,143,219,0.95); font-weight: 900; }
-.pdIdentityBox{
-  padding: 16px 18px 14px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.pdIdentityBox .pdLoyaltySmall{
-  margin-bottom: 4px;
-}
-.pdIdentityValue{
-  margin-top: 2px;
-  margin-bottom: 6px;
-  font-size: 26px;
-  font-weight: 950;
-  letter-spacing: 0.35px;
-  line-height: 1.1;
-  color: rgba(28,46,66,0.92);
-  word-break: break-word;
-}
-.pdIdentityBox .pdMiniLink{
-  font-size: 13px;
-  line-height: 1.2;
+  justify-content: space-between;
+  gap: 12px;
 }
 
+.pdPtsNum{
+  font-size: 34px;
+  font-weight: 950;
+}
+
+.pdPtsTxt{
+  color: rgba(107,76,255,0.95);
+  font-weight: 950;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+/* GRID */
 .pdGrid{
+  margin-top: 14px;
   display:grid;
-  grid-template-columns: 1fr 1.15fr;
+  grid-template-columns: 1fr 1fr;
   gap: 14px;
-  align-items: start;
 }
 @media (max-width: 980px){
   .pdGrid{ grid-template-columns: 1fr; }
 }
 
-@media (max-width: 360px){
-  .pdTopCards{
-    grid-template-columns: 1fr;
-  }
-}
-
-.pdCard{
-  padding: 16px;
-  border-radius: 22px;
-  overflow:hidden;
-}
-
-.pdCardHead{
-  display:flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-.pdCardTitle{ font-weight: 950; font-size: 16px; }
-.pdMiniLink{ color: rgba(28,46,66,0.62); font-weight: 750; font-size: 12.5px; }
-
-.pdList{ display:grid; gap: 10px; }
-.pdEmpty{
+.pdPanel{
   padding: 14px;
-  border-radius: 16px;
-  border: 1px solid rgba(127, 149, 171, 0.32);
-  background: rgba(255,255,255,0.78);
-  color: rgba(28,46,66,0.68);
-  font-weight: 800;
+  border-radius: 22px;
 }
 
-.pdAppt{
+.pdPanelHead{
   display:flex;
+  align-items:center;
   justify-content: space-between;
   gap: 12px;
-  padding: 12px 12px;
+}
+
+.pdPanelTitle{
+  font-weight: 950;
+  font-size: 14px;
+  color: rgba(255,255,255,0.86);
+}
+
+.pdLinkBtn{
+  border: none;
+  background: transparent;
+  color: rgba(107,76,255,0.95);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.pdIconBtn{
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  display:grid;
+  place-items:center;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.05);
+}
+
+/* Cards */
+.pdCards{ margin-top: 12px; display:grid; gap: 10px; }
+
+.pdCard{
+  display:grid;
+  grid-template-columns: 52px 1fr 130px;
+  gap: 12px;
+  padding: 12px;
   border-radius: 18px;
-  border: 1px solid rgba(127, 149, 171, 0.32);
-  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
 }
-.pdDoc{ font-weight: 950; }
-.pdMeta{
-  margin-top: 6px;
+
+.pdAvatar{
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display:grid;
+  place-items:center;
+  font-weight: 950;
+  background: rgba(66,0,255,0.16);
+  border: 1px solid rgba(66,0,255,0.26);
+}
+
+.pdDoc{
+  font-weight: 950;
+  margin-top: 2px;
+}
+
+.pdRow{
+  margin-top: 10px;
   display:flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  color: rgba(28,46,66,0.66);
-  font-weight: 750;
-  font-size: 12.5px;
+  gap: 18px;
 }
+
+.pdMetaLabel{
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.45);
+  font-weight: 900;
+}
+
+.pdMetaVal{
+  margin-top: 4px;
+  font-weight: 950;
+  color: rgba(255,255,255,0.88);
+}
+
+.pdRight{
+  display:flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 6px;
+}
+
+.pdPayLabel{
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.45);
+  font-weight: 900;
+}
+
+.pdPill{
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 950;
+  font-size: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.pdPill.paid{
+  background: rgba(21,196,126,0.12);
+  border-color: rgba(21,196,126,0.25);
+  color: rgba(200,255,235,0.95);
+}
+.pdPill.pending{
+  background: rgba(255,180,0,0.10);
+  border-color: rgba(255,180,0,0.25);
+  color: rgba(255,230,170,0.95);
+}
+.pdMini{
+  color: rgba(255,255,255,0.55);
+  font-weight: 800;
+  font-size: 12px;
+}
+
+/* Table */
+.pdTable{ margin-top: 12px; }
+
+.pdTr{
+  display:grid;
+  grid-template-columns: 120px 160px 1fr 140px 70px;
+  gap: 10px;
+  padding: 12px 10px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  align-items:center;
+}
+.pdTr.head{
+  border-top: none;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  color: rgba(107,76,255,0.9);
+  font-weight: 950;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.pdTd{
+  color: rgba(255,255,255,0.82);
+  font-weight: 750;
+  font-size: 13px;
+}
+
 .pdTag{
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(31,113,191,0.14);
-  border: 1px solid rgba(31,113,191,0.22);
-  color: rgba(28,46,66,0.86);
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.05);
+  font-weight: 900;
+  font-size: 11px;
+}
+
+.pdSmall{
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 900;
+  opacity: .9;
+}
+.pdSmall.paid{ color: rgba(21,196,126,0.95); }
+.pdSmall.pending{ color: rgba(255,180,0,0.95); }
+
+.pdDl{
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.06);
+  cursor: pointer;
+  color: rgba(255,255,255,0.9);
   font-weight: 900;
 }
 
-.pdApptRight{
+.pdAll{
+  text-align:center;
+  padding: 12px 0 0;
+  color: rgba(255,255,255,0.45);
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+/* Bottom assistant */
+.pdBottom{
+  margin-top: 14px;
+  border-radius: 22px;
+  padding: 14px;
+  display:grid;
+  grid-template-columns: 360px 1fr;
+  gap: 14px;
+}
+@media (max-width: 980px){
+  .pdBottom{ grid-template-columns: 1fr; }
+}
+
+.pdBotTitle{
+  font-weight: 950;
+  margin-top: 2px;
+}
+
+.pdOnline{
+  margin-top: 6px;
+  color: rgba(21,196,126,0.95);
+  font-weight: 950;
+  font-size: 12px;
+}
+
+.pdBotText{
+  margin-top: 10px;
+  color: rgba(255,255,255,0.60);
+  font-weight: 750;
+  line-height: 1.6;
+}
+
+.pdBotMiniBtns{
+  margin-top: 12px;
+  display:flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pdMiniBtn{
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.80);
+  padding: 8px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 900;
+  font-size: 11px;
+}
+
+.pdChat{
   display:flex;
   flex-direction: column;
-  align-items:flex-end;
-  gap: 8px;
+  gap: 10px;
 }
 
-.pdBadge{
-  padding: 7px 10px;
-  border-radius: 999px;
-  font-weight: 950;
-  font-size: 12px;
-  border: 1px solid rgba(127, 149, 171, 0.32);
-}
-.pdBadge.paid{
-  background: rgba(21,196,126,0.14);
-  border-color: rgba(21,196,126,0.35);
-}
-.pdBadge.pending{
-  background: rgba(255,196,0,0.14);
-  border-color: rgba(255,196,0,0.35);
-}
-
-.pdPayBtn{
+.pdChatMsg{
+  max-width: 75%;
   padding: 10px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(31,113,191,0.55);
-  background: linear-gradient(90deg, #1F71BF, rgba(52,143,219,0.95));
-  color: #fff;
-  font-weight: 950;
-  cursor: pointer;
-}
-.pdCashHint{
-  font-size: 12px;
-  color: rgba(28,46,66,0.62);
-  font-weight: 800;
-}
-
-.pdTable{
   border-radius: 16px;
-  overflow:hidden;
-  border: 1px solid rgba(127, 149, 171, 0.32);
-}
-.pdTr{
-  display:grid;
-  grid-template-columns: 1.1fr 0.9fr 1.2fr 0.8fr 0.8fr;
-  gap: 10px;
-  padding: 10px 12px;
-  border-top: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.78);
-  align-items: center;
-  font-weight: 800;
-  color: rgba(28,46,66,0.80);
-}
-.pdTh{
-  border-top: none;
-  background: rgba(255,255,255,0.78);
-  font-weight: 950;
-  color: rgba(28,46,66,0.88);
-}
-.pdTr6{
-  grid-template-columns: 1.1fr 0.9fr 1fr 0.8fr 0.8fr 0.8fr;
-}
-.pdChip{
-  display:inline-flex;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.78);
-  border: 1px solid rgba(127, 149, 171, 0.32);
-  font-weight: 900;
-  font-size: 12px;
-}
-.pdDoctorCell{ color: rgba(28,46,66,0.72); }
-.pdAmt{ font-weight: 950; }
-
-.pdEmptyRow{
-  padding: 14px;
-  color: rgba(28,46,66,0.62);
-  font-weight: 800;
-  background: rgba(255,255,255,0.78);
-}
-
-.pdFootNote{
-  margin-top: 10px;
-  color: rgba(28,46,66,0.55);
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.80);
   font-weight: 750;
-  font-size: 12px;
 }
-.pdModalOverlay{
-  position: fixed;
-  inset: 0;
-  background: rgba(14,25,35,0.35);
-  display: grid;
-  place-items: center;
-  z-index: 70;
+
+.pdChatMsg.user{ align-self: flex-end; }
+.pdChatMsg.bot{
+  align-self: flex-start;
+  background: rgba(66,0,255,0.14);
+  border-color: rgba(66,0,255,0.24);
 }
-.pdModal{
-  width: min(92vw, 440px);
-  padding: 18px;
-  border-radius: 20px;
-  display: grid;
+
+.pdChatBar{
+  margin-top: auto;
+  display:flex;
   gap: 10px;
+  align-items:center;
 }
-.pdCardInput{
-  width: 100%;
-  border: 1px solid rgba(127, 149, 171, 0.32);
-  background: rgba(255,255,255,0.78);
-  color: rgba(28,46,66,0.92);
-  border-radius: 12px;
-  padding: 10px 12px;
+
+.pdChatInput{
+  flex:1;
+  padding: 12px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.90);
+  outline: none;
   font-weight: 800;
 }
-.pdCardRow{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-.pdModalBtns{
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-.pdGhostBtn{
-  padding: 10px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(127, 149, 171, 0.35);
-  background: rgba(255,255,255,0.78);
-  color: rgba(28,46,66,0.86);
-  font-weight: 900;
+
+.pdSend{
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(66,0,255,0.55);
+  background: linear-gradient(90deg, #4200FF, rgba(107,76,255,0.95));
+  color: #fff;
   cursor: pointer;
+  font-weight: 950;
+}
+
+.pdEmpty, .pdEmptyTbl{
+  margin-top: 10px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px dashed rgba(255,255,255,0.16);
+  color: rgba(255,255,255,0.62);
+  font-weight: 800;
 }

@@ -1,26 +1,49 @@
-import React, { useMemo } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "./auth/AuthContext.jsx";
+import React, { useMemo, useRef } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import "./Whyus.css";
+
+// ✅ Images (must exist in src/assets)
+import doctorImg from "./assets/docter.png";
+import award1 from "./assets/award1.png";
+import award2 from "./assets/award2.png";
+import award3 from "./assets/award3.png";
 
 const ease = [0.22, 1, 0.36, 1];
 
-function SplitWords({ text, delay = 0 }) {
+function Reveal({ children, delay = 0, y = 18, className = "" }) {
+  const reduce = useReducedMotion();
+  const ref = useRef(null);
+  const inView = useInView(ref, { margin: "-12% 0px -12% 0px", once: true });
+
+  if (reduce) return <div className={className}>{children}</div>;
+
+  return (
+    <motion.div
+      ref={ref}
+      className={className}
+      initial={{ opacity: 0, y, filter: "blur(8px)" }}
+      animate={inView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+      transition={{ duration: 0.7, delay, ease }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function SplitLine({ text, delay = 0 }) {
   const reduce = useReducedMotion();
   const words = useMemo(() => text.split(" "), [text]);
 
   if (reduce) return <span>{text}</span>;
 
   return (
-    <span className="splitWrap" aria-label={text}>
+    <span className="wuSplit" aria-label={text}>
       {words.map((w, i) => (
         <motion.span
           key={i}
-          className="splitWord"
+          className="wuWord"
           initial={{ y: 18, opacity: 0, filter: "blur(7px)" }}
-          whileInView={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-          viewport={{ once: true, amount: 0.7 }}
+          animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
           transition={{ duration: 0.55, delay: delay + i * 0.045, ease }}
         >
           {w}&nbsp;
@@ -30,223 +53,218 @@ function SplitWords({ text, delay = 0 }) {
   );
 }
 
-const fadeUp = (d = 0) => ({
-  initial: { opacity: 0, y: 18 },
-  whileInView: { opacity: 1, y: 0, transition: { duration: 0.6, delay: d, ease } },
-  viewport: { once: true, amount: 0.25 },
-});
-
-const pop = (d = 0) => ({
-  initial: { opacity: 0, scale: 0.97, y: 14 },
-  whileInView: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: { type: "spring", stiffness: 240, damping: 18, delay: d },
-  },
-  viewport: { once: true, amount: 0.25 },
-});
-
 export default function Whyus() {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-
-  const goToProtected = (path) => {
-    if (user) {
-      navigate(path);
-      return;
-    }
-    navigate("/signup", { state: { from: path } });
-  };
-
-  // Smooth “floating” effect while user scrolls
-  const { scrollYProgress } = useScroll();
-  const floatY = useTransform(scrollYProgress, [0, 1], [0, -30]);
-
-  // Customize these texts only
-  const owner = {
-    name: "Dr. Asanka Weerasinghe",
-    role: "Hospital Director • Medical Services",
-    msg:
-      "I recommend our hospital because we treat every patient like family. " +
-      "We focus on accurate diagnosis, honest guidance, transparent treatment plans, " +
-      "and careful follow-up until you recover. Our team uses modern technology and " +
-      "patient-first care to make sure you feel safe, respected, and supported at every step.",
-    photo: "/images/owner-doctor.png",
-  };
-
-  // Put your real award photos in /public/images (replace anytime)
   const awards = [
     {
-      year: "2025",
-      title: "Fashion Formula 2025",
-      img: "/images/award-01.jpeg",
+      year: "2023",
+      title: "Healthcare Leader of the Year",
+      note: "Recognized for patient-first service quality and consistent outcomes.",
+      img: award1,
     },
     {
-      year: "2025",
-      title: "Miss Teen Sri Lanka 2025",
-      img: "/images/award-02.jpeg",
+      year: "2022",
+      title: "Excellence in Patient Care",
+      note: "Awarded for compassionate care, safety, and follow-up standards.",
+      img: award2,
     },
     {
-      year: "2025",
-      title: "People Excellence's Award 2025",
-      img: "/images/award-03.jpeg",
-    },
-    {
-      year: "2025",
-      title: "Miss Earth Sri Lanka 2025",
-      img: "/images/award-04.jpeg",
+      year: "2021",
+      title: "Best Medical Center Award",
+      note: "Honored for modern facilities and trusted clinical teams.",
+      img: award3,
     },
   ];
 
-  const reasons = [
-    { title: "Patient-First Care", text: "We listen, explain clearly, and treat with empathy. Your comfort matters." },
-    { title: "Modern Technology", text: "Updated diagnostics and equipment for safer, faster clinical decisions." },
-    { title: "Specialist Team", text: "Experienced consultants + trained nurses working together for you." },
-  ];
-
-  const comments = [
-    { name: "Nimali K.", text: "Fast service. The doctor explained everything clearly. Highly recommended!" },
-    { name: "Chamith S.", text: "Clean place. Friendly staff. Appointment was smooth and quick." },
-    { name: "Tharindu P.", text: "Great care. They treated my family like their own." },
+  const testimonials = [
+    {
+      name: "Nimali K.",
+      text:
+        "From the first consultation to follow-up, everything felt calm and professional. The staff explained clearly, and the process was smooth.",
+      meta: "OPD • Colombo",
+    },
+    {
+      name: "Chandis S.",
+      text:
+        "The doctors were kind and direct. I felt listened to, and the treatment plan was explained in a way I could trust.",
+      meta: "Physiotherapy • Nawala",
+    },
+    {
+      name: "Tharindu P.",
+      text:
+        "Fast booking, clean environment, and very friendly support. Results and updates were handled neatly and quickly.",
+      meta: "Lab Testing • Colombo",
+    },
   ];
 
   return (
-    <div className="page">
-      <section className="wyNeo-hero">
-        <div className="container wyNeo-grid">
-          {/* LEFT */}
-          <div>
-            <motion.div {...fadeUp(0)} className="kicker">
-              <span className="dot" /> Trusted Care • Modern Facilities • Expert Team
-            </motion.div>
+    <div className="wuPage">
+      <div className="wuGlow" />
 
-            <h1 className="h1 wyNeo-title">
-              <SplitWords text="Why Patients Choose" delay={0.08} />
-              <br />
-              <span className="accent">
-                <SplitWords text="Our Hospital" delay={0.20} />
+      <section className="wuContainer">
+        {/* HERO */}
+        <div className="wuHero">
+          <Reveal className="wuHeroLeft" delay={0.02}>
+            <div className="wuKicker">
+              <span className="wuDot" />
+              Trusted Care • Modern Facilities • Expert Team
+            </div>
+
+            <h1 className="wuTitle">
+              <SplitLine text="Why Patients Choose" delay={0.05} />
+              <span className="wuAccent">
+                <SplitLine text="Best Medicare Nawala" delay={0.12} />
               </span>
             </h1>
 
-            <motion.p {...fadeUp(0.12)} className="p">
-              We combine <b>specialist doctors</b>, patient-first care, and high-standard technology to deliver treatment you can trust —
-              from consultation to recovery.
-            </motion.p>
+            <p className="wuSub">
+              We deliver reliable healthcare through a specialist team, patient-first workflow,
+              and modern clinical standards — from consultation to recovery.
+            </p>
 
-            <motion.div {...fadeUp(0.18)} className="pills">
-              <div className="pill"><span className="dot" /> 24/7 Emergency Support</div>
-              <div className="pill"><span className="dot" /> Advanced Diagnostics</div>
-              <div className="pill"><span className="dot" /> Transparent Treatment Plans</div>
-            </motion.div>
+            <div className="wuActions">
+              <button className="wuBtnPrimary">Book Appointment</button>
+              <button className="wuBtnGhost">Talk to Support</button>
+            </div>
 
-          </div>
-
-          {/* RIGHT: OWNER MESSAGE CARD */}
-          <motion.div style={{ y: floatY }} className="glass wyNeo-ownerCard">
-            <div className="wyNeo-ownerLeft">
-              <div className="wyNeo-ownerImg">
-                <img src={owner.photo} alt="Owner Doctor" />
+            {/* PROOF METRICS */}
+            <div className="wuMetrics">
+              <div className="wuMetricCard">
+                <div className="wuMetricValue">24/7</div>
+                <div className="wuMetricLabel">Emergency Support</div>
+              </div>
+              <div className="wuMetricCard">
+                <div className="wuMetricValue">98%</div>
+                <div className="wuMetricLabel">Patient Satisfaction</div>
+              </div>
+              <div className="wuMetricCard">
+                <div className="wuMetricValue">10+</div>
+                <div className="wuMetricLabel">Specialist Areas</div>
               </div>
             </div>
+          </Reveal>
 
-            <div className="wyNeo-ownerRight">
-              <div className="wyNeo-ownerName">{owner.name}</div>
-              <div className="wyNeo-ownerRole">{owner.role}</div>
-
-              <div className="wyNeo-ownerMsg">
-                “{owner.msg}”
+          {/* Doctor Message Card */}
+          <Reveal className="wuHeroRight" delay={0.10} y={22}>
+            <div className="wuDoctorCard">
+              <div className="wuDoctorRow">
+                <img className="wuDoctorImg" src={doctorImg} alt="Hospital Director" />
+                <div>
+                  <div className="wuDoctorName">Dr. Asanka Weerasinghe</div>
+                  <div className="wuDoctorRole">Director of Medical Services</div>
+                </div>
               </div>
 
-              <div className="wyNeo-scrollHint">Scroll down for awards + patient comments</div>
+              <p className="wuDoctorMsg">
+                At Best Medicare Nawala, our goal is simple: treat every patient with respect,
+                clarity, and care. We focus on accurate diagnosis, honest guidance, and thoughtful
+                follow-up — so you always feel safe, informed, and supported.
+              </p>
+
+              <div className="wuDoctorFoot">
+                <span className="wuPill">Verified Care ✅</span>
+                <span className="wuPill">Modern Standards 🧪</span>
+              </div>
             </div>
-          </motion.div>
+          </Reveal>
         </div>
 
-        {/* 3 feature cards */}
-        <div className="container wyNeo-cards">
-          <div className="grid3">
-            {reasons.map((c, i) => (
-              <motion.div key={c.title} className="glass card wyNeo-mini" {...pop(i * 0.06)}>
-                <div className="cardTitle">
-                  <SplitWords text={c.title} delay={0.02} />
-                </div>
-                <div className="cardText">{c.text}</div>
-              </motion.div>
-            ))}
+        {/* STORY PANELS */}
+        <div className="wuStory">
+          <Reveal className="wuStoryCard" delay={0.02}>
+            <h3>Care that feels structured — not stressful</h3>
+            <p>
+              From booking to consultation, our process is designed to reduce friction. Patients
+              receive clear next steps, accurate timelines, and a calm environment that supports
+              confidence.
+            </p>
+          </Reveal>
+
+          <Reveal className="wuStoryCard" delay={0.06}>
+            <h3>A team built on consistency</h3>
+            <p>
+              Our doctors and nurses follow modern protocols while keeping communication human.
+              We explain what matters, keep you updated, and support your recovery with care that
+              stays dependable.
+            </p>
+          </Reveal>
+
+          <Reveal className="wuStoryCard" delay={0.10}>
+            <h3>Modern tools, practical results</h3>
+            <p>
+              We combine updated diagnostics and clean workflows to help decisions stay accurate
+              and fast — without compromising safety or patient comfort.
+            </p>
+          </Reveal>
+        </div>
+
+        {/* AWARDS */}
+        <Reveal delay={0.02}>
+          <div className="wuSectionHead">
+            <h2>Awards & Recognition</h2>
+            <p>
+              External recognition matters — but we care more about what it represents: consistent
+              outcomes, safety, and patient trust.
+            </p>
           </div>
+        </Reveal>
+
+        <div className="wuAwards">
+          {awards.map((a, idx) => (
+            <Reveal key={a.year} className="wuAwardCard" delay={0.05 + idx * 0.05}>
+              <div className="wuAwardTop">
+                <span className="wuYear">{a.year}</span>
+                <span className="wuBadge">Award</span>
+              </div>
+
+              <div className="wuAwardMedia">
+                <img src={a.img} alt={a.title} />
+              </div>
+
+              <div className="wuAwardTitle">{a.title}</div>
+              <div className="wuAwardNote">{a.note}</div>
+            </Reveal>
+          ))}
         </div>
-      </section>
 
-      {/* ABOUT TEXT (nice scroll reveal) */}
-      <section className="wyNeo-section">
-        <div className="container">
-          <motion.p {...fadeUp(0)} className="wyNeo-para" style={{ fontWeight: 800 }}>
-            We are a 24-hour patient care center situated at Nawala Junction, easily accessible from all directions with
-            convenient parking at the hospital premises. Our hardworking and dedicated team of doctors and nurses sees every
-            patient as family, not just a case number. We focus on delivering the best possible care so you feel safe,
-            supported, and respected throughout your treatment journey. We are also deeply committed to both your mental and
-            physical wellbeing, helping you move toward your healthiest and strongest version of yourself.
-          </motion.p>
-        </div>
-      </section>
-
-      {/* AWARDS with REAL photos */}
-      <section className="wyNeo-section" id="awards">
-        <div className="container">
-          <motion.h2 {...fadeUp(0)} className="wyNeo-h2">
-            <SplitWords text="Awards & Recognition" delay={0.05} />
-          </motion.h2>
-
-          <div className="wyNeo-awGrid">
-            {awards.map((a, i) => (
-              <motion.div key={a.year} className="glass card wyNeo-aw" {...pop(i * 0.06)}>
-                <div className="wyNeo-awPhoto">
-                  <img src={a.img} alt={`${a.year} award`} />
-                </div>
-
-                <div className="wyNeo-awYear">{a.year}</div>
-                <div className="cardTitle">{a.title}</div>
-                <div className="cardText">{a.note}</div>
-              </motion.div>
-            ))}
+        {/* TESTIMONIALS */}
+        <Reveal delay={0.02}>
+          <div className="wuSectionHead">
+            <h2>Patient Comments</h2>
+            <p>Real feedback helps us improve and helps new patients feel confident.</p>
           </div>
-        </div>
-      </section>
+        </Reveal>
 
-      {/* COMMENTS */}
-      <section className="wyNeo-section">
-        <div className="container">
-          <motion.h2 {...fadeUp(0)} className="wyNeo-h2">
-            <SplitWords text="Patient Comments" delay={0.05} />
-          </motion.h2>
-
-          <div className="grid3 wyNeo-commentGrid">
-            {comments.map((c, i) => (
-              <motion.div key={c.name} className="glass card wyNeo-comment" {...pop(i * 0.06)}>
-                <div className="wyNeo-commentTop">
-                  <div>
-                    <div className="wyNeo-name">{c.name}</div>
-                    <div className="wyNeo-stars">5/5 ⭐</div>
-                  </div>
+        <div className="wuTestimonials">
+          {testimonials.map((t, idx) => (
+            <Reveal key={t.name} className="wuTestCard" delay={0.05 + idx * 0.05}>
+              <div className="wuTestTop">
+                <div className="wuAvatar">{t.name.slice(0, 1)}</div>
+                <div>
+                  <div className="wuTestName">{t.name}</div>
+                  <div className="wuTestMeta">{t.meta}</div>
                 </div>
-                <div className="cardText" style={{ marginTop: 10 }}>{c.text}</div>
-              </motion.div>
-            ))}
-          </div>
+                <div className="wuStars">★★★★★</div>
+              </div>
+              <p className="wuTestText">{t.text}</p>
+            </Reveal>
+          ))}
+        </div>
 
-          <motion.div className="glass wyNeo-cta" {...pop(0.06)}>
-            <div className="wyNeo-ctaTitle">Need care now? We’re open 24/7</div>
-            <div className="wyNeo-ctaBtns">
-              <button className="btnPrimary" onClick={() => goToProtected("/echanneling")}>
-                Book Appointment
-              </button>
-              <button className="btnGhost" onClick={() => (window.location.href = "tel:+94771234567")}>
-                Call
-              </button>
+        {/* CTA */}
+        <Reveal delay={0.02}>
+          <div className="wuCTA">
+            <div>
+              <div className="wuCTATitle">Need care now? We’re open 24/7 🌙</div>
+              <div className="wuCTASub">
+                Book your appointment in minutes — we’ll confirm quickly.
+              </div>
             </div>
-          </motion.div>
-        </div>
+            <div className="wuCTAButtons">
+              <button className="wuBtnPrimary">Book Appointment</button>
+              <button className="wuBtnGhost">Call</button>
+            </div>
+          </div>
+        </Reveal>
       </section>
     </div>
   );

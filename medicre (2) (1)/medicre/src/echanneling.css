@@ -1,3 +1,4 @@
+
 /* split text */
 .splitWrap{ display:inline-block; }
 .splitWord{ display:inline-block; white-space: pre; }
@@ -16,8 +17,8 @@
   position:absolute;
   inset:-200px;
   background:
-    radial-gradient(900px 520px at 18% 18%, rgba(31,113,191,0.22), transparent 62%),
-    radial-gradient(900px 520px at 82% 86%, rgba(31,113,191,0.18), transparent 62%);
+    radial-gradient(900px 520px at 18% 18%, rgba(66,0,255,0.22), transparent 62%),
+    radial-gradient(900px 520px at 82% 86%, rgba(66,0,255,0.18), transparent 62%);
   pointer-events:none;
   opacity: 0.95;
 }
@@ -28,19 +29,19 @@
   gap: 10px;
   padding: 10px 14px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.78);
-  border: 1px solid rgba(127, 149, 171, 0.32);
-  color: rgba(52,143,219,0.95);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(107,76,255,0.95);
   font-weight: 950;
   width: fit-content;
 }
 .echDot{
   width: 10px; height: 10px;
   border-radius: 999px;
-  background: rgba(52,143,219,0.95);
-  box-shadow: 0 0 0 6px rgba(31,113,191,0.18);
+  background: rgba(107,76,255,0.95);
+  box-shadow: 0 0 0 6px rgba(66,0,255,0.18);
 }
-.echHeart{ filter: drop-shadow(0 10px 20px rgba(31,113,191,0.35)); }
+.echHeart{ filter: drop-shadow(0 10px 20px rgba(66,0,255,0.35)); }
 
 .echTitle{
   margin: 16px 0 0;
@@ -54,7 +55,7 @@
 
 .echSub{
   margin-top: 10px;
-  color: rgba(28,46,66,0.62);
+  color: rgba(255,255,255,0.62);
   font-weight: 700;
 }
 
@@ -93,7 +94,7 @@
 .echField label{
   display:block;
   font-weight: 900;
-  color: rgba(28,46,66,0.82);
+  color: rgba(255,255,255,0.82);
   margin-bottom: 8px;
 }
 
@@ -101,52 +102,51 @@
   width:100%;
   padding: 12px 14px;
   border-radius: 16px;
-  border: 1px solid rgba(127, 149, 171, 0.32);
-  background: rgba(255,255,255,0.78);
-  color: rgba(28,46,66,0.92);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.92);
   outline: none;
   font-weight: 800;
 }
 .echInput::placeholder{
-  color: rgba(28,46,66,0.45);
+  color: rgba(255,255,255,0.45);
 }
 .echInput:focus{
-  border-color: rgba(52,143,219,0.55);
-  box-shadow: 0 0 0 5px rgba(31,113,191,0.16);
+  border-color: rgba(107,76,255,0.55);
+  box-shadow: 0 0 0 5px rgba(66,0,255,0.16);
 }
 
 .echTextarea{
   width:100%;
   padding: 12px 14px;
   border-radius: 16px;
-  border: 1px solid rgba(127, 149, 171, 0.32);
-  background: rgba(255,255,255,0.78);
-  color: rgba(28,46,66,0.92);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.92);
   outline: none;
   font-weight: 750;
   resize: vertical;
 }
 .echTextarea:focus{
-  border-color: rgba(52,143,219,0.55);
-  box-shadow: 0 0 0 5px rgba(31,113,191,0.16);
+  border-color: rgba(107,76,255,0.55);
+  box-shadow: 0 0 0 5px rgba(66,0,255,0.16);
 }
 
 /* Tips mini card */
 .echTips{
   padding: 12px 14px;
   border-radius: 18px;
-  background: rgba(31,113,191,0.08);
-  border: 1px solid rgba(31,113,191,0.18);
-  height: 100%;
+  background: rgba(66,0,255,0.08);
+  border: 1px solid rgba(66,0,255,0.18);
 }
 .echTipsTitle{
   font-weight: 950;
-  color: rgba(52,143,219,0.95);
+  color: rgba(107,76,255,0.95);
 }
 .echTipsList{
   margin: 8px 0 0;
   padding-left: 16px;
-  color: rgba(28,46,66,0.66);
+  color: rgba(255,255,255,0.66);
   line-height: 1.7;
   font-weight: 750;
 }
@@ -156,8 +156,8 @@
   padding: 10px 12px;
   border-radius: 14px;
   font-weight: 900;
-  border: 1px solid rgba(127, 149, 171, 0.32);
-  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
 }
 .echAlert.ok{
   border-color: rgba(21,196,126,0.35);
@@ -173,17 +173,17 @@
   width: 100%;
   padding: 14px 16px;
   border-radius: 16px;
-  border: 1px solid rgba(31,113,191,0.55);
-  background: linear-gradient(90deg, #1F71BF, rgba(52,143,219,0.95));
+  border: 1px solid rgba(66,0,255,0.55);
+  background: linear-gradient(90deg, #4200FF, rgba(107,76,255,0.95));
   color: white;
   font-weight: 950;
   cursor: pointer;
-  box-shadow: 0 18px 40px rgba(31,113,191,0.22);
+  box-shadow: 0 18px 40px rgba(66,0,255,0.22);
   transition: transform .15s ease, box-shadow .15s ease;
 }
 .echSubmit:hover{
   transform: translateY(-1px);
-  box-shadow: 0 24px 60px rgba(31,113,191,0.32);
+  box-shadow: 0 24px 60px rgba(66,0,255,0.32);
 }
 
 /* Right side info */
@@ -199,7 +199,7 @@
   align-items:center;
   gap: 10px;
   font-weight: 950;
-  color: rgba(28,46,66,0.86);
+  color: rgba(255,255,255,0.86);
   margin-bottom: 8px;
 }
 .echIcon{
@@ -207,18 +207,18 @@
   display:grid;
   place-items:center;
   border-radius: 12px;
-  background: rgba(255,255,255,0.78);
-  border: 1px solid rgba(127, 149, 171, 0.32);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
 }
 .echInfoText{
-  color: rgba(28,46,66,0.62);
+  color: rgba(255,255,255,0.62);
   font-weight: 750;
   margin-top: 4px;
 }
 
 .echDivider{
   height: 1px;
-  background: rgba(255,255,255,0.78);
+  background: rgba(255,255,255,0.10);
   margin: 14px 0;
 }
 
@@ -226,42 +226,35 @@
 .echWhy{
   padding: 16px;
   border-radius: 22px;
-  background: rgba(31,113,191,0.08);
-  border: 1px solid rgba(31,113,191,0.18);
+  background: rgba(66,0,255,0.08);
+  border: 1px solid rgba(66,0,255,0.18);
 }
 .echWhyTitle{
   font-weight: 950;
-  color: rgba(28,46,66,0.90);
+  color: rgba(255,255,255,0.90);
   margin-bottom: 10px;
 }
 .echWhyItem{
-  color: rgba(28,46,66,0.70);
+  color: rgba(255,255,255,0.70);
   font-weight: 800;
   margin-top: 8px;
 }
 
-/* FIX: Select dropdown (Service) background + readable text */
+/* ✅ FIX: Select dropdown readable */
 select.echInput{
-  background: rgba(255,255,255,0.88) !important;
-  color: rgba(28,46,66,0.92) !important;
-  border: 1px solid rgba(127, 149, 171, 0.32);
+  background: rgba(15, 15, 28, 0.65) !important;
+  color: rgba(255,255,255,0.92) !important;
+  border: 1px solid rgba(255,255,255,0.14);
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
 }
-
-/* Dropdown list items */
 select.echInput option{
-  background: #e9eff6;          /* dark list background */
-  color: rgba(28,46,66,0.92); /* white text */
+  background: #0b0b14;
+  color: rgba(255,255,255,0.92);
 }
 
-/* optional: hover (some browsers support) */
-select.echInput option:hover{
-  background: rgba(31,113,191,0.35);
-}
-
-/* Optional: add a nice arrow icon to the right */
+/* Optional arrow */
 select.echInput{
   background-image:
     linear-gradient(45deg, transparent 50%, rgba(255,255,255,0.7) 50%),
@@ -276,118 +269,579 @@ select.echInput{
   padding-right: 42px;
 }
 
-/* Disabled input style (looks clean, still readable) */
+/* Tabs */
+.echTabs{
+  display:flex;
+  gap: 10px;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  width: fit-content;
+}
+.echTab{
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(255,255,255,0.70);
+  font-weight: 950;
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: .2s ease;
+}
+.echTab:hover{
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.16);
+  color: rgba(255,255,255,0.95);
+}
+.echTab.active{
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.22);
+  color: rgba(255,255,255,0.98);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.25);
+}
+
 .echInput:disabled{
   opacity: 0.55;
   cursor: not-allowed;
   filter: grayscale(0.25);
 }
 
-/* small hint under doctor select */
 .echHint{
   margin-top: 8px;
-  color: rgba(28,46,66,0.62);
+  color: rgba(255,255,255,0.62);
+  font-weight: 750;
+  font-size: 12.5px;
+}
+/* ===========================
+   INVOICE MODAL (E-channeling)
+   =========================== */
+
+.invOverlay{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,0.62);
+  backdrop-filter: blur(10px);
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.invModal{
+  width: min(920px, 96vw);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.10);
+  overflow: hidden;
+  box-shadow: 0 30px 90px rgba(0,0,0,0.55);
+}
+
+.invTopbar{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 12px;
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.invTopbarRight{
+  display:flex;
+  gap: 10px;
+  align-items:center;
+}
+
+.invBtnPrimary{
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(66,0,255,0.55);
+  background: linear-gradient(90deg, #4200FF, rgba(107,76,255,0.95));
+  color: #fff;
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow: 0 16px 40px rgba(66,0,255,0.26);
+}
+
+.invBtnGhost{
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.88);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.invPaper{
+  position: relative;
+  padding: 18px 18px 20px;
+  background: rgba(12,12,22,0.62);
+}
+
+.invLeftBar{
+  position:absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  background: linear-gradient(#4200FF, rgba(107,76,255,0.85));
+}
+
+.invHeader{
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: start;
+  gap: 10px;
+  padding-left: 10px;
+}
+
+.invTitle{
+  font-weight: 950;
+  color: rgba(255,255,255,0.9);
+}
+
+.invBrand{
+  text-align:center;
+}
+
+.invBrandName{
+  font-weight: 950;
+  color: rgba(107,76,255,0.95);
+  letter-spacing: 0.3px;
+}
+
+.invAddress{
+  text-align:right;
+  color: rgba(255,255,255,0.70);
+  font-weight: 700;
+  font-size: 12.5px;
+}
+
+.invMeta{
+  margin-top: 16px;
+  padding-left: 10px;
+  color: rgba(255,255,255,0.82);
+  font-weight: 800;
+}
+
+.invMetaRow{
+  display:grid;
+  grid-template-columns: 80px 1fr 80px 1fr;
+  gap: 10px;
+  margin-top: 10px;
+  align-items:center;
+}
+
+.invMetaLabel{
+  color: rgba(255,255,255,0.75);
+}
+.invMetaLabel.right{
+  text-align:right;
+}
+.invMetaVal{
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.05);
+}
+
+.invCenterHead{
+  margin-top: 16px;
+  text-align:center;
+  color: rgba(255,255,255,0.80);
+  font-weight: 950;
+}
+
+.invTable{
+  margin-top: 14px;
+  border: 2px solid rgba(255,255,255,0.22);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.invTr{
+  display:grid;
+  grid-template-columns: 1fr 160px;
+  background: rgba(255,255,255,0.02);
+}
+.invTr + .invTr{
+  border-top: 2px solid rgba(255,255,255,0.20);
+}
+.invTr > div{
+  padding: 14px 14px;
+  color: rgba(255,255,255,0.84);
+  font-weight: 850;
+}
+.invTh > div{
+  background: rgba(255,255,255,0.05);
+  font-weight: 950;
+}
+.invRs{
+  border-left: 2px solid rgba(255,255,255,0.20);
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap: 8px;
+}
+
+.invInput{
+  width: 120px;
+  text-align:right;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.92);
+  font-weight: 950;
+  outline:none;
+}
+.invInput:focus{
+  border-color: rgba(107,76,255,0.55);
+  box-shadow: 0 0 0 5px rgba(66,0,255,0.16);
+}
+
+.invTall{
+  min-height: 90px;
+}
+.invTallRight{
+  align-items:flex-start;
+  padding-top: 10px;
+}
+
+.invTotal{
+  background: rgba(66,0,255,0.10);
+}
+.invTotalNum{
+  font-weight: 950;
+  color: rgba(107,76,255,0.95);
+}
+
+.invFooterRow{
+  display:flex;
+  justify-content: space-between;
+  align-items:flex-end;
+  gap: 16px;
+  padding: 18px 10px 0;
+}
+
+.invSign{
+  width: 260px;
+}
+.invSignLine{
+  height: 2px;
+  background: rgba(255,255,255,0.25);
+  margin-bottom: 8px;
+}
+.invSignText{
+  text-align:center;
+  color: rgba(255,255,255,0.72);
+  font-weight: 900;
+  font-size: 12.5px;
+}
+
+.invHintText{
+  margin-top: 14px;
+  padding-left: 10px;
+  color: rgba(255,255,255,0.55);
+  font-weight: 750;
+  font-size: 12px;
+}
+
+@media (max-width: 720px){
+  .invHeader{
+    grid-template-columns: 1fr;
+    text-align:left;
+  }
+  .invAddress{ text-align:left; }
+  .invMetaRow{
+    grid-template-columns: 80px 1fr;
+  }
+  .invMetaLabel.right{ text-align:left; }
+  .invTr{ grid-template-columns: 1fr; }
+  .invRs{
+    border-left: none;
+    border-top: 2px solid rgba(255,255,255,0.20);
+    justify-content:flex-start;
+  }
+}
+
+/* Print styles: print ONLY invoice paper */
+@media print {
+  body * { visibility: hidden !important; }
+  .invOverlay, .invOverlay * { visibility: visible !important; }
+  .invModal { box-shadow: none !important; }
+  .no-print { display: none !important; }
+  .invOverlay{
+    background: transparent !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    place-items: stretch !important;
+  }
+  .invPaper{
+    background: #ffffff !important;
+    color: #000 !important;
+  }
+  .invPaper *{
+    color: #000 !important;
+    border-color: #000 !important;
+  }
+  .invLeftBar{
+    background: #4200FF !important;
+  }
+  .invBrandName{
+    color: #4200FF !important;
+  }
+  .invMetaVal,
+  .invInput{
+    background: #fff !important;
+  }
+}
+
+/* ===========================
+   APPOINTMENT CONFIRM POPUP
+   =========================== */
+
+.confOverlay{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,0.62);
+  backdrop-filter: blur(10px);
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.confModal{
+  width: min(880px, 96vw);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.10);
+  overflow: hidden;
+  padding: 18px;
+  box-shadow: 0 30px 90px rgba(0,0,0,0.55);
+}
+
+.confTop{
+  display:flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.confKicker{
+  display:inline-flex;
+  align-items:center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: rgba(66,0,255,0.12);
+  border: 1px solid rgba(66,0,255,0.22);
+  font-weight: 950;
+  color: rgba(255,255,255,0.92);
+  width: fit-content;
+}
+
+.confDot{
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(107,76,255,0.95);
+  box-shadow: 0 0 0 6px rgba(66,0,255,0.18);
+}
+
+.confTitle{
+  margin-top: 10px;
+  font-size: 26px;
+  font-weight: 950;
+  letter-spacing: -0.5px;
+}
+
+.confSub{
+  margin-top: 8px;
+  color: rgba(255,255,255,0.65);
+  font-weight: 750;
+  line-height: 1.6;
+  max-width: 680px;
+}
+
+.confClose{
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.9);
+  border-radius: 14px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 950;
+}
+
+.confGrid{
+  margin-top: 14px;
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 860px){
+  .confGrid{ grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 520px){
+  .confGrid{ grid-template-columns: 1fr; }
+}
+
+.confCard{
+  padding: 12px 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.05);
+}
+
+.confLabel{
+  font-size: 12px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.60);
+}
+
+.confValue{
+  margin-top: 6px;
+  font-weight: 950;
+  color: rgba(255,255,255,0.92);
+}
+
+.confMini{
+  margin-top: 4px;
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.60);
+  font-weight: 750;
+}
+
+.confBar{
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(66,0,255,0.18);
+  background: rgba(66,0,255,0.08);
+}
+
+.confPills{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.confPill{
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.05);
+  font-weight: 900;
+  color: rgba(255,255,255,0.88);
+}
+
+.confSms{
+  margin-top: 10px;
+  color: rgba(255,255,255,0.85);
+  font-weight: 850;
+}
+.confSmsHint{
+  color: rgba(255,255,255,0.55);
+  font-weight: 750;
+}
+
+.confActions{
+  margin-top: 14px;
+  display:flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.confBtnPrimary{
+  padding: 12px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(66,0,255,0.55);
+  background: linear-gradient(90deg, #4200FF, rgba(107,76,255,0.95));
+  color: #fff;
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow: 0 16px 40px rgba(66,0,255,0.26);
+}
+
+.confBtnGhost{
+  padding: 12px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.88);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.confFooterHint{
+  margin-top: 10px;
+  color: rgba(255,255,255,0.55);
+  font-weight: 750;
+  font-size: 12.5px;
+}
+/* ===========================
+   PAYMENT SECTION
+   =========================== */
+.echPayBlock{
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+}
+
+.echPayHead{
+  font-weight: 950;
+  color: rgba(255,255,255,0.88);
+  margin-bottom: 10px;
+}
+
+.echPayTabs{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.echPayTab{
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.78);
+  font-weight: 900;
+  padding: 10px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: .18s ease;
+}
+
+.echPayTab:hover{
+  background: rgba(255,255,255,0.09);
+  color: rgba(255,255,255,0.95);
+}
+
+.echPayTab.active{
+  border-color: rgba(66,0,255,0.55);
+  background: rgba(66,0,255,0.18);
+  color: rgba(255,255,255,0.98);
+  box-shadow: 0 18px 40px rgba(66,0,255,0.18);
+}
+
+.echCardFields{
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.10);
+}
+
+.echPayHint{
+  margin-top: 10px;
+  color: rgba(255,255,255,0.62);
   font-weight: 750;
   font-size: 12.5px;
 }
 
-.echSlotsWrap{
-  margin-top: 12px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
-  gap: 10px;
-  max-height: 280px;
-  overflow-y: auto;
-  padding: 4px 2px 4px 0;
-}
 
-.echSlotButton{
-  min-height: 44px;
-  border-radius: 14px;
-  border: 1px solid rgba(127, 149, 171, 0.32);
-  background: rgba(255,255,255,0.88);
-  color: rgba(28,46,66,0.9);
-  font-weight: 900;
-  cursor: pointer;
-  transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
-}
-
-.echSlotButton:hover{
-  transform: translateY(-1px);
-  border-color: rgba(52,143,219,0.55);
-  box-shadow: 0 10px 24px rgba(31,113,191,0.12);
-}
-
-.echSlotButton.active{
-  border-color: rgba(31,113,191,0.78);
-  background: linear-gradient(135deg, rgba(31,113,191,0.96), rgba(52,143,219,0.9));
-  color: #fff;
-  box-shadow: 0 14px 32px rgba(31,113,191,0.22);
-}
-
-.echSlotButton.disabled{
-  background: rgba(216,225,235,0.72);
-  color: rgba(28,46,66,0.42);
-  cursor: not-allowed;
-  border-style: dashed;
-  box-shadow: none;
-}
-
-.echFeeBox{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 16px 18px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, rgba(31,113,191,0.12), rgba(255,255,255,0.88));
-  border: 1px solid rgba(31,113,191,0.22);
-}
-
-.echFeeLabel{
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(28,46,66,0.56);
-  font-weight: 900;
-}
-
-.echFeeValue{
-  margin-top: 4px;
-  font-size: 28px;
-  line-height: 1;
-  font-weight: 950;
-  color: rgba(28,46,66,0.92);
-}
-
-.echFeeMeta{
-  margin-top: 6px;
-  color: rgba(28,46,66,0.62);
-  font-weight: 800;
-}
-
-.echFeeBadge{
-  padding: 10px 12px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.88);
-  color: rgba(52,143,219,0.96);
-  border: 1px solid rgba(31,113,191,0.22);
-  font-weight: 900;
-  white-space: nowrap;
-}
-
-.echCardRow{
-  margin-top: 12px;
-}
-
-@media (max-width: 720px){
-  .echFeeBox{
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .echSlotsWrap{
-    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
-  }
-}
 
