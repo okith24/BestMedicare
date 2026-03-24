@@ -1,460 +1,396 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import { useLocation } from "react-router-dom";
+
+import React, { useMemo, useState, useRef } from "react";
+import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import "./echanneling.css";
-import { useAuth } from "./auth/AuthContext.jsx";
-import { apiFetch } from "./api.js";
 
 const ease = [0.22, 1, 0.36, 1];
-
-const fallbackServices = [
-  { name: "OPD", doctorCharge: 1000, hospitalCharge: 350, fee: 1350, doctorRequired: false, slotMinutes: 10, bookingWindowDays: 30 },
-  { name: "Psychiatric", doctorCharge: 6000, hospitalCharge: 1000, fee: 7000, doctorRequired: true, slotMinutes: 10, bookingWindowDays: 30 },
-  { name: "Physiotherapy", doctorCharge: 4000, hospitalCharge: 1000, fee: 5000, doctorRequired: true, slotMinutes: 10, bookingWindowDays: 30 },
-  { name: "Counselling", doctorCharge: 5000, hospitalCharge: 1500, fee: 6500, doctorRequired: true, slotMinutes: 10, bookingWindowDays: 30 },
-  { name: "Aesthetic", doctorCharge: 2500, hospitalCharge: 350, fee: 2850, doctorRequired: true, slotMinutes: 10, bookingWindowDays: 30 }
-];
 
 function SplitWords({ text, delay = 0 }) {
   const reduce = useReducedMotion();
   const words = useMemo(() => text.split(" "), [text]);
-
   if (reduce) return <span>{text}</span>;
 
   return (
     <span className="splitWrap" aria-label={text}>
-      {words.map((word, index) => (
+      {words.map((w, i) => (
         <motion.span
-          key={`${word}-${index}`}
+          key={i}
           className="splitWord"
           initial={{ y: 18, opacity: 0, filter: "blur(7px)" }}
           animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-          transition={{ duration: 0.55, delay: delay + index * 0.05, ease }}
+          transition={{ duration: 0.55, delay: delay + i * 0.05, ease }}
         >
-          {word}&nbsp;
+          {w}&nbsp;
         </motion.span>
       ))}
     </span>
   );
 }
 
-const fadeUp = (delay = 0) => ({
+const fadeUp = (d = 0) => ({
   initial: { opacity: 0, y: 16 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.6, delay, ease } }
+  animate: { opacity: 1, y: 0, transition: { duration: 0.6, delay: d, ease } },
 });
 
-const pop = (delay = 0) => ({
+const pop = (d = 0) => ({
   initial: { opacity: 0, scale: 0.97, y: 14 },
   animate: {
     opacity: 1,
     scale: 1,
     y: 0,
-    transition: { type: "spring", stiffness: 240, damping: 18, delay }
-  }
+    transition: { type: "spring", stiffness: 240, damping: 18, delay: d },
+  },
 });
 
-function formatBookedNumber(value) {
-  const raw = String(value || "").trim();
-  if (!raw) return "-";
-
-  const match = raw.match(/^([A-Z0-9-]+)-\d{8}-(\d{1,3})$/);
-  if (!match) return raw;
-
-  const service = match[1];
-  const sequence = String(Number(match[2]) || 0).padStart(2, "0");
-  return `${service} -${sequence}`;
+function formatDate(dateStr) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr + "T00:00:00");
+  return d.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  });
 }
 
-function formatCardExpiryInput(value) {
-  const digits = String(value || "").replace(/\D/g, "").slice(0, 4);
-  if (digits.length <= 2) return digits;
-  return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+function formatTime(timeStr) {
+  if (!timeStr) return "";
+  const [h, m] = timeStr.split(":").map(Number);
+  const d = new Date();
+  d.setHours(h, m, 0, 0);
+  return d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
 }
 
-function formatMoney(value) {
-  const amount = Number(value || 0);
-  return `LKR ${amount.toLocaleString()}`;
+function makeRef() {
+  const n = Math.floor(10000 + Math.random() * 90000);
+  return `BMN-${n}`;
 }
 
-function getPricing(config) {
-  const doctorCharge = Number(config?.doctorCharge || 0);
-  const hospitalCharge = Number(config?.hospitalCharge || 0);
-  const fee = Number(config?.fee || doctorCharge + hospitalCharge || 0);
+function makeQueue() {
+  return String(Math.floor(1 + Math.random() * 25)).padStart(2, "0");
+}
 
-  return {
-    doctorCharge,
-    hospitalCharge,
-    fee
-  };
+function getAppointments() {
+  try {
+    return JSON.parse(localStorage.getItem("bmn_appointments") || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveAppointments(list) {
+  localStorage.setItem("bmn_appointments", JSON.stringify(list));
+  window.dispatchEvent(new Event("bmn_appointments_updated"));
+}
+
+function onlyDigits(s) {
+  return (s || "").replace(/\D/g, "");
+}
+
+/* Confirmation Modal */
+function ConfirmModal({ open, data, onClose, onBookAnother }) {
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          className="confOverlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <motion.div
+            className="confModal glass"
+            initial={{ opacity: 0, y: 18, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.98 }}
+            transition={{ duration: 0.35, ease }}
+          >
+            <div className="confTop">
+              <div>
+                <div className="confKicker">
+                  <span className="confDot" />
+                  Appointment Confirmed
+                </div>
+                <div className="confTitle">Your spot is reserved ✅</div>
+                <div className="confSub">
+                  You have successfully placed your spot with the selected doctor.
+                  <br />
+                  ✅ Verification SMS sent to <b>{data?.phone || "your phone"}</b>
+                </div>
+              </div>
+
+              <button className="confClose" type="button" onClick={onClose} aria-label="Close">
+                ✕
+              </button>
+            </div>
+
+            <div className="confGrid">
+              <div className="confCard">
+                <div className="confLabel">Patient</div>
+                <div className="confValue">{data?.patientText || "-"}</div>
+              </div>
+
+              <div className="confCard">
+                <div className="confLabel">Service</div>
+                <div className="confValue">{data?.service || "-"}</div>
+              </div>
+
+              <div className="confCard">
+                <div className="confLabel">Doctor</div>
+                <div className="confValue">{data?.doctor || "-"}</div>
+                <div className="confMini">{data?.spec || ""}</div>
+              </div>
+
+              <div className="confCard">
+                <div className="confLabel">Date</div>
+                <div className="confValue">{data?.dateNice || "-"}</div>
+              </div>
+
+              <div className="confCard">
+                <div className="confLabel">Time</div>
+                <div className="confValue">{data?.timeNice || "-"}</div>
+              </div>
+
+              <div className="confCard">
+                <div className="confLabel">Payment</div>
+                <div className="confValue">
+                  {data?.paymentMethod === "card" ? "Card Payment" : "Cash Payment"}
+                </div>
+                <div className="confMini">
+                  Status: <b>{data?.paymentStatus === "PAID" ? "PAID ✅" : "PENDING ⏳"}</b>
+                </div>
+              </div>
+            </div>
+
+            <div className="confBar">
+              <div className="confPills">
+                <span className="confPill">
+                  Ref: <b>{data?.ref || "-"}</b>
+                </span>
+                <span className="confPill">
+                  Queue: <b>{data?.queue || "-"}</b>
+                </span>
+              </div>
+              <div className="confSms">
+                Please arrive 10–15 minutes early. If you don’t receive SMS within 5 minutes, call{" "}
+                <b>+94 77 123 4567</b>.
+              </div>
+            </div>
+
+            <div className="confActions">
+              <button className="confBtnGhost" type="button" onClick={onBookAnother}>
+                Book Another
+              </button>
+              <button className="confBtnPrimary" type="button" onClick={onClose}>
+                Done
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 }
 
 export default function Echanneling() {
-  const { user } = useAuth();
-  const location = useLocation();
+  const doctors = useMemo(
+    () => [
+      { name: "Dr. Asanka Weerasinghe", spec: "Internal Medicine" },
+      { name: "Dr. A. Perera", spec: "General Physician" },
+      { name: "Dr. N. Silva", spec: "Psychiatrist" },
+      { name: "Dr. S. Jayasinghe", spec: "Physiotherapist" },
+      { name: "Dr. R. Fernando", spec: "Dermatology / Aesthetic" },
+      { name: "Dr. M. Kumara", spec: "Counsellor" },
+      { name: "Dr. K. Wijesuriya", spec: "Lab Consultant" },
+    ],
+    []
+  );
 
+  const [patientMode, setPatientMode] = useState("id"); // "id" | "name"
+
+  // paymentMethod starts EMPTY (must select)
   const [form, setForm] = useState({
-    patientId: user?.patientId || "",
+    patientId: "",
     name: "",
     age: "",
-    gender: "",
     phone: "",
     service: "OPD",
-    doctor: "",
+    doctor: doctors[0].name,
     date: "",
     time: "",
-    paymentMethod: "cash",
-    cardHolder: "",
+    note: "",
+
+    paymentMethod: "",
+    cardName: "",
     cardNumber: "",
-    cardExpiry: "",
+    cardExp: "",
     cardCvv: "",
-    note: ""
   });
 
   const [status, setStatus] = useState({ type: "idle", msg: "" });
-  const [services, setServices] = useState(fallbackServices);
-  const [serviceConfig, setServiceConfig] = useState(fallbackServices[0]);
-  const [doctorOptions, setDoctorOptions] = useState([]);
-  const [slotOptions, setSlotOptions] = useState([]);
-  const [dateRange, setDateRange] = useState({ minDate: "", maxDate: "" });
-  const [doctorDisabled, setDoctorDisabled] = useState(true);
-  const [loadingOptions, setLoadingOptions] = useState(false);
-  const [isAutoFillingIdentity, setIsAutoFillingIdentity] = useState(false);
+  const [attempted, setAttempted] = useState(false);
 
-  const lookupSeqRef = useRef(0);
-  const optionsSeqRef = useRef(0);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmData, setConfirmData] = useState(null);
 
-  const normalizeName = (value) =>
-    String(value || "")
-      .trim()
-      .replace(/\s+/g, " ")
-      .toLowerCase();
+  const payRef = useRef(null);
 
-  useEffect(() => {
-    if (!user?.patientId) return;
-    setForm((prev) => (prev.patientId ? prev : { ...prev, patientId: user.patientId }));
-  }, [user?.patientId]);
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search || "");
-    const selectedService = String(params.get("service") || "").trim();
-    if (!selectedService) return;
-
-    setForm((prev) => ({
-      ...prev,
-      service: selectedService,
-      doctor: "",
-      time: ""
-    }));
-  }, [location.search]);
-
-  useEffect(() => {
-    let cancelled = false;
-    const seq = ++optionsSeqRef.current;
-
-    const loadOptions = async () => {
-      try {
-        setLoadingOptions(true);
-
-        const search = new URLSearchParams();
-        search.set("service", form.service);
-        if (form.date) search.set("date", form.date);
-        if (form.doctor) search.set("doctor", form.doctor);
-
-        const payload = await apiFetch(`/api/patients/echanneling/options?${search.toString()}`);
-        if (cancelled || optionsSeqRef.current !== seq) return;
-
-        setServices(Array.isArray(payload?.services) && payload.services.length ? payload.services : fallbackServices);
-        setServiceConfig(payload?.service || fallbackServices[0]);
-        setDoctorOptions(Array.isArray(payload?.doctors) ? payload.doctors : []);
-        setSlotOptions(Array.isArray(payload?.slots) ? payload.slots : []);
-        setDateRange(payload?.dateRange || { minDate: "", maxDate: "" });
-        setDoctorDisabled(!!payload?.doctorDisabled);
-
-        setForm((prev) => {
-          let nextDoctor = prev.doctor;
-          let nextDate = prev.date;
-          let nextTime = prev.time;
-
-          if (payload?.doctorDisabled) {
-            nextDoctor = payload?.selectedDoctor || "OPD Duty Doctor";
-          } else {
-            const validDoctor = (payload?.doctors || []).some((item) => item.name === prev.doctor);
-            if (!validDoctor) nextDoctor = "";
-          }
-
-          if (
-            nextDate
-            && payload?.dateRange?.minDate
-            && payload?.dateRange?.maxDate
-            && (nextDate < payload.dateRange.minDate || nextDate > payload.dateRange.maxDate)
-          ) {
-            nextDate = "";
-            nextTime = "";
-          }
-
-          if (!nextDate || (payload?.doctorDisabled ? false : !nextDoctor)) {
-            nextTime = "";
-          } else if (nextTime) {
-            const validTime = (payload?.slots || []).some((item) => item.value === nextTime && item.available);
-            if (!validTime) nextTime = "";
-          }
-
-          if (
-            nextDoctor === prev.doctor
-            && nextDate === prev.date
-            && nextTime === prev.time
-          ) {
-            return prev;
-          }
-
-          return {
-            ...prev,
-            doctor: nextDoctor,
-            date: nextDate,
-            time: nextTime
-          };
-        });
-      } catch (error) {
-        if (!cancelled) {
-          setStatus({ type: "error", msg: error.message || "Failed to load booking options." });
-        }
-      } finally {
-        if (!cancelled && optionsSeqRef.current === seq) {
-          setLoadingOptions(false);
-        }
-      }
-    };
-
-    loadOptions();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [form.service, form.doctor, form.date]);
-
-  const autoFillByName = async (rawName) => {
-    const fullName = String(rawName || "").trim();
-    if (fullName.length < 2) {
-      setIsAutoFillingIdentity(false);
-      return;
-    }
-
-    const currentName = normalizeName(fullName);
-    const signedName = normalizeName(user?.name || "");
-    if (
-      signedName &&
-      (signedName.includes(currentName) || currentName.includes(signedName)) &&
-      (user?.patientId || user?.phone)
-    ) {
-      const userGender = String(user?.gender || "").trim().toLowerCase();
-      const normalizedUserGender = userGender === "male" || userGender === "female" ? userGender : "";
-      setForm((prev) => {
-        const liveName = normalizeName(prev.name);
-        if (!(signedName.includes(liveName) || liveName.includes(signedName))) return prev;
-        return {
-          ...prev,
-          patientId: user.patientId || "",
-          gender: normalizedUserGender || prev.gender || "",
-          phone: user.phone || ""
-        };
-      });
-      if (normalizedUserGender) {
-        setIsAutoFillingIdentity(false);
-        return;
-      }
-    }
-
-    const seq = ++lookupSeqRef.current;
-    try {
-      setIsAutoFillingIdentity(true);
-      const result = await apiFetch(`/api/patients/lookup/by-name?name=${encodeURIComponent(fullName)}`);
-      if (!result?.found) return;
-
-      setForm((prev) => {
-        if (normalizeName(prev.name) !== currentName) return prev;
-        return {
-          ...prev,
-          patientId: result.patientId || "",
-          gender: result.gender || prev.gender || "",
-          phone: result.phone || ""
-        };
-      });
-    } catch {
-      // Keep manual flow if lookup is unavailable.
-    } finally {
-      if (lookupSeqRef.current === seq) {
-        setIsAutoFillingIdentity(false);
-      }
-    }
+  const onChange = (e) => {
+    const { name, value } = e.target;
+    setForm((s) => ({ ...s, [name]: value }));
   };
 
-  useEffect(() => {
-    const fullName = String(form.name || "").trim();
-    if (fullName.length < 2) {
-      setIsAutoFillingIdentity(false);
-      return undefined;
-    }
-
-    const timer = setTimeout(() => {
-      autoFillByName(fullName);
-    }, 450);
-
-    return () => clearTimeout(timer);
-  }, [form.name]);
-
-  const onChange = (event) => {
-    const { name, value } = event.target;
-    if (name === "cardExpiry") {
-      setForm((prev) => ({ ...prev, cardExpiry: formatCardExpiryInput(value) }));
-      return;
-    }
-    if (name === "patientId") {
-      setForm((prev) => ({ ...prev, patientId: value.toUpperCase() }));
-      return;
-    }
-    if (name === "service") {
-      setStatus({ type: "idle", msg: "" });
-      setForm((prev) => ({
-        ...prev,
-        service: value,
-        doctor: "",
-        time: ""
-      }));
-      return;
-    }
-    if (name === "doctor") {
-      setStatus({ type: "idle", msg: "" });
-      setForm((prev) => ({
-        ...prev,
-        doctor: value,
-        time: ""
-      }));
-      return;
-    }
-    if (name === "date") {
-      setStatus({ type: "idle", msg: "" });
-      setForm((prev) => ({
-        ...prev,
-        date: value,
-        time: ""
-      }));
-      return;
-    }
-
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const chooseTime = (timeValue) => {
+  const switchMode = (mode) => {
+    setPatientMode(mode);
     setStatus({ type: "idle", msg: "" });
-    setForm((prev) => ({ ...prev, time: timeValue }));
+    setAttempted(false);
+
+    setForm((s) => ({
+      ...s,
+      patientId: mode === "id" ? s.patientId : "",
+      name: mode === "name" ? s.name : "",
+    }));
   };
 
-  const onSubmit = async (event) => {
-    event.preventDefault();
+  //  validation (strict)
+  const errors = useMemo(() => {
+    const e = {};
 
-    const identityMode = form.patientId.trim() ? "id" : "name";
-    const hasIdentity = form.patientId.trim() || form.name.trim();
+    const hasIdentity = patientMode === "id" ? form.patientId.trim() : form.name.trim();
 
-    if (!hasIdentity || !form.phone.trim() || !form.gender || !form.date || !form.time) {
-      setStatus({
-        type: "error",
-        msg: "Please fill Patient ID or Full Name, Gender, Phone, Date and a time slot."
-      });
-      return;
-    }
+    if (!hasIdentity) e.identity = "Required";
+    if (!form.phone.trim()) e.phone = "Required";
+    if (!form.date) e.date = "Required";
+    if (!form.time) e.time = "Required";
+    if (!form.doctor) e.doctor = "Required";
 
-    if (!doctorDisabled && !form.doctor.trim()) {
-      setStatus({
-        type: "error",
-        msg: "Please choose a doctor for the selected service."
-      });
-      return;
-    }
+    if (!form.paymentMethod) e.paymentMethod = "Choose payment method";
 
     if (form.paymentMethod === "card") {
-      const cardDigits = form.cardNumber.replace(/\D/g, "");
-      const hasValidExpiry = /^(0[1-9]|1[0-2])\/\d{2}$/.test(form.cardExpiry.trim());
-      if (!form.cardHolder.trim() || cardDigits.length < 12 || !hasValidExpiry || form.cardCvv.trim().length < 3) {
-        setStatus({
-          type: "error",
-          msg: "Enter valid card details (MM/YY) for online payment."
-        });
-        return;
-      }
+      if (!form.cardName.trim()) e.cardName = "Card name required";
+
+      const digits = onlyDigits(form.cardNumber);
+      if (!digits || digits.length < 12) e.cardNumber = "Valid card number required";
+
+      if (!/^\d{2}\/\d{2}$/.test(form.cardExp.trim())) e.cardExp = "Use MM/YY";
+
+      if (!/^\d{3,4}$/.test(form.cardCvv.trim())) e.cardCvv = "CVV must be 3-4 digits";
     }
 
-    try {
-      const created = await apiFetch("/api/patients/appointments", {
-        method: "POST",
-        body: JSON.stringify({
-          patientMode: identityMode,
-          patientId: form.patientId.trim(),
-          name: form.name.trim(),
-          age: form.age ? Number(form.age) : null,
-          gender: form.gender,
-          phone: form.phone.trim(),
-          service: form.service,
-          doctor: doctorDisabled ? "" : form.doctor,
-          date: form.date,
-          time: form.time,
-          fee: pricing.fee,
-          doctorCharge: pricing.doctorCharge,
-          hospitalCharge: pricing.hospitalCharge,
-          paymentMethod: form.paymentMethod,
-          paymentStatus: form.paymentMethod === "card" ? "PAID" : "PENDING",
-          cardLast4: form.cardNumber.replace(/\D/g, "").slice(-4),
-          note: form.note.trim(),
-          bookedByEmail: (user?.email || "guest@local").toLowerCase()
-        })
-      });
+    return e;
+  }, [form, patientMode]);
 
-      setStatus({
-        type: "success",
-        msg: `Booked No: ${formatBookedNumber(created?.appointmentNumber)} | Payment: ${created?.paymentStatus || "PENDING"}${
-          created?.smsNotification?.sent === true
-            ? " | SMS sent"
-            : created?.smsNotification?.sent === false
-            ? ` | SMS failed${created?.smsNotification?.message ? `: ${created.smsNotification.message}` : ""}`
-            : ""
-        }`
-      });
+  const canSubmit = Object.keys(errors).length === 0;
 
-      setForm((prev) => ({
-        ...prev,
-        patientId: user?.patientId || "",
-        name: "",
-        age: "",
-        gender: "",
-        phone: "",
-        date: "",
-        time: "",
-        paymentMethod: "cash",
-        cardHolder: "",
-        cardNumber: "",
-        cardExpiry: "",
-        cardCvv: "",
-        note: ""
-      }));
-    } catch (error) {
-      setStatus({
-        type: "error",
-        msg: `Booking failed: ${error.message}`
-      });
-    }
+  const setPay = (method) => {
+    setForm((s) => ({
+      ...s,
+      paymentMethod: method,
+      // optional clear when switching
+      cardName: method === "card" ? s.cardName : "",
+      cardNumber: method === "card" ? s.cardNumber : "",
+      cardExp: method === "card" ? s.cardExp : "",
+      cardCvv: method === "card" ? s.cardCvv : "",
+    }));
   };
 
-  const slotHint = !form.date
-    ? "Choose a date to see available 10-minute slots."
-    : doctorDisabled
-    ? "OPD time slots are available for the full 24 hours in 10-minute sections."
-    : !form.doctor
-    ? "Choose a doctor to load that doctor's available time slots."
-    : loadingOptions
-    ? "Loading available time slots..."
-    : slotOptions.length
-    ? "Select one of the available 10-minute slots below."
-    : "No slots are available for the selected date.";
-  const pricing = getPricing(serviceConfig);
+  const onSubmit = (e) => {
+    e.preventDefault();
+    setAttempted(true);
+
+    if (!canSubmit) {
+      setStatus({
+        type: "error",
+        msg: "Please complete required fields — especially Payment method 👇",
+      });
+
+      // scroll to payment block if payment is the problem
+      if (errors.paymentMethod || errors.cardName || errors.cardNumber || errors.cardExp || errors.cardCvv) {
+        payRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      return;
+    }
+
+    const selectedDoctor = doctors.find((d) => d.name === form.doctor);
+
+    const patientText =
+      patientMode === "id"
+        ? `ID: ${form.patientId.trim()}`
+        : `Name: ${form.name.trim()}${form.age.trim() ? ` (Age ${form.age.trim()})` : ""}`;
+
+    const paymentStatus = form.paymentMethod === "card" ? "PAID" : "PENDING";
+
+    const booking = {
+      id: crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()),
+      ref: makeRef(),
+      queue: makeQueue(),
+      patientMode,
+      patientId: form.patientId.trim(),
+      name: form.name.trim(),
+      age: form.age.trim(),
+      phone: form.phone.trim(),
+      service: form.service,
+      doctor: form.doctor,
+      doctorSpec: selectedDoctor?.spec || "",
+      date: form.date,
+      time: form.time,
+      note: form.note.trim(),
+      paymentMethod: form.paymentMethod,
+      paymentStatus,
+      amount: form.service === "OPD" ? 1500 : 2500, // demo amount
+      createdAt: new Date().toISOString(),
+    };
+
+    const list = getAppointments();
+    saveAppointments([booking, ...list]);
+
+    setConfirmData({
+      patientText,
+      phone: booking.phone,
+      service: booking.service,
+      doctor: booking.doctor,
+      spec: booking.doctorSpec,
+      dateNice: formatDate(booking.date),
+      timeNice: formatTime(booking.time),
+      ref: booking.ref,
+      queue: booking.queue,
+      paymentMethod: booking.paymentMethod,
+      paymentStatus: booking.paymentStatus,
+    });
+
+    setStatus({ type: "success", msg: "Booking submitted ✅ Opening confirmation..." });
+    setConfirmOpen(true);
+  };
+
+  const closeConfirm = () => {
+    setConfirmOpen(false);
+    setStatus({ type: "idle", msg: "" });
+  };
+
+  const bookAnother = () => {
+    setConfirmOpen(false);
+    setStatus({ type: "idle", msg: "" });
+    setAttempted(false);
+    setForm((s) => ({
+      ...s,
+      date: "",
+      time: "",
+      note: "",
+      service: "OPD",
+      doctor: doctors[0].name,
+
+      paymentMethod: "",
+      cardName: "",
+      cardNumber: "",
+      cardExp: "",
+      cardCvv: "",
+    }));
+  };
+
+  const paymentHasError =
+    attempted &&
+    (errors.paymentMethod || errors.cardName || errors.cardNumber || errors.cardExp || errors.cardCvv);
 
   return (
     <div className="page echPage">
@@ -462,7 +398,7 @@ export default function Echanneling() {
         <div className="container">
           <motion.div {...fadeUp(0)} className="echKicker">
             <span className="echDot" />
-            <span>E-channelling</span>
+            <span>E-channelling</span> <span className="echHeart">💙</span>
           </motion.div>
 
           <h1 className="echTitle">
@@ -470,12 +406,30 @@ export default function Echanneling() {
           </h1>
 
           <motion.p {...fadeUp(0.12)} className="echSub">
-            Select a service, choose an available doctor or OPD flow, then book one of the open 10-minute slots.
+            Fill this form and we’ll confirm your appointment quickly ⚡
           </motion.p>
 
           <div className="echGrid">
+            {/* LEFT */}
             <motion.div className="glass echCard" {...pop(0.06)}>
               <form onSubmit={onSubmit} className="echForm">
+                <div className="echTabs">
+                  <button
+                    type="button"
+                    className={patientMode === "id" ? "echTab active" : "echTab"}
+                    onClick={() => switchMode("id")}
+                  >
+                    Patient ID 🪪
+                  </button>
+                  <button
+                    type="button"
+                    className={patientMode === "name" ? "echTab active" : "echTab"}
+                    onClick={() => switchMode("name")}
+                  >
+                    Full Name 👤
+                  </button>
+                </div>
+
                 <div className="echTwo">
                   <div className="echField">
                     <label>Patient ID</label>
@@ -484,7 +438,8 @@ export default function Echanneling() {
                       value={form.patientId}
                       onChange={onChange}
                       placeholder="Ex: BMN-10245"
-                      className="echInput"
+                      className={`echInput ${attempted && errors.identity && patientMode === "id" ? "echInvalid" : ""}`}
+                      disabled={patientMode !== "id"}
                     />
                   </div>
 
@@ -494,13 +449,10 @@ export default function Echanneling() {
                       name="name"
                       value={form.name}
                       onChange={onChange}
-                      onBlur={(event) => autoFillByName(event.target.value)}
                       placeholder="Your name"
-                      className="echInput"
+                      className={`echInput ${attempted && errors.identity && patientMode === "name" ? "echInvalid" : ""}`}
+                      disabled={patientMode !== "name"}
                     />
-                    {isAutoFillingIdentity ? (
-                      <div className="echHint">Looking up patient details...</div>
-                    ) : null}
                   </div>
                 </div>
 
@@ -513,25 +465,10 @@ export default function Echanneling() {
                       onChange={onChange}
                       placeholder="Ex: 24"
                       className="echInput"
+                      inputMode="numeric"
                     />
                   </div>
 
-                  <div className="echField">
-                    <label>Gender</label>
-                    <select
-                      name="gender"
-                      value={form.gender}
-                      onChange={onChange}
-                      className="echInput"
-                    >
-                      <option value="">Select gender</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="echTwo">
                   <div className="echField">
                     <label>Phone</label>
                     <input
@@ -539,59 +476,45 @@ export default function Echanneling() {
                       value={form.phone}
                       onChange={onChange}
                       placeholder="+94..."
-                      className="echInput"
+                      className={`echInput ${attempted && errors.phone ? "echInvalid" : ""}`}
                     />
-                  </div>
-
-                  <div className="echField">
-                    <label>Service</label>
-                    <select
-                      name="service"
-                      value={form.service}
-                      onChange={onChange}
-                      className="echInput"
-                    >
-                      {services.map((item) => (
-                        <option key={item.name} value={item.name}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </select>
                   </div>
                 </div>
 
                 <div className="echTwo">
                   <div className="echField">
+                    <label>Service</label>
+                    <select name="service" value={form.service} onChange={onChange} className="echInput">
+                      <option>OPD</option>
+                      <option>Psychiatric</option>
+                      <option>Physiotherapy</option>
+                      <option>Counselling</option>
+                      <option>Aesthetic</option>
+                      <option>Lab Testing</option>
+                    </select>
+                  </div>
+
+                  <div className="echField">
                     <label>Select Doctor</label>
                     <select
                       name="doctor"
-                      value={doctorDisabled ? "OPD Duty Doctor" : form.doctor}
+                      value={form.doctor}
                       onChange={onChange}
-                      className="echInput"
-                      disabled={doctorDisabled}
+                      className={`echInput ${attempted && errors.doctor ? "echInvalid" : ""}`}
                     >
-                      {doctorDisabled ? (
-                        <option value="OPD Duty Doctor">Not required for OPD</option>
-                      ) : (
-                        <>
-                          <option value="">Select doctor</option>
-                          {doctorOptions.map((item) => (
-                            <option key={item.doctorId || item.name} value={item.name}>
-                              {item.name}
-                            </option>
-                          ))}
-                        </>
-                      )}
+                      {doctors.map((d) => (
+                        <option key={d.name} value={d.name}>
+                          {d.name} — {d.spec}
+                        </option>
+                      ))}
                     </select>
                     <div className="echHint">
-                      {doctorDisabled
-                        ? "OPD bookings do not require a specific doctor."
-                        : doctorOptions.length
-                        ? "Only doctors assigned to the selected service are shown."
-                        : "No doctors are assigned to this service yet."}
+                      🩺 Selected: <b>{form.doctor}</b>
                     </div>
                   </div>
+                </div>
 
+                <div className="echTwo">
                   <div className="echField">
                     <label>Preferred Date</label>
                     <input
@@ -599,36 +522,120 @@ export default function Echanneling() {
                       name="date"
                       value={form.date}
                       onChange={onChange}
-                      className="echInput"
-                      min={dateRange.minDate || undefined}
-                      max={dateRange.maxDate || undefined}
+                      className={`echInput ${attempted && errors.date ? "echInvalid" : ""}`}
                     />
-                    <div className="echHint">
-                      Booking window: <b>{dateRange.minDate || "-"} to {dateRange.maxDate || "-"}</b>
-                    </div>
+                  </div>
+
+                  <div className="echField">
+                    <label>Preferred Time</label>
+                    <input
+                      type="time"
+                      name="time"
+                      value={form.time}
+                      onChange={onChange}
+                      className={`echInput ${attempted && errors.time ? "echInvalid" : ""}`}
+                    />
                   </div>
                 </div>
 
-                <div className="echField">
-                  <label>Available Time Slots</label>
-                  <div className="echHint">{slotHint}</div>
-                  <div className="echSlotsWrap">
-                    {slotOptions.map((slot) => (
-                      <button
-                        key={slot.value}
-                        type="button"
-                        className={[
-                          "echSlotButton",
-                          slot.available ? "" : "disabled",
-                          form.time === slot.value ? "active" : ""
-                        ].join(" ").trim()}
-                        onClick={() => chooseTime(slot.value)}
-                        disabled={!slot.available}
-                      >
-                        {slot.label}
-                      </button>
-                    ))}
+                {/* Payment Method (STRICT + highlight) */}
+                <div
+                  ref={payRef}
+                  className={`echPayBlock ${paymentHasError ? "error shake" : ""}`}
+                >
+                  <div className="echPayHead">Payment Method</div>
+
+                  <div className="echPayTabs">
+                    <button
+                      type="button"
+                      className={form.paymentMethod === "cash" ? "echPayTab active" : "echPayTab"}
+                      onClick={() => setPay("cash")}
+                    >
+                      Cash 💵 (Pay at Hospital)
+                    </button>
+                    <button
+                      type="button"
+                      className={form.paymentMethod === "card" ? "echPayTab active" : "echPayTab"}
+                      onClick={() => setPay("card")}
+                    >
+                      Card 💳 (Pay Online)
+                    </button>
                   </div>
+
+                  {attempted && errors.paymentMethod && (
+                    <div className="echPayError">⚠️ Please choose a payment method to continue.</div>
+                  )}
+
+                  {form.paymentMethod === "card" && (
+                    <div className="echCardFields">
+                      <div className="echTwo">
+                        <div className="echField">
+                          <label>Card Holder Name</label>
+                          <input
+                            name="cardName"
+                            value={form.cardName}
+                            onChange={onChange}
+                            className={`echInput ${attempted && errors.cardName ? "echInvalid" : ""}`}
+                            placeholder="Ex: Jonathan Silva"
+                          />
+                          {attempted && errors.cardName && <div className="echFieldErr">{errors.cardName}</div>}
+                        </div>
+                        <div className="echField">
+                          <label>Card Number</label>
+                          <input
+                            name="cardNumber"
+                            value={form.cardNumber}
+                            onChange={onChange}
+                            className={`echInput ${attempted && errors.cardNumber ? "echInvalid" : ""}`}
+                            placeholder="1234 5678 9012 3456"
+                          />
+                          {attempted && errors.cardNumber && <div className="echFieldErr">{errors.cardNumber}</div>}
+                        </div>
+                      </div>
+
+                      <div className="echTwo">
+                        <div className="echField">
+                          <label>Expiry</label>
+                          <input
+                            name="cardExp"
+                            value={form.cardExp}
+                            onChange={onChange}
+                            className={`echInput ${attempted && errors.cardExp ? "echInvalid" : ""}`}
+                            placeholder="MM/YY"
+                          />
+                          {attempted && errors.cardExp && <div className="echFieldErr">{errors.cardExp}</div>}
+                        </div>
+                        <div className="echField">
+                          <label>CVV</label>
+                          <input
+                            name="cardCvv"
+                            value={form.cardCvv}
+                            onChange={onChange}
+                            className={`echInput ${attempted && errors.cardCvv ? "echInvalid" : ""}`}
+                            placeholder="123"
+                          />
+                          {attempted && errors.cardCvv && <div className="echFieldErr">{errors.cardCvv}</div>}
+                        </div>
+                      </div>
+
+                      <div className="echPayHint">🔒 Demo UI only — connect payment gateway later.</div>
+                    </div>
+                  )}
+
+                  {form.paymentMethod === "cash" && (
+                    <div className="echPayHint">
+                      ✅ Cash selected — payment will show as <b>PENDING</b> in your dashboard.
+                    </div>
+                  )}
+                </div>
+
+                <div className="glass echTips">
+                  <div className="echTipsTitle">✨ Quick Tips</div>
+                  <ul className="echTipsList">
+                    <li>Choose a doctor you prefer 👨‍⚕️</li>
+                    <li>Keep phone available 📞</li>
+                    <li>Arrive 10–15 minutes early ⏰</li>
+                  </ul>
                 </div>
 
                 <div className="echField">
@@ -643,124 +650,66 @@ export default function Echanneling() {
                   />
                 </div>
 
-                <div className="glass echFeeBox">
-                  <div>
-                    <div className="echFeeLabel">Charge Summary</div>
-                    <div className="echFeeMeta">
-                      Doctor fee: {formatMoney(pricing.doctorCharge)}
-                    </div>
-                    <div className="echFeeMeta">
-                      Channeling fee: {formatMoney(pricing.hospitalCharge)}
-                    </div>
-                    <div className="echFeeValue">{formatMoney(pricing.fee)}</div>
-                    <div className="echFeeMeta">
-                      Total: {formatMoney(pricing.fee)}
-                    </div>
-                    <div className="echFeeMeta">
-                      {serviceConfig?.name || form.service}
-                      {doctorDisabled ? " | OPD duty doctor" : form.doctor ? ` | ${form.doctor}` : ""}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="echField">
-                  <label>Payment Method</label>
-                  <select
-                    name="paymentMethod"
-                    value={form.paymentMethod}
-                    onChange={onChange}
-                    className="echInput"
-                  >
-                    <option value="cash">Cash (Pay at Hospital)</option>
-                    <option value="card">Visa / Card (Pay Online)</option>
-                  </select>
-                </div>
-
-                {form.paymentMethod === "card" ? (
-                  <div className="echField">
-                    <label>Card Details</label>
-                    <div className="echTwo">
-                      <input
-                        name="cardHolder"
-                        value={form.cardHolder}
-                        onChange={onChange}
-                        placeholder="Card holder name"
-                        className="echInput"
-                      />
-                      <input
-                        name="cardNumber"
-                        value={form.cardNumber}
-                        onChange={onChange}
-                        placeholder="Card number"
-                        className="echInput"
-                      />
-                    </div>
-                    <div className="echTwo echCardRow">
-                      <input
-                        name="cardExpiry"
-                        value={form.cardExpiry}
-                        onChange={onChange}
-                        placeholder="MM/YY"
-                        maxLength={5}
-                        className="echInput"
-                      />
-                      <input
-                        name="cardCvv"
-                        value={form.cardCvv}
-                        onChange={onChange}
-                        placeholder="CVV"
-                        type="password"
-                        className="echInput"
-                      />
-                    </div>
-                  </div>
-                ) : null}
-
-                {status.type !== "idle" ? (
+                {status.type !== "idle" && (
                   <div className={status.type === "success" ? "echAlert ok" : "echAlert bad"}>
                     {status.msg}
                   </div>
-                ) : null}
+                )}
 
-                <button className="echSubmit" type="submit">
-                  Submit Request
+                {/* ✅ Disabled until valid */}
+                <button className="echSubmit" type="submit" disabled={!canSubmit}>
+                  BOOKING NOW ✅
                 </button>
               </form>
             </motion.div>
 
+            {/* RIGHT */}
             <div className="echRight">
-              <motion.div className="glass echInfo" {...pop(0.1)}>
+              <motion.div className="glass echInfo" {...pop(0.10)}>
                 <div className="echInfoRow">
-                  <div className="echInfoHead">Working Hours</div>
-                  <div className="echInfoText">OPD: 24 hours with 10-minute booking slots</div>
-                  <div className="echInfoText">Other services: doctor and clinic availability only</div>
+                  <div className="echInfoHead">
+                    <span className="echIcon">🕒</span> Working Hours
+                  </div>
+                  <div className="echInfoText">Mon–Sat: 8:00am – 8:00pm</div>
+                  <div className="echInfoText">Emergency: 24/7 🚑</div>
                 </div>
 
                 <div className="echDivider" />
 
                 <div className="echInfoRow">
-                  <div className="echInfoHead">Location</div>
+                  <div className="echInfoHead">
+                    <span className="echIcon">📍</span> Location
+                  </div>
                   <div className="echInfoText">Nawala Junction, Colombo</div>
                 </div>
 
                 <div className="echDivider" />
 
                 <div className="echInfoRow">
-                  <div className="echInfoHead">Hotline</div>
+                  <div className="echInfoHead">
+                    <span className="echIcon">📞</span> Hotline
+                  </div>
                   <div className="echInfoText">+94 77 123 4567</div>
                 </div>
               </motion.div>
 
               <motion.div className="glass echWhy" {...pop(0.16)}>
-                <div className="echWhyTitle">Booking Rules</div>
-                <div className="echWhyItem">Only one-month advance booking is allowed</div>
-                <div className="echWhyItem">Booked slots are locked immediately</div>
-                <div className="echWhyItem">Fees come from clinic service settings</div>
+                <div className="echWhyTitle">💙 Why E-channelling?</div>
+                <div className="echWhyItem">✅ Fast booking</div>
+                <div className="echWhyItem">✅ Less waiting time</div>
+                <div className="echWhyItem">✅ Easy follow-ups</div>
               </motion.div>
             </div>
           </div>
         </div>
       </section>
+
+      <ConfirmModal
+        open={confirmOpen}
+        data={confirmData}
+        onClose={closeConfirm}
+        onBookAnother={bookAnother}
+      />
     </div>
   );
 }

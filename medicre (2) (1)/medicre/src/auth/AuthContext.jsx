@@ -1,97 +1,90 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { apiFetch } from "../api.js";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-const AuthContext = createContext(null);
+const AuthCtx = createContext(null);
 
-function readStoredUser() {
-  try {
-    const raw = localStorage.getItem("bmn_user");
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
+const LS_USERS = "bm_users_v1";
+const LS_SESSION = "bm_session_v1";
+
+// Staff rule (edit if you want stricter)
+function getRoleFromEmail(email) {
+  const e = (email || "").trim().toLowerCase();
+  const local = e.split("@")[0] || "";
+  const domain = e.split("@")[1] || "";
+  if (domain === "nawala.com" && local.includes("staff")) return "staff";
+  return "patient";
 }
 
-function readStoredToken() {
+function safeParse(json, fallback) {
   try {
-    return localStorage.getItem("bmn_auth_token") || "";
+    return JSON.parse(json) ?? fallback;
   } catch {
-    return "";
+    return fallback;
   }
 }
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => readStoredUser());
-  const [token, setToken] = useState(() => readStoredToken());
-
-  const clearLocalSession = useCallback(() => {
-    setUser(null);
-    setToken("");
-    localStorage.removeItem("bmn_user");
-    localStorage.removeItem("bmn_auth_token");
-  }, []);
-
-  const login = useCallback((nextUser, nextToken = "") => {
-    setUser(nextUser);
-    localStorage.setItem("bmn_user", JSON.stringify(nextUser));
-    setToken(nextToken);
-    if (nextToken) {
-      localStorage.setItem("bmn_auth_token", nextToken);
-    } else {
-      localStorage.removeItem("bmn_auth_token");
-    }
-  }, []);
-
-  const logout = useCallback(async () => {
-    try {
-      if (token) {
-        await apiFetch("/api/auth/logout", { method: "POST" });
-      }
-    } catch {
-      // Ignore logout API failure and clear local session anyway.
-    }
-    clearLocalSession();
-  }, [clearLocalSession, token]);
+  const [user, setUser] = useState(null); // {email, role, name}
 
   useEffect(() => {
-    let cancelled = false;
+    const session = safeParse(localStorage.getItem(LS_SESSION), null);
+    if (session?.email && session?.role) setUser(session);
+  }, []);
 
-    const verifySession = async () => {
-      if (!token) {
-        clearLocalSession();
-        return;
-      }
+  const api = useMemo(() => {
+    const readUsers = () => safeParse(localStorage.getItem(LS_USERS), []);
 
-      try {
-        const payload = await apiFetch("/api/auth/me");
-        if (cancelled) return;
-        if (payload?.user) {
-          setUser(payload.user);
-          localStorage.setItem("bmn_user", JSON.stringify(payload.user));
-          return;
-        }
-        clearLocalSession();
-      } catch {
-        if (!cancelled) {
-          clearLocalSession();
-        }
-      }
+    const writeUsers = (arr) => localStorage.setItem(LS_USERS, JSON.stringify(arr));
+
+    const signIn = ({ email, password }) => {
+      const e = (email || "").trim().toLowerCase();
+      const p = (password || "").trim();
+
+      const users = readUsers();
+      const found = users.find((u) => u.email === e);
+
+      if (!found) throw new Error("Account not found. Please sign up first.");
+      if (found.password !== p) throw new Error("Wrong password. Try again.");
+
+      const session = { email: found.email, role: found.role, name: found.name || "" };
+      localStorage.setItem(LS_SESSION, JSON.stringify(session));
+      setUser(session);
+      return session;
     };
 
-    verifySession();
-    return () => {
-      cancelled = true;
-    };
-  }, [clearLocalSession, token]);
+    const signUp = ({ name, email, password }) => {
+      const e = (email || "").trim().toLowerCase();
+      const p = (password || "").trim();
+      const n = (name || "").trim();
 
-  const value = useMemo(() => ({ user, token, login, logout }), [login, logout, token, user]);
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+      if (!e || !p) throw new Error("Email and password are required.");
+      if (p.length < 4) throw new Error("Password should be at least 4 characters.");
+
+      const role = getRoleFromEmail(e);
+
+      const users = readUsers();
+      if (users.some((u) => u.email === e)) throw new Error("This email is already registered.");
+
+      const newUser = { email: e, password: p, role, name: n };
+      users.push(newUser);
+      writeUsers(users);
+
+      const session = { email: newUser.email, role: newUser.role, name: newUser.name || "" };
+      localStorage.setItem(LS_SESSION, JSON.stringify(session));
+      setUser(session);
+      return session;
+    };
+
+    const signOut = () => {
+      localStorage.removeItem(LS_SESSION);
+      setUser(null);
+    };
+
+    return { user, signIn, signUp, signOut };
+  }, [user]);
+
+  return <AuthCtx.Provider value={api}>{children}</AuthCtx.Provider>;
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) {
-    throw new Error("useAuth must be used within AuthProvider");
-  }
-  return ctx;
+  return useContext(AuthCtx);
 }

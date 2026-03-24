@@ -1,204 +1,101 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "./auth/AuthContext.jsx";
-import { apiFetch } from "./api.js";
+import VideoBG from "./components/VideoBG.jsx";
+import videoSrc from "./assets/hospital.mp4";
+import staffImg from "./assets/docter.png";
 import "./auth-glass.css";
 
-const ease = [0.22, 1, 0.36, 1];
+export default function Signin() {
+  const { signIn } = useAuth();
+  const nav = useNavigate();
 
-export default function SignIn() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { login } = useAuth();
-
-  const fromPath =
-    typeof location.state?.from === "string" &&
-    location.state.from.startsWith("/")
-      ? location.state.from
-      : null;
-
-  const [email, setEmail] = useState(
-    typeof location.state?.email === "string" ? location.state.email : ""
-  );
-
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState("");
 
-  const navigateAfterAuth = (fallbackPath) => {
-    if (fromPath) {
-      navigate(fromPath, { replace: true });
-      return;
-    }
-    navigate(fallbackPath, { replace: true });
-  };
-
-  const handleSignIn = async () => {
-    if (loading) return;
-
-    if (!email.trim() || !password) {
-      alert("Please enter email and password");
-      return;
-    }
+  const onSubmit = (e) => {
+    e.preventDefault();
+    setMsg("");
 
     try {
-      setLoading(true);
-
-      const result = await apiFetch("/api/auth/signin", {
-        method: "POST",
-        body: JSON.stringify({
-          email: email.trim().toLowerCase(),
-          password
-        }),
-      });
-
-      login(result.user, result.token || "");
-
-      /* ROLE BASED REDIRECT */
-      const role = result.user?.role;
-
-      if (role === "superadmin") {
-        navigateAfterAuth("/superadmin/managestaff");
-      } 
-      else if (role && role !== "patient") {
-        navigateAfterAuth("/staffdashboard");
-      } 
-      else {
-        navigateAfterAuth("/patientdashboard");
-      }
-
-    } catch (error) {
-      console.error(error);
-      alert(error?.message || "Invalid email or password.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleSignIn();
+      const session = signIn({ email, password });
+      nav(session.role === "staff" ? "/staff" : "/patient");
+    } catch (err) {
+      setMsg(err.message || "Login failed");
     }
   };
 
   return (
-    <div className="authWrap">
-      <video className="authVideo" autoPlay muted loop playsInline>
-        <source src="/videos/hospital.mp4" type="video/mp4" />
-      </video>
-
-      <div className="authOverlay" />
-      <div className="authNoise" />
-
-      <motion.div
-        className="glass authCard"
-        initial={{ opacity: 0, y: 18, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.65, ease }}
-      >
-        <motion.div
-          className="glass authBrand"
-          initial={{ opacity: 0, x: -14 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.65, ease, delay: 0.05 }}
-        >
-          <div className="authLogoRow">
-            <div className="authLogo">
-              <img src="/images/logo.png" alt="Hospital Logo" />
-            </div>
-
-            <div>
-              <div className="authHospitalName">BEST MEDICARE</div>
-              <div className="authTag">
-                Trusted Care - Modern Facilities
-              </div>
-            </div>
+    <VideoBG src={videoSrc}>
+      <div className="authShell">
+        {/* LEFT INTRO */}
+        <div className="authIntro">
+          <div className="authIntroTop">
+            <span className="authIntroBadge">💙 BEST MEDICARE • NAWALA</span>
           </div>
 
-          <div className="authBigTitle">
-            Access your <span className="authAccent">MediCare</span> dashboard
-          </div>
-
-          <div className="authBullets">
-            <div className="authBullet">
-              <span className="authDot" /> Appointment Management
-            </div>
-
-            <div className="authBullet">
-              <span className="authDot" /> Reports and Records
-            </div>
-
-            <div className="authBullet">
-              <span className="authDot" /> Secure Access
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          className="glass authForm"
-          initial={{ opacity: 0, x: 14 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.65, ease, delay: 0.08 }}
-        >
-          <h2 className="authH">Sign In</h2>
-
-          <p className="authP">
-            Sign in using your staff or patient account.
+          <h1 className="authIntroH">Welcome Back 👋</h1>
+          <p className="authIntroP">
+            Sign in to manage appointments, patient records, and hospital services with a smooth,
+            secure experience.
           </p>
 
-          <div className="authFields">
+          <div className="authPills">
+            <span className="authPill">🕒 24/7 Support</span>
+            <span className="authPill">🩺 Trusted Doctors</span>
+            <span className="authPill">⚡ Fast E-channelling</span>
+            <span className="authPill">🧾 Clear Reports</span>
+          </div>
+
+          <div className="authStaffCard">
+            <img className="authStaffImg" src={staffImg} alt="Staff" />
+            <div>
+              <p className="authStaffName">Hospital Director</p>
+              <p className="authStaffRole">Medical Services • Best Medicare</p>
+              <p className="authStaffQuote">
+                “We treat every patient like family — accurate diagnosis, honest guidance, and
+                caring follow-ups.” 💜
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT FORM */}
+        <div className="authCard authFormCard">
+          <h2 className="authTitle">Sign in</h2>
+          <p className="authSub">Staff → @nawala.com + contains “staff” ✅</p>
+
+          <form onSubmit={onSubmit} className="authForm">
+            <label>Email</label>
             <input
               className="authInput"
-              placeholder="Email"
-              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={handleKeyPress}
+              placeholder="email"
             />
 
+            <label>Password</label>
             <input
               className="authInput"
-              placeholder="Password"
-              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={handleKeyPress}
+              type="password"
+              placeholder="password"
             />
-          </div>
 
-          <div className="authRow">
-            <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <input type="checkbox" />
-              Remember me
-            </label>
+            {msg && <div className="authMsg">{msg}</div>}
 
-            <Link className="authLink" to="/forgot-password">
-              Forgot password?
-            </Link>
-          </div>
-
-          <div className="authBtnRow">
-            <button
-              className="btnPrimary"
-              onClick={handleSignIn}
-              disabled={loading}
-            >
-              {loading ? "Signing in..." : "Sign In"}
+            <button className="authBtn" type="submit">
+              Login
             </button>
-          </div>
+          </form>
 
-          <div className="authMini">
-            Need an account?{" "}
-            <Link
-              className="authLink"
-              to="/signup"
-              state={{ from: fromPath }}
-            >
-              Sign up
-            </Link>
+          <div className="authFoot">
+            New user? <Link to="/signup">Create account</Link>
           </div>
-        </motion.div>
-      </motion.div>
-    </div>
+        </div>
+      </div>
+    </VideoBG>
   );
 }
