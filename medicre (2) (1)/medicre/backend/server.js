@@ -85,7 +85,26 @@ connectDB();
 /* 
    SECURITY MIDDLEWARE
 */
-app.use(helmet()); // Secure HTTP headers
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        // API-only server — no HTML content, so block everything.
+        // frame-ancestors / base-uri / form-action are not covered by default-src.
+        defaultSrc:     ["'none'"],
+        frameAncestors: ["'none'"],
+        baseUri:        ["'none'"],
+        formAction:     ["'none'"],
+      },
+    },
+    // These headers are already set explicitly in the security-headers middleware
+    // below, so disable Helmet's copies to avoid sending duplicates.
+    hsts:           false,
+    frameguard:     false,
+    referrerPolicy: false,
+    noSniff:        false,
+  })
+);
 app.use(mongoSanitize()); // Prevent MongoDB injection
 
 // XSS sanitization
