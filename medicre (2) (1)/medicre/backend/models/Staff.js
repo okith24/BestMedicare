@@ -1,3 +1,5 @@
+// Mongoose model for staff directory records.
+
 const mongoose = require("mongoose");
 
 const StaffSchema = new mongoose.Schema(

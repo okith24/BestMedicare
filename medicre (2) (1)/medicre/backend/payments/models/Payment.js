@@ -1,3 +1,5 @@
+// Mongoose model for payment transactions.
+
 const mongoose = require('mongoose');
 const { TRANSACTION_STATUS, TRANSACTION_TYPE } = require('../constants');
 
@@ -694,3 +696,4 @@ paymentSchema.pre('save', function(next) {
 // ============================================================
 
 module.exports = mongoose.model('Payment', paymentSchema);
+

@@ -1,3 +1,5 @@
+// CSRF protection middleware and token helpers.
+
 const crypto = require('crypto');
 
 /**
@@ -264,3 +266,4 @@ module.exports = {
   TOKEN_LENGTH,
   TOKEN_TTL_MS
 };
+

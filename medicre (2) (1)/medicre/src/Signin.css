@@ -1,3 +1,4 @@
+﻿/* Holds sign-in specific style overrides for the authentication UI. */
 .signin-container {
   display: flex;
   height: 100vh;
@@ -76,3 +77,4 @@ label {
 .signin-btn:hover {
   background: #164F87;
 }
+

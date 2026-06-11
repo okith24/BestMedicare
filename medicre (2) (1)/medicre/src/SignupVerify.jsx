@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+﻿import React, { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { apiFetch } from "./api.js";
@@ -33,6 +33,7 @@ function persistVerificationState(state) {
 }
 
 export default function SignupVerify() {
+  // Keeps OTP verification and resend state together.
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
@@ -283,3 +284,10 @@ export default function SignupVerify() {
     </div>
   );
 }
+
+
+
+
+
+
+

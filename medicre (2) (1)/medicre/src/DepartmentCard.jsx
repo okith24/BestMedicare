@@ -1,4 +1,5 @@
-export default function DepartmentCard({ title, value }) {
+﻿export default function DepartmentCard({ title, value }) {
+  // Turns one department count into a tiny summary card.
   const progress = Math.max(0, Math.min(100, value * 2));
   return (
     <div className="glass card department-card">
@@ -10,3 +11,10 @@ export default function DepartmentCard({ title, value }) {
     </div>
   );
 }
+
+
+
+
+
+
+

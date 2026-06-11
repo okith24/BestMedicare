@@ -1,3 +1,5 @@
+// Chatbot routes and knowledge matching logic.
+
 const express = require("express");
 const ChatbotSettings = require("../models/ChatbotSettings");
 const ChatbotKnowledge = require("../models/ChatbotKnowledge");
@@ -25,7 +27,11 @@ const EMERGENCY_MESSAGE =
 const DIAGNOSIS_MESSAGE =
   "I am an administrative assistant and can only provide advisory information. I cannot provide diagnosis or medication recommendations. Please book a professional consultation for medical advice.";
 
+const GREETING_MESSAGE =
+  "Hi, welcome to BestMediCareNawala how can I help?";
+
 async function getSettings() {
+  // Keep one global settings document so chatbot safety toggles apply everywhere.
   let doc = await ChatbotSettings.findOne({ key: "global" });
   if (!doc) {
     doc = await ChatbotSettings.create({ key: "global", ...DEFAULT_SETTINGS });
@@ -104,6 +110,7 @@ function tokenize(text) {
 }
 
 function isDiagnosisRequest(question) {
+  // Detect prompts that drift into medical advice so the bot can refuse them.
   const q = normalizeText(question);
   const patterns = [
     "what should i take",
@@ -125,6 +132,11 @@ function isDiagnosisRequest(question) {
   return patterns.some((p) => q.includes(p));
 }
 
+function isGreeting(question) {
+  const q = normalizeText(question);
+  return ["hi", "hello", "hey", "good morning", "good afternoon", "good evening"].includes(q);
+}
+
 // Pick a random item from an array, or return null.
 function pickRandom(arr) {
   if (!Array.isArray(arr) || arr.length === 0) return null;
@@ -144,6 +156,7 @@ function resolveAnswer(entry) {
 }
 
 async function findKnowledgeMatch(question) {
+  // Rank knowledge entries by topic/tag/content overlap and return the best match.
   const q = normalizeText(question);
   const tokens = tokenize(q);
 
@@ -234,6 +247,7 @@ async function findKnowledgeMatch(question) {
 
 router.get("/settings", attachAuth, requireAuth, async (req, res, next) => {
   try {
+    // Signed-in users can read the current chatbot safeguard settings.
     const settings = await getSettings();
     res.json({
       emergencyBrakeEnabled: settings.emergencyBrakeEnabled,
@@ -251,6 +265,7 @@ router.get("/settings", attachAuth, requireAuth, async (req, res, next) => {
 
 router.put("/settings", attachAuth, requireAuth, requireSuperAdmin, async (req, res, next) => {
   try {
+    // Only super admins are allowed to change system-wide chatbot behavior.
     const nextSettings = {
       emergencyBrakeEnabled:
         typeof req.body.emergencyBrakeEnabled === "boolean"
@@ -304,6 +319,7 @@ router.post("/ask", attachAuth, requireAuth, async (req, res, next) => {
       return res.status(400).json({ message: "Question is required." });
     }
 
+    // Enforce the active safety toggles before looking up an answer.
     const settings = await getSettings();
 
     if (settings.emergencyBrakeEnabled) {
@@ -314,12 +330,17 @@ router.post("/ask", attachAuth, requireAuth, async (req, res, next) => {
       return res.json({ answer: DIAGNOSIS_MESSAGE, sources: [] });
     }
 
+    if (isGreeting(question)) {
+      return res.json({ answer: GREETING_MESSAGE, sources: [] });
+    }
+
     const ragEnabled =
       typeof settings.ragEnabled === "boolean"
         ? settings.ragEnabled
         : settings.factCheckerEnabled;
 
     if (ragEnabled) {
+      // In knowledge mode, replies must come from a matching stored knowledge entry.
       const match = await findKnowledgeMatch(question);
       if (!match) {
         return res.json({ answer: FALLBACK_MESSAGE, sources: [] });

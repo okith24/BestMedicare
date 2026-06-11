@@ -1,12 +1,14 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 
 export default function AppointmentSearch({
+  // Local filters for the appointment table.
   appointments = [],
   selectedDate = "",
   onSelectedDateChange,
   onCancel,
   cancellingId = "",
 }) {
+  // Keeps the search filters and derived appointment list together.
   const [searchText, setSearchText] = useState("");
   const [category, setCategory] = useState("");
   const [doctor, setDoctor] = useState("");
@@ -139,3 +141,10 @@ export default function AppointmentSearch({
     </div>
   );
 }
+
+
+
+
+
+
+

@@ -1,3 +1,5 @@
+// Encryption helpers for sensitive backend data.
+
 const crypto = require('crypto');
 
 /**
@@ -189,3 +191,4 @@ module.exports = {
   ALGORITHM,
   KEY_SIZE
 };
+

@@ -1,3 +1,5 @@
+// Routes for managing saved payment tokens.
+
 const express = require("express");
 const router = express.Router();
 const { body, param, query, validationResult } = require("express-validator");
@@ -38,7 +40,7 @@ router.get(
   handleValidationErrors,
   async (req, res) => {
   try {
-    const patientId = req.user.id;
+    const patientId = req.authUser.id;
     const { status } = req.query;
 
     const filter = { patientId, status: status || "active" };
@@ -105,7 +107,7 @@ router.post(
   handleValidationErrors,
   async (req, res) => {
   try {
-    const patientId = req.user.id;
+    const patientId = req.authUser.id;
     const {
       cybersourceToken,
       cardLast4,
@@ -212,7 +214,7 @@ router.get(
     const { id } = req.params;
     const token = await PaymentToken.findById(id);
 
-    if (!token || token.patientId.toString() !== req.user.id) {
+    if (!token || token.patientId.toString() !== req.authUser.id) {
       return res
         .status(404)
         .json({ success: false, error: { message: "Token not found" } });
@@ -262,7 +264,7 @@ router.delete(
     const { reason } = req.body;
 
     const token = await PaymentToken.findById(id);
-    if (!token || token.patientId.toString() !== req.user.id) {
+    if (!token || token.patientId.toString() !== req.authUser.id) {
       return res
         .status(404)
         .json({ success: false, error: { message: "Token not found" } });
@@ -276,7 +278,7 @@ router.delete(
     // If was default, assign default to another active token
     if (wasDefault) {
       const nextActive = await PaymentToken.findOne({
-        patientId: req.user.id,
+        patientId: req.authUser.id,
         status: "active",
         _id: { $ne: id },
       }).sort({ createdAt: -1 });
@@ -328,7 +330,7 @@ router.post(
     const { id } = req.params;
 
     const token = await PaymentToken.findById(id);
-    if (!token || token.patientId.toString() !== req.user.id) {
+    if (!token || token.patientId.toString() !== req.authUser.id) {
       return res
         .status(404)
         .json({ success: false, error: { message: "Token not found" } });
@@ -343,7 +345,7 @@ router.post(
 
     // Unset previous default
     await PaymentToken.updateMany(
-      { patientId: req.user.id, _id: { $ne: id } },
+      { patientId: req.authUser.id, _id: { $ne: id } },
       { isDefault: false }
     );
 
@@ -391,7 +393,7 @@ router.post(
     const { id } = req.params;
 
     const token = await PaymentToken.findById(id);
-    if (!token || token.patientId.toString() !== req.user.id) {
+    if (!token || token.patientId.toString() !== req.authUser.id) {
       return res
         .status(404)
         .json({ success: false, error: { message: "Token not found" } });
@@ -437,3 +439,4 @@ router.post(
 });
 
 module.exports = router;
+

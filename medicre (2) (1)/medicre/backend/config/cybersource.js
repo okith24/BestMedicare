@@ -325,7 +325,7 @@ function initialize() {
     initialized = true;
 
     console.log(`✓ Cybersource configured for ${config.environment} environment`);
-    console.log(`✓ Merchant ID: ${config.merchantId}`);
+    console.log(`✓ Merchant ID: ${String(config.merchantId || '').slice(0, 4)}****`);
     console.log(`✓ API Host: ${getApiHost()}`);
     console.log(`✓ Decision Manager: ${config.decisionManager.enabled ? 'enabled' : 'disabled'}`);
     console.log(`✓ 3D Secure: ${config.threeDSecure.enabled ? 'enabled' : 'disabled'}`);

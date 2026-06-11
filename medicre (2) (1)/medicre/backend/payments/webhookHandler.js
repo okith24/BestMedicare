@@ -1,3 +1,5 @@
+// Shared webhook handling logic for payment callbacks.
+
 const crypto = require("crypto");
 const PaymentAudit = require("./models/PaymentAudit");
 
@@ -154,3 +156,4 @@ module.exports = {
   shouldAlertAdmin,
   createWebhookAuditLog,
 };
+

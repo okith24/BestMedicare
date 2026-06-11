@@ -1,3 +1,4 @@
+﻿/* Styles the chatbot control room, settings toggles, and in-app chat layout. */
 .chatbotControl{
   padding-top: 12px;
 }
@@ -208,3 +209,4 @@
     grid-template-columns: 1fr;
   }
 }
+

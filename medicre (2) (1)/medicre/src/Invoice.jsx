@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "./api.js";
 import "./Invoice.css";
@@ -44,6 +44,7 @@ function makeReference() {
 }
 
 export default function Invoice() {
+  // Holds editable invoice fields, totals, and save actions.
   const MAX_PRINT_ROWS = 8;
   const MIN_PRINT_ROWS = 6;
   const navigate = useNavigate();
@@ -146,7 +147,8 @@ export default function Invoice() {
       }
     }, 500);
 
-    return () => {
+    // Editor and print views.
+  return () => {
       cancelled = true;
       clearTimeout(timer);
     };
@@ -486,3 +488,10 @@ export default function Invoice() {
     </div>
   );
 }
+
+
+
+
+
+
+

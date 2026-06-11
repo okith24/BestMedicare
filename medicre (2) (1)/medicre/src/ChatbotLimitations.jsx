@@ -1,9 +1,12 @@
-import React from "react";
+﻿import React from "react";
 import "./chatbot-limitations.css";
 
 export default function ChatbotLimitations() {
+  // Shows a short static summary of chatbot limits.
+  // Limitation summary UI.
   return (
     <section className="chatbot-limitations" aria-label="Gemini chatbot limitations">
+      {/* This panel is informational; actual chatbot restrictions are enforced in backend routes/settings. */}
       <div className="container chatbot-limitations__inner glass">
         <div className="chatbot-limitations__icon chatbot-limitations__iconFloating" aria-hidden="true">
           <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
@@ -31,3 +34,10 @@ export default function ChatbotLimitations() {
     </section>
   );
 }
+
+
+
+
+
+
+

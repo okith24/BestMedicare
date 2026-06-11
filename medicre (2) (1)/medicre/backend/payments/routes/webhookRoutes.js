@@ -1,3 +1,5 @@
+// Routes that receive payment gateway webhooks.
+
 const express = require("express");
 const router = express.Router();
 const Payment = require("../models/Payment");
@@ -197,3 +199,4 @@ router.post("/cybersource", async (req, res) => {
 });
 
 module.exports = router;
+

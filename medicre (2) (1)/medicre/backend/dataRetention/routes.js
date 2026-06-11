@@ -5,7 +5,9 @@
 
 const express = require("express");
 const router = express.Router();
-const { requireAuth, requireAdmin } = require("../auth/middleware");
+const { attachAuth, requireAuth, requireAdmin } = require("../auth/middleware");
+
+router.use(attachAuth);
 const {
   generateRetentionReport,
   anonymizePatientData,
@@ -56,10 +58,10 @@ router.post("/cleanup", requireAuth, requireAdmin, async (req, res) => {
     // Log the admin action
     await PaymentAudit.create({
       action: "MANUAL_DATA_RETENTION_CLEANUP",
-      adminId: req.user.id,
-      adminEmail: req.user.email,
+      adminId: req.authUser.id,
+      adminEmail: req.authUser.email,
       details: {
-        triggeredBy: req.user.email,
+        triggeredBy: req.authUser.email,
         timestamp: new Date(),
       },
       severity: "HIGH",
@@ -96,12 +98,12 @@ router.post(
       // Log the sensitive action
       await PaymentAudit.create({
         action: "PATIENT_DATA_ANONYMIZATION",
-        adminId: req.user.id,
-        adminEmail: req.user.email,
+        adminId: req.authUser.id,
+        adminEmail: req.authUser.email,
         patientId,
         details: {
           reason: req.body.reason || "No reason provided",
-          triggeredBy: req.user.email,
+          triggeredBy: req.authUser.email,
         },
         severity: "CRITICAL",
       });

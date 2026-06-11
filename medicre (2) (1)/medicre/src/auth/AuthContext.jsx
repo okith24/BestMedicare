@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+﻿import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { apiFetch } from "../api.js";
 
 const AuthContext = createContext(null);
@@ -21,6 +21,7 @@ function readStoredToken() {
 }
 
 export function AuthProvider({ children }) {
+  // Stores session state and exposes shared auth helpers.
   const [user, setUser] = useState(() => readStoredUser());
   const [token, setToken] = useState(() => readStoredToken());
 
@@ -79,7 +80,8 @@ export function AuthProvider({ children }) {
     };
 
     verifySession();
-    return () => {
+    // Provide auth state to the app.
+  return () => {
       cancelled = true;
     };
   }, [clearLocalSession, token]);
@@ -95,3 +97,10 @@ export function useAuth() {
   }
   return ctx;
 }
+
+
+
+
+
+
+

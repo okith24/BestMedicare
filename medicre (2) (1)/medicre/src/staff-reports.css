@@ -1,3 +1,4 @@
+﻿/* Styles the staff reporting filters, charts/cards, and report output sections. */
 .staffReportsPage {
   padding: 24px 0 40px;
 }
@@ -371,3 +372,4 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+

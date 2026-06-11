@@ -1,4 +1,5 @@
-export default function StatCard({ title, value, growth, subtitle }) {
+﻿export default function StatCard({ title, value, growth, subtitle }) {
+  // Displays one compact dashboard metric.
   return (
     <div className="glass card stat-card">
       <h3>{title}</h3>
@@ -10,3 +11,10 @@ export default function StatCard({ title, value, growth, subtitle }) {
     </div>
   );
 }
+
+
+
+
+
+
+

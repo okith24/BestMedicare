@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+﻿import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuth } from "./auth/AuthContext.jsx";
 import { apiFetch } from "./api.js";
 import "./PatientDashboard.css";
@@ -19,6 +19,7 @@ function niceTime(time) {
 }
 
 export default function PatientDashboard() {
+  // Stores the patient summary plus derived appointment and invoice lists.
   const { user } = useAuth();
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -44,7 +45,8 @@ export default function PatientDashboard() {
     }
     loadSummary(false);
     const timer = setInterval(() => loadSummary(true), 5000);
-    return () => clearInterval(timer);
+    // Patient dashboard UI.
+  return () => clearInterval(timer);
   }, [user, loadSummary]);
 
   const records = useMemo(() => summary?.records || [], [summary]);
@@ -175,3 +177,10 @@ export default function PatientDashboard() {
     </div>
   );
 }
+
+
+
+
+
+
+

@@ -1,3 +1,5 @@
+// Mongoose model for clinic visit and billing records.
+
 const mongoose = require("mongoose");
 
 const ClinicSchema = new mongoose.Schema(
@@ -50,3 +52,4 @@ const ClinicSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model("Clinic", ClinicSchema);
+

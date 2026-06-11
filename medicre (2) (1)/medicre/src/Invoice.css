@@ -1,3 +1,4 @@
+﻿/* Styles the invoice editor, totals area, and print-friendly bill layout. */
 .invPage {
   padding-top: 22px;
 }
@@ -646,3 +647,4 @@
     margin: 0;
   }
 }
+

@@ -1,3 +1,5 @@
+// E-channeling routes for appointment operations.
+
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
@@ -59,6 +61,8 @@ router.use((req, res, next) => {
   next();
 });
 
+router.use(requireAuth);
+
 router.get('/meta', async (req, res) => {
   res.json({
     services: Object.entries(SERVICE_FEES).map(([name, fee]) => ({ name, fee })),
@@ -66,8 +70,6 @@ router.get('/meta', async (req, res) => {
     paymentMethods: ['cash', 'card']
   });
 });
-
-router.use(requireAuth);
 
 router.post('/appointments', async (req, res) => {
   try {
@@ -212,5 +214,6 @@ router.patch('/appointments/:id/cancel', async (req, res) => {
 });
 
 module.exports = router;
+
 
 

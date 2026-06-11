@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+﻿import React, { useEffect, useMemo, useState } from "react";
 import { apiFetch } from "./api.js";
 import { useAuth } from "./auth/AuthContext.jsx";
 import "./chatbot-control.css";
 
 export default function ChatbotControlRoom() {
+  // Keeps chatbot settings and conversation state in one place.
   const { user } = useAuth();
   const [settings, setSettings] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -37,6 +38,7 @@ export default function ChatbotControlRoom() {
         return;
       }
       try {
+        // Load the current chatbot limitation toggles for staff and superadmin users.
         const payload = await apiFetch("/api/chatbot/settings");
         if (mounted) {
           setSettings({
@@ -56,13 +58,15 @@ export default function ChatbotControlRoom() {
       }
     };
     loadSettings();
-    return () => {
+    // Control room UI.
+  return () => {
       mounted = false;
     };
   }, [canViewLimitations]);
 
   const updateSetting = (key) => {
     if (!canEditLimitations) return;
+    // Toggle one setting locally before saving the full settings object.
     setSettings((prev) => ({
       ...prev,
       [key]: !prev[key],
@@ -75,6 +79,7 @@ export default function ChatbotControlRoom() {
     setSaving(true);
     setSettingsError("");
     try {
+      // Persist the edited limitation settings back to the backend.
       const payload = await apiFetch("/api/chatbot/settings", {
         method: "PUT",
         body: JSON.stringify({
@@ -107,12 +112,14 @@ export default function ChatbotControlRoom() {
     setAsking(true);
     setQuestion("");
 
+    // Add the user message immediately so the chat feels responsive.
     setMessages((prev) => [
       ...prev,
       { role: "user", text: trimmed, sources: [] },
     ]);
 
     try {
+      // Send the question to the chatbot API and append the assistant reply.
       const payload = await apiFetch("/api/chatbot/ask", {
         method: "POST",
         body: JSON.stringify({ question: trimmed }),
@@ -281,3 +288,10 @@ export default function ChatbotControlRoom() {
     </div>
   );
 }
+
+
+
+
+
+
+

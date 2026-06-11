@@ -1,3 +1,4 @@
+﻿/* Styles the public-facing chatbot limitations information panel. */
 .chatbot-limitations{
   position: relative;
   z-index: 20;
@@ -81,3 +82,4 @@
     right: 12px;
   }
 }
+

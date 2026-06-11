@@ -1,3 +1,5 @@
+// Validation middleware for common request checks.
+
 const joi = require('joi');
 
 /**
@@ -507,3 +509,4 @@ module.exports = {
   paymentTokenSchema,
   refundSchema
 };
+

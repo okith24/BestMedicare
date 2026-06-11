@@ -1,4 +1,4 @@
-import "./dashboard.css";
+﻿import "./dashboard.css";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./auth/AuthContext.jsx";
@@ -20,6 +20,7 @@ function prettyDate(date) {
 }
 
 export default function Dashboard() {
+  // Stores live staff dashboard data and quick actions.
   const navigate = useNavigate();
   const { user } = useAuth();
   const [dashboard, setDashboard] = useState(null);
@@ -38,6 +39,7 @@ export default function Dashboard() {
       if (!silent) setLoading(true);
       setIsFetching(true);
       setError("");
+      // The dashboard endpoint returns the selected day's appointments plus weekly department totals.
       const data = await apiFetch(`/api/staff/dashboard?date=${selectedDate}`);
       setDashboard(data);
     } catch (err) {
@@ -50,6 +52,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadDashboard(false);
+    // Refresh in the background so front-desk users see near-live activity without manual reloads.
     const timer = setInterval(() => loadDashboard(true), 10000);
     return () => clearInterval(timer);
   }, [loadDashboard]);
@@ -74,6 +77,7 @@ export default function Dashboard() {
 
   const growthText = `${overview.growthPercent >= 0 ? "+" : ""}${overview.growthPercent}%`;
   const appointments = dashboard?.appointments || [];
+  // Sort department cards by highest activity so the busiest services stay most visible.
   const departments = useMemo(
     () => (dashboard?.departments || []).sort((a, b) => b.count - a.count),
     [dashboard]
@@ -90,7 +94,7 @@ export default function Dashboard() {
         day: "numeric",
         year: "numeric",
       });
-    return `Showing week: ${fmt(wr.start)} – ${fmt(wr.end)}`;
+    return `Showing week: ${fmt(wr.start)} â€“ ${fmt(wr.end)}`;
   }, [dashboard]);
 
   return (
@@ -174,3 +178,10 @@ export default function Dashboard() {
     </div>
   );
 }
+
+
+
+
+
+
+

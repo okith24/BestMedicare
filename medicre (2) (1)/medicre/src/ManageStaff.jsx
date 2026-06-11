@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+﻿import React, { useEffect, useState, useMemo } from "react";
 import "./ManageStaff.css";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { useAuth } from "./auth/AuthContext";
@@ -7,6 +7,7 @@ import { apiFetch } from "./api";
 import NavBar from "./NavBar";
 
 const ManageStaff = () => {
+  // Keeps staff lists, filters, and admin actions together.
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -312,6 +313,7 @@ const ManageStaff = () => {
   /* 
      UI
   */
+  // Management page UI.
   return (
     <>
       <NavBar />
@@ -439,3 +441,10 @@ const ManageStaff = () => {
 };
 
 export default ManageStaff;
+
+
+
+
+
+
+

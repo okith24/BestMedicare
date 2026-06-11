@@ -1,3 +1,5 @@
+// Patient-facing routes for dashboard and appointments.
+
 const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
@@ -25,9 +27,9 @@ const {
 } = require('../auth/middleware');
 
 /*
-================================
+
 UTILITY FUNCTIONS
-================================
+
 */
 
 function toDateTime(appointment) {
@@ -286,7 +288,6 @@ router.post('/appointments', attachAuth, requireAuth, requirePatient, async (req
     const phone = String(req.body?.phone || '').trim();
     const service = normalizeServiceName(req.body?.service || 'OPD');
     const paymentMethod = normalizePaymentMethod(req.body?.paymentMethod);
-    const explicitPaymentStatus = String(req.body?.paymentStatus || '').trim();
 
     if (!date || !time || !phone) {
       return res.status(400).json({ message: 'Date, time and phone are required' });
@@ -377,9 +378,7 @@ router.post('/appointments', attachAuth, requireAuth, requirePatient, async (req
       fee,
       doctorCharge: Number(pricing.doctorCharge || 0),
       hospitalCharge: Number(pricing.hospitalCharge || 0),
-      paymentStatus: explicitPaymentStatus
-        ? normalizePaymentStatus(explicitPaymentStatus)
-        : (paymentMethod === 'card' ? 'PAID' : 'PENDING'),
+      paymentStatus: paymentMethod === 'card' ? 'PAID' : 'PENDING',
       paymentMethod,
       status: 'REQUESTED'
     });
@@ -529,6 +528,7 @@ router.get('/dashboard', attachAuth, requirePatient, async (req, res) => {
 });
 
 module.exports = router;
+
 
 
 

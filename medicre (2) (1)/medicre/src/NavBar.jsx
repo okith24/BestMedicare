@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useState } from "react";
+﻿import React, { useEffect, useMemo, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import "./nav.css";
 import { useAuth } from "./auth/AuthContext.jsx";
 
 export default function NavBar() {
+  // Builds the role-aware navigation header.
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   // Only these 3 texts will animate
@@ -19,7 +20,7 @@ export default function NavBar() {
     const t = setInterval(() => {
       setIdx((p) => (p + 1) % subtitles.length);
     }, 2200); // timer speed (ms)
-    return () => clearInterval(t);
+  return () => clearInterval(t);
   }, [subtitles.length]);
 
   const handleLogout = async () => {
@@ -121,3 +122,10 @@ export default function NavBar() {
     </header>
   );
 }
+
+
+
+
+
+
+

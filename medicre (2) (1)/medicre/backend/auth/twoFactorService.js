@@ -1,3 +1,5 @@
+// Service helpers for two-factor authentication operations.
+
 const TwoFactorAuth = require('../auth/twoFactorModel');
 const { encrypt, decrypt } = require('../utils/encryption');
 const totp = require('./totp');
@@ -20,7 +22,6 @@ const crypto = require('crypto');
  * Returns secret and QR code for authenticator app
  */
 async function initiateSetup(userId, userModel = 'User', email) {
-  // Check if user already has 2FA
   let twoFactor = await TwoFactorAuth.findOne({ userId, userModel });
 
   if (!twoFactor) {
@@ -31,14 +32,18 @@ async function initiateSetup(userId, userModel = 'User', email) {
     });
   }
 
-  // Generate new secret
   const secret = totp.generateSecret();
   const otpauthUrl = totp.generateQrCode(secret, email, 'Hospital Management System');
 
-  // Store secret temporarily (not yet committed)
-  // In a real app, you'd use a temporary storage with TTL
-  twoFactor.totpSecret = secret;
+  // Encrypt the secret before persisting — the plaintext is returned to the
+  // client only here so the user can scan the QR code.
+  const { iv, encrypted } = encrypt(secret);
+  twoFactor.totpSecret = encrypted;
+  twoFactor.totpSecretIv = iv;
   twoFactor.qrCodeDataUrl = otpauthUrl;
+  twoFactor.isEnabled = false;
+
+  await twoFactor.save();
 
   return {
     secret,
@@ -58,12 +63,12 @@ async function initiateSetup(userId, userModel = 'User', email) {
 async function completeSetup(userId, totpCode, userModel = 'User') {
   const twoFactor = await TwoFactorAuth.findOne({ userId, userModel });
 
-  if (!twoFactor || !twoFactor.totpSecret) {
+  if (!twoFactor || !twoFactor.totpSecret || !twoFactor.totpSecretIv) {
     throw new Error('2FA setup not initiated');
   }
 
-  // Verify the code
-  const verification = totp.verify(twoFactor.totpSecret, totpCode);
+  const plainSecret = decrypt(twoFactor.totpSecret, twoFactor.totpSecretIv);
+  const verification = totp.verify(plainSecret, totpCode);
 
   if (!verification.valid) {
     throw new Error('Invalid authentication code. Please try again.');
@@ -100,13 +105,12 @@ async function verifyCode(userId, totpCode, userModel = 'User') {
     throw new Error('Two-factor authentication not enabled');
   }
 
-  // Check if account is locked
   if (twoFactor.isLocked()) {
     throw new Error('Account locked due to too many failed attempts. Try again in 15 minutes.');
   }
 
-  // Verify the code
-  const verification = totp.verify(twoFactor.totpSecret, totpCode);
+  const plainSecret = decrypt(twoFactor.totpSecret, twoFactor.totpSecretIv);
+  const verification = totp.verify(plainSecret, totpCode);
 
   if (!verification.valid) {
     await twoFactor.recordFailedAttempt();
@@ -340,3 +344,4 @@ module.exports = {
   getTwoFactorStatus,
   generateDeviceFingerprint
 };
+

@@ -1,3 +1,5 @@
+// Staff dashboard and reporting routes.
+
 const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
@@ -8,9 +10,9 @@ const { SERVICE_FEES } = require('../echanneling/constants');
 const { attachAuth, requireStaff } = require('../auth/middleware');
 
 /*
-==============================
+
 UTILITY FUNCTIONS
-==============================
+
 */
 
 function toIsoDate(date) {
@@ -33,6 +35,7 @@ function resolvePatientName(appointment) {
 }
 
 function mapAppointment(appointment) {
+  // Shape raw appointment documents into the compact response used by dashboard/report screens.
   return {
     id: String(appointment._id),
     appointmentNumber: appointment.appointmentNumber || '',
@@ -57,17 +60,17 @@ function isTreatedAppointment(appointment) {
 }
 
 /*
-==============================
+
 AUTH + STAFF ACCESS
-==============================
+
 */
 
 router.use(attachAuth, requireStaff);
 
 /*
-==============================
+
 DB CONNECTION CHECK
-==============================
+
 */
 
 router.use((req, res, next) => {
@@ -80,9 +83,9 @@ router.use((req, res, next) => {
 });
 
 /*
-==============================
+
 STAFF DASHBOARD
-==============================
+
 */
 
 router.get('/dashboard', async (req, res) => {
@@ -110,6 +113,7 @@ router.get('/dashboard', async (req, res) => {
     const startOfWeekStr = toIsoDate(startOfWeek);
     const endOfWeekStr = toIsoDate(endOfWeek);
 
+    // Pull one day for the live dashboard plus one week for department activity totals.
     const [dailyAppointments, weeklyAppointments] = await Promise.all([
       Appointment.find({ date: today }).sort({ time: 1 }),
       Appointment.find({
@@ -119,7 +123,7 @@ router.get('/dashboard', async (req, res) => {
 
     const treated = dailyAppointments.filter(a => isTreatedAppointment(a)).length;
 
-    // Calculate department summary from weekly appointments
+    // Group weekly appointments by service so the dashboard can render department cards.
     const deptCounts = {};
     weeklyAppointments.forEach(app => {
         const dept = app.service || 'OPD';
@@ -150,9 +154,9 @@ router.get('/dashboard', async (req, res) => {
 });
 
 /*
-==============================
+
 CANCEL APPOINTMENT
-==============================
+
 */
 
 router.patch('/appointments/:id/cancel', async (req, res) => {
@@ -184,9 +188,9 @@ router.patch('/appointments/:id/cancel', async (req, res) => {
 });
 
 /*
-==============================
+
 DAILY REPORT
-==============================
+
 */
 
 router.get('/reports/daily', async (req, res) => {
@@ -203,6 +207,7 @@ router.get('/reports/daily', async (req, res) => {
       .find({ date })
       .sort({ time: 1 });
 
+    // Split the same appointment list into report-friendly buckets.
     const treated = appointments.filter(a => isTreatedAppointment(a));
     const cancelled = appointments.filter(a => a.status === 'CANCELLED');
 
@@ -224,9 +229,9 @@ router.get('/reports/daily', async (req, res) => {
 });
 
 /*
-==============================
+
 MONTHLY REPORT
-==============================
+
 */
 
 router.get('/reports/monthly', async (req, res) => {
@@ -239,9 +244,16 @@ router.get('/reports/monthly', async (req, res) => {
       return res.status(400).json({ message: 'month must be YYYY-MM' });
     }
 
+    // Build an inclusive date range for the selected month.
+    const [year, mm] = month.split('-').map(Number);
+    const firstDay = `${month}-01`;
+    const lastDayDate = new Date(year, mm, 0); // day 0 of next month = last day of this month
+    const lastDay = `${month}-${String(lastDayDate.getDate()).padStart(2, '0')}`;
+
+    // Monthly totals combine appointment activity with finalized invoice revenue.
     const [appointments, invoices] = await Promise.all([
-      Appointment.find({ date: { $regex: `^${month}` } }),
-      Invoice.find({ issueDate: { $regex: `^${month}` }, status: 'Finalized' })
+      Appointment.find({ date: { $gte: firstDay, $lte: lastDay } }),
+      Invoice.find({ issueDate: { $gte: firstDay, $lte: lastDay }, status: 'Finalized' })
     ]);
 
     const revenue = invoices.reduce((sum, x) => sum + Number(x.total || 0), 0);

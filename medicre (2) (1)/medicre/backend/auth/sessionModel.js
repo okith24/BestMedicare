@@ -1,3 +1,5 @@
+// Mongoose model for stored login sessions.
+
 const mongoose = require('mongoose');
 
 const SessionSchema = new mongoose.Schema(
@@ -14,3 +16,4 @@ const SessionSchema = new mongoose.Schema(
 SessionSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 module.exports = mongoose.model('Session', SessionSchema);
+

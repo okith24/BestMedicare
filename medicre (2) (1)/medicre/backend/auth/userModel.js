@@ -1,3 +1,5 @@
+// Mongoose model for application users.
+
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema(
@@ -90,3 +92,4 @@ UserSchema.index(
 );
 
 module.exports = mongoose.model('User', UserSchema);
+

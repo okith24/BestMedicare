@@ -1,3 +1,5 @@
+// Main Express server bootstrap and route wiring.
+
 const fs = require("fs");
 const path = require("path");
 const dotenv = require("dotenv");
@@ -39,9 +41,9 @@ process.on("unhandledRejection", (reason) => {
   process.exit(1);
 });
 
-// ============================================================
+
 // CRITICAL: VALIDATE ALL SECRETS BEFORE STARTING SERVER
-// ============================================================
+
 const { validateSecrets } = require("./config/secrets");
 try {
   validateSecrets();
@@ -85,16 +87,31 @@ connectDB();
 */
 app.use(helmet()); // Secure HTTP headers
 app.use(mongoSanitize()); // Prevent MongoDB injection
-app.use(morgan("combined")); // Request logging
 
-// ============================================================
+// XSS sanitization
+const xss = require("xss-clean");
+app.use(xss());
+
+// Redact sensitive query params (e.g. reset tokens) from access logs
+morgan.token("redacted-url", (req) => {
+  try {
+    const url = new URL(req.originalUrl, "http://x");
+    if (url.searchParams.has("rt")) url.searchParams.set("rt", "[REDACTED]");
+    return url.pathname + (url.search ? url.search : "");
+  } catch {
+    return req.originalUrl;
+  }
+});
+app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :redacted-url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"'));
+
+
 // AUDIT LOGGING - Log all sensitive operations
-// ============================================================
+
 app.use(attachAuditContext);
 
-// ============================================================
+
 // 2FA VERIFICATION - Check if user has verified 2FA
-// ============================================================
+
 app.use(verify2FACookie);
 
 const limiter = rateLimit({
@@ -104,23 +121,33 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Strict limiter for authentication endpoints (signin, signup, password reset, OTP resend)
+const authLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: "Too many attempts. Please try again in an hour.",
+  skipSuccessfulRequests: false,
+});
+
 // Stricter rate limiting for payment endpoints
 const paymentLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Max 10 payment requests per 15 min per IP
+  max: 10,
   standardHeaders: true,
   legacyHeaders: false,
   message: "Too many payment requests. Please try again later.",
 });
 
-// ============================================================
+
 // COOKIE & SESSION INITIALIZATION
-// ============================================================
+
 try {
   initializeCookies(app);
-  console.log('✅ Cookies & Session Management Initialized');
+  console.log(' Cookies & Session Management Initialized');
 } catch (error) {
-  console.error('❌ Cookie initialization failed:', error.message);
+  console.error(' Cookie initialization failed:', error.message);
   process.exit(1);
 }
 
@@ -180,7 +207,8 @@ app.use(
       callback(new Error("Not allowed by CORS"));
     },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token", "X-XSRF-Token"],
+    credentials: true,
     optionsSuccessStatus: 204,
     maxAge: 86400,
   })
@@ -207,6 +235,23 @@ app.get("/", (req, res) => {
   res.send("Hospital API is running");
 });
 
+app.get("/api", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "Hospital API is running",
+    health: "/api/health",
+  });
+});
+
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "ok",
+    uptime: process.uptime(),
+    database:
+      mongoose.connection.readyState === 1 ? "connected" : "not_connected",
+  });
+});
+
 /* 
    ROUTES
 */
@@ -231,6 +276,12 @@ const alertingRoutes = require("./security/alertingRoutes");
 const apiKeyRoutes = require("./apiKeys/apiKeyRoutes");
 
 app.use("/api/patients", patientRoutes);
+// Apply strict rate limiting to all sensitive auth endpoints
+app.use("/api/auth/signin", authLimiter);
+app.use("/api/auth/signup", authLimiter);
+app.use("/api/auth/forgot-password", authLimiter);
+app.use("/api/auth/2fa/verify", authLimiter);
+app.use("/api/auth/2fa/backup-verify", authLimiter);
 app.use("/api/auth", authRoutes);
 app.use("/api/staff", staffRoutes);
 app.use("/api/bill-payment", billPaymentRoutes);
@@ -270,9 +321,9 @@ startAppointmentReminderService();
 // Start data retention scheduler
 try {
   startScheduler();
-  console.log('✅ Data Retention Scheduler initialized');
+  console.log(' Data Retention Scheduler initialized');
 } catch (error) {
-  console.error('❌ Failed to initialize Data Retention Scheduler:', error.message);
+  console.error(' Failed to initialize Data Retention Scheduler:', error.message);
 }
 
 /* 
@@ -332,14 +383,10 @@ server.on('error', (err) => {
 
 server.listen(PORT, () => {
   console.log(`
-  ╔════════════════════════════════════════════════════════╗
-  ║         HOSPITAL MANAGEMENT SYSTEM - BACKEND           ║
-  ║                  Server Started                        ║
-  ╠════════════════════════════════════════════════════════╣
-  ║ Port: ${PORT} (${process.env.NODE_ENV || 'development'})
-  ║ Database: ${mongoose.connection.readyState === 1 ? '✅ Connected' : '⚠️  Pending'}
-  ║ Audit Logging: ✅ Enabled
-  ║ Secrets Validation: ✅ Passed
-  ╚════════════════════════════════════════════════════════╝
+   Port: ${PORT} (${process.env.NODE_ENV || 'development'})
+   Database: ${mongoose.connection.readyState === 1 ? ' Connected' : '  Pending'}
+   Audit Logging:  Enabled
+  Secrets Validation:  Passed
+ 
   `);
 });

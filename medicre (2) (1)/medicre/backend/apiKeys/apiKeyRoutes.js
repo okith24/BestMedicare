@@ -37,7 +37,7 @@ router.post("/", requireAuth, async (req, res) => {
     // Create new API key
     const { apiKey: apiKeyDoc, rawKey } = await APIKey.createKey({
       name: name.trim(),
-      createdBy: req.user.id,
+      createdBy: req.authUser.id,
       permissions,
       description: description || "",
       tags: tags || [],
@@ -52,8 +52,8 @@ router.post("/", requireAuth, async (req, res) => {
     // Log key creation
     await PaymentAudit.create({
       action: "API_KEY_CREATED",
-      userId: req.user.id,
-      userEmail: req.user.email,
+      userId: req.authUser.id,
+      userEmail: req.authUser.email,
       details: {
         keyId: apiKeyDoc._id,
         name,
@@ -88,12 +88,12 @@ router.get("/", requireAuth, async (req, res) => {
   try {
     const { limit = 50, offset = 0 } = req.query;
 
-    const apiKeys = await APIKey.find({ createdBy: req.user.id })
+    const apiKeys = await APIKey.find({ createdBy: req.authUser.id })
       .limit(parseInt(limit))
       .skip(parseInt(offset))
       .sort({ createdAt: -1 });
 
-    const total = await APIKey.countDocuments({ createdBy: req.user.id });
+    const total = await APIKey.countDocuments({ createdBy: req.authUser.id });
 
     res.json({
       success: true,
@@ -121,7 +121,7 @@ router.get("/:id", requireAuth, async (req, res) => {
   try {
     const apiKey = await APIKey.findById(req.params.id);
 
-    if (!apiKey || apiKey.createdBy.toString() !== req.user.id) {
+    if (!apiKey || apiKey.createdBy.toString() !== req.authUser.id) {
       return res.status(404).json({
         success: false,
         error: { message: "API key not found" },
@@ -149,7 +149,7 @@ router.patch("/:id", requireAuth, async (req, res) => {
   try {
     const apiKey = await APIKey.findById(req.params.id);
 
-    if (!apiKey || apiKey.createdBy.toString() !== req.user.id) {
+    if (!apiKey || apiKey.createdBy.toString() !== req.authUser.id) {
       return res.status(404).json({
         success: false,
         error: { message: "API key not found" },
@@ -176,8 +176,8 @@ router.patch("/:id", requireAuth, async (req, res) => {
     // Log update
     await PaymentAudit.create({
       action: "API_KEY_UPDATED",
-      userId: req.user.id,
-      userEmail: req.user.email,
+      userId: req.authUser.id,
+      userEmail: req.authUser.email,
       details: {
         keyId: apiKey._id,
         updates: updateData,
@@ -207,7 +207,7 @@ router.post("/:id/revoke", requireAuth, async (req, res) => {
   try {
     const apiKey = await APIKey.findById(req.params.id);
 
-    if (!apiKey || apiKey.createdBy.toString() !== req.user.id) {
+    if (!apiKey || apiKey.createdBy.toString() !== req.authUser.id) {
       return res.status(404).json({
         success: false,
         error: { message: "API key not found" },
@@ -219,8 +219,8 @@ router.post("/:id/revoke", requireAuth, async (req, res) => {
     // Log revocation
     await PaymentAudit.create({
       action: "API_KEY_REVOKED",
-      userId: req.user.id,
-      userEmail: req.user.email,
+      userId: req.authUser.id,
+      userEmail: req.authUser.email,
       details: {
         keyId: apiKey._id,
         reason: req.body.reason || "No reason provided",
@@ -266,8 +266,8 @@ router.post(
       // Log suspension
       await PaymentAudit.create({
         action: "API_KEY_SUSPENDED",
-        adminId: req.user.id,
-        adminEmail: req.user.email,
+        adminId: req.authUser.id,
+        adminEmail: req.authUser.email,
         details: {
           keyId: apiKey._id,
           reason: req.body.reason,
@@ -323,8 +323,8 @@ router.post(
       // Log reactivation
       await PaymentAudit.create({
         action: "API_KEY_REACTIVATED",
-        adminId: req.user.id,
-        adminEmail: req.user.email,
+        adminId: req.authUser.id,
+        adminEmail: req.authUser.email,
         details: {
           keyId: apiKey._id,
         },
@@ -361,8 +361,8 @@ router.delete("/:id", requireAuth, async (req, res) => {
     }
 
     // Check authorization (own key or admin)
-    const isOwner = apiKey.createdBy.toString() === req.user.id;
-    const isAdmin = req.user.role === "admin" || req.user.role === "super_admin";
+    const isOwner = apiKey.createdBy.toString() === req.authUser.id;
+    const isAdmin = req.authUser.role === "admin" || req.authUser.role === "super_admin";
 
     if (!isOwner && !isAdmin) {
       return res.status(403).json({
@@ -376,11 +376,11 @@ router.delete("/:id", requireAuth, async (req, res) => {
     // Log deletion
     await PaymentAudit.create({
       action: "API_KEY_DELETED",
-      userId: req.user.id,
-      userEmail: req.user.email,
+      userId: req.authUser.id,
+      userEmail: req.authUser.email,
       details: {
         keyId: apiKey._id,
-        deletedBy: req.user.email,
+        deletedBy: req.authUser.email,
       },
       severity: "MEDIUM",
     });
@@ -406,7 +406,7 @@ router.get("/:id/usage", requireAuth, async (req, res) => {
   try {
     const apiKey = await APIKey.findById(req.params.id);
 
-    if (!apiKey || apiKey.createdBy.toString() !== req.user.id) {
+    if (!apiKey || apiKey.createdBy.toString() !== req.authUser.id) {
       return res.status(404).json({
         success: false,
         error: { message: "API key not found" },

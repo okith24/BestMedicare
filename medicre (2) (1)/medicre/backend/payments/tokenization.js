@@ -1,3 +1,5 @@
+// Tokenization helpers for stored payment data.
+
 const crypto = require('crypto');
 
 /**
@@ -396,3 +398,4 @@ module.exports = {
   ENCODING,
   IV_LENGTH
 };
+

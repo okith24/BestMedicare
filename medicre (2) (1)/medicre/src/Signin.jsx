@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "./auth/AuthContext.jsx";
@@ -8,6 +8,7 @@ import "./auth-glass.css";
 const ease = [0.22, 1, 0.36, 1];
 
 export default function SignIn() {
+  // Tracks login form values and post-login redirects.
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
@@ -202,3 +203,10 @@ export default function SignIn() {
     </div>
   );
 }
+
+
+
+
+
+
+

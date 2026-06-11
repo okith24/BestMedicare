@@ -1,3 +1,5 @@
+// Mongoose model for signup OTP records.
+
 const mongoose = require("mongoose");
 
 const SignupOtpSchema = new mongoose.Schema(
@@ -46,3 +48,4 @@ SignupOtpSchema.index({ phoneNormalized: 1, createdAt: -1 });
 SignupOtpSchema.index({ userId: 1, createdAt: -1 });
 
 module.exports = mongoose.model("SignupOtp", SignupOtpSchema);
+

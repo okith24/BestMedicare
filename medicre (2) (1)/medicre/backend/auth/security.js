@@ -1,3 +1,5 @@
+// Shared auth helpers for hashing, tokens, and session security.
+
 const crypto = require("crypto");
 
 const SALT_BYTES = 16;
@@ -21,17 +23,18 @@ function normalizeEmail(email) {
 }
 
 /*
-==============================
+
 PASSWORD HASHING
-==============================
+
 */
 
 function hashPassword(password, saltHex) {
   const salt =
     saltHex || crypto.randomBytes(SALT_BYTES).toString("hex");
 
+  // N=65536 is OWASP-recommended for medical applications storing PHI.
   const hash = crypto
-    .scryptSync(String(password || ""), salt, HASH_KEYLEN)
+    .scryptSync(String(password || ""), salt, HASH_KEYLEN, { N: 65536, r: 8, p: 1 })
     .toString("hex");
 
   return { salt, hash };
@@ -104,9 +107,7 @@ function isValidEmail(email) {
 
 function isValidPhone(phone) {
   const value = String(phone || "").trim();
-
-  if (!value) return true;
-
+  if (!value) return false;
   return PHONE_REGEX.test(value);
 }
 
@@ -182,6 +183,47 @@ function sanitizeUser(userDoc) {
   };
 }
 
+/*
+==============================
+PRE-AUTH TOKENS (2FA step-up)
+==============================
+Short-lived HMAC tokens issued after password verification when 2FA is required.
+They prove the caller passed the password check without creating a full session.
+*/
+
+const PRE_AUTH_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+function createPreAuthToken(userId, userModel) {
+  const secret = process.env.SESSION_SECRET || process.env.JWT_SECRET || "fallback-change-me";
+  const payload = `${userId}:${userModel}:${Date.now()}`;
+  const sig = crypto.createHmac("sha256", secret).update(payload).digest("hex");
+  return `${Buffer.from(payload).toString("base64url")}.${sig}`;
+}
+
+function verifyPreAuthToken(token) {
+  try {
+    const secret = process.env.SESSION_SECRET || process.env.JWT_SECRET || "fallback-change-me";
+    const [b64, sig] = token.split(".");
+    if (!b64 || !sig) return null;
+
+    const payload = Buffer.from(b64, "base64url").toString("utf8");
+    const expectedSig = crypto.createHmac("sha256", secret).update(payload).digest("hex");
+
+    const sigBuf = Buffer.from(sig, "hex");
+    const expBuf = Buffer.from(expectedSig, "hex");
+    if (sigBuf.length !== expBuf.length) return null;
+    if (!crypto.timingSafeEqual(sigBuf, expBuf)) return null;
+
+    const [userId, userModel, tsStr] = payload.split(":");
+    if (!userId || !userModel || !tsStr) return null;
+    if (Date.now() - Number(tsStr) > PRE_AUTH_TTL_MS) return null;
+
+    return { userId, userModel };
+  } catch {
+    return null;
+  }
+}
+
 module.exports = {
   normalizeEmail,
   hashPassword,
@@ -194,5 +236,8 @@ module.exports = {
   isValidNationalId,
   generatePatientId,
   isStrongPassword,
-  sanitizeUser
+  sanitizeUser,
+  createPreAuthToken,
+  verifyPreAuthToken
 };
+

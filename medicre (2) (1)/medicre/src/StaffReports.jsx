@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { apiFetch } from "./api.js";
 import "./staff-reports.css";
 
@@ -78,6 +78,7 @@ function appointmentLabel(appt) {
 }
 
 function buildFallbackOverview(appointments = [], invoices = [], from, to, selectedService = "all") {
+  // Normalize the report inputs first so every chart uses the same filtered appointment set.
   const targetService = normalizeSelectedService(selectedService);
   const rangedAppointments = appointments
     .filter((a) => String(a.date || "") >= from && String(a.date || "") <= to)
@@ -87,6 +88,7 @@ function buildFallbackOverview(appointments = [], invoices = [], from, to, selec
     .filter((a) => String(a.status || "").toUpperCase() !== "CANCELLED")
     .sort((a, b) => `${a.date || ""} ${a.time || ""}`.localeCompare(`${b.date || ""} ${b.time || ""}`));
 
+  // Demographic counts are derived directly from appointment age/gender fields.
   const demographics = {
     ageGroups: { "0-18": 0, "19-60": 0, "60+": 0 },
     gender: { male: 0, female: 0 },
@@ -103,6 +105,7 @@ function buildFallbackOverview(appointments = [], invoices = [], from, to, selec
 
   const byApptId = new Map(filteredAppointments.map((a) => [String(a._id || ""), a]));
   const byApptNo = new Map(filteredAppointments.map((a) => [String(a.appointmentNumber || ""), a]));
+  // Revenue is joined back to appointments so each invoice can be attributed to a service/department.
   const revenueMap = new Map();
   const matchedInvoices = [];
 
@@ -124,6 +127,7 @@ function buildFallbackOverview(appointments = [], invoices = [], from, to, selec
     .map(([department, revenue]) => ({ department, revenue: Number(revenue.toFixed(2)) }))
     .sort((a, b) => b.revenue - a.revenue);
 
+  // Payment method stats only use invoices that were matched to the filtered appointment range.
   const paymentMethodDistribution = { cash: 0, card: 0 };
   for (const inv of matchedInvoices) {
     const method = String(inv.paymentMethod || "").trim().toLowerCase();
@@ -131,6 +135,7 @@ function buildFallbackOverview(appointments = [], invoices = [], from, to, selec
     else paymentMethodDistribution.cash += 1;
   }
 
+  // Status summary powers the treated/cancelled/pending panel in the report UI.
   const treatedAppointments = rangedAppointments.filter((a) => isTreatedAppointment(a));
   const cancelledAppointments = rangedAppointments.filter(
     (a) => String(a.status || "").toUpperCase() === "CANCELLED"
@@ -147,6 +152,7 @@ function buildFallbackOverview(appointments = [], invoices = [], from, to, selec
     cancelledAppointments: cancelledAppointments.slice(0, 5).map(appointmentLabel),
   };
 
+  // The forecast is intentionally lightweight: it extends the recent 28-day trend forward 7 days.
   const today = to;
   const inflowStart = addDays(today, -27);
   const opdLast28 = appointments
@@ -195,6 +201,7 @@ function buildFallbackOverview(appointments = [], invoices = [], from, to, selec
 }
 
 export default function StaffReports() {
+  // Holds report filters, fetch state, and generated summaries.
   const [from, setFrom] = useState(daysAgo(29));
   const [to, setTo] = useState(toDateInput());
   const [service, setService] = useState("all");
@@ -209,6 +216,7 @@ export default function StaffReports() {
       setLoading(true);
       setError("");
       try {
+        // Prefer calculating the analytics from raw appointments/invoices already exposed by the API.
         const [appointmentsRes, invoicesRes] = await Promise.allSettled([
           apiFetch("/api/echanneling/appointments"),
           apiFetch("/api/invoices"),
@@ -222,6 +230,7 @@ export default function StaffReports() {
 
         setData(buildFallbackOverview(appointments, invoices, from, to, serviceValue));
       } catch {
+        // Fallback to a dedicated backend overview endpoint if raw datasets are unavailable.
         const result = await apiFetch(
           `/api/staff/reports/overview?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&service=${encodeURIComponent(serviceValue)}`
         );
@@ -234,6 +243,7 @@ export default function StaffReports() {
     }
   };
 
+  // Staff reports UI.
   return (
     <div className="page staffReportsPage">
       <div className="container staffReports">
@@ -477,3 +487,10 @@ export default function StaffReports() {
     </div>
   );
 }
+
+
+
+
+
+
+

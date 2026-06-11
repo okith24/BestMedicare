@@ -1,3 +1,5 @@
+// Mongoose model for doctor profiles.
+
 const mongoose = require("mongoose");
 
 const DoctorSchema = new mongoose.Schema(

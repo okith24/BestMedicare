@@ -1,3 +1,5 @@
+// MongoDB connection setup.
+
 const mongoose = require('mongoose');
 
 const RETRY_MS = 10000;
@@ -47,3 +49,4 @@ mongoose.connection.on('disconnected', () => {
 });
 
 module.exports = connectDB;
+

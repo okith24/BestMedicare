@@ -1,7 +1,10 @@
+// Routes for payment creation, status, and lookup.
+
 const express = require("express");
 const router = express.Router();
 const { body, param, query, validationResult } = require("express-validator");
-const { requireAuth } = require("../../auth/middleware");
+const { requireAuth, requireAdmin } = require("../../auth/middleware");
+const csrfProtection = require("../../middleware/csrf");
 const {
   signPaymentRequest,
   verifyPaymentResponse,
@@ -37,6 +40,7 @@ const handleValidationErrors = (req, res, next) => {
 router.post(
   "/charge",
   requireAuth,
+  csrfProtection.validateToken,
   [
     body("cardTokenId")
       .notEmpty().withMessage("Card token ID is required")
@@ -56,7 +60,7 @@ router.post(
   async (req, res) => {
   try {
     const { cardTokenId, invoiceRef, amount, currency } = req.body;
-    const patientId = req.user.id;
+    const patientId = req.authUser.id;
 
     // Validate input
     if (!cardTokenId || !invoiceRef || !amount) {
@@ -219,6 +223,7 @@ router.post(
 router.post(
   "/charge/:id/refund",
   requireAuth,
+  csrfProtection.validateToken,
   [
     param("id")
       .isMongoId().withMessage("Invalid payment ID format"),
@@ -245,7 +250,7 @@ router.post(
     }
 
     // Verify ownership
-    if (payment.patientId.toString() !== req.user.id) {
+    if (payment.patientId.toString() !== req.authUser.id) {
       return res
         .status(403)
         .json({ success: false, error: { message: "Unauthorized" } });
@@ -366,7 +371,7 @@ router.get(
         .json({ success: false, error: { message: "Payment not found" } });
     }
 
-    if (payment.patientId.toString() !== req.user.id) {
+    if (payment.patientId.toString() !== req.authUser.id) {
       return res
         .status(403)
         .json({ success: false, error: { message: "Unauthorized" } });
@@ -389,6 +394,7 @@ router.get(
  */
 router.get(
   "/invoice/:invoiceRef",
+  requireAuth,
   [
     param("invoiceRef")
       .notEmpty().withMessage("Invoice reference is required")
@@ -461,7 +467,7 @@ router.get(
     const { patientId } = req.params;
     const { limit = 10, offset = 0, status } = req.query;
 
-    if (patientId !== req.user.id) {
+    if (patientId !== req.authUser.id) {
       return res
         .status(403)
         .json({ success: false, error: { message: "Unauthorized" } });
@@ -504,6 +510,8 @@ router.get(
  */
 router.get(
   "/stats",
+  requireAuth,
+  requireAdmin,
   [], // No parameters to validate
   handleValidationErrors,
   async (req, res) => {
@@ -521,3 +529,4 @@ router.get(
 });
 
 module.exports = router;
+

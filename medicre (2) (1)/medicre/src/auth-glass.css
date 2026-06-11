@@ -1,3 +1,4 @@
+﻿/* Shared glass-style auth screen styling used by sign-in, sign-up, and password reset pages. */
 .authWrap{
   position: relative;
   min-height: 100vh;
@@ -201,3 +202,4 @@
   font-size: 13px;
   text-align:center;
 }
+

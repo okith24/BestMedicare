@@ -1,3 +1,5 @@
+// Mongoose model for payment audit events.
+
 const mongoose = require('mongoose');
 
 /**
@@ -638,3 +640,4 @@ paymentAuditSchema.pre('save', function(next) {
 // ============================================================
 
 module.exports = mongoose.model('PaymentAudit', paymentAuditSchema);
+

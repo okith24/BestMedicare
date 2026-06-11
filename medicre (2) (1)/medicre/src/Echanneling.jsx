@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+﻿import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import "./echanneling.css";
@@ -89,6 +89,8 @@ function getPricing(config) {
 }
 
 export default function Echanneling() {
+  // Keeps booking form state, availability, and submit logic.
+  // Booking state, lookups, and submit flow.
   const { user } = useAuth();
   const location = useLocation();
 
@@ -764,3 +766,10 @@ export default function Echanneling() {
     </div>
   );
 }
+
+
+
+
+
+
+

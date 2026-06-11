@@ -1,3 +1,4 @@
+﻿/* Styles the landing page hero, service cards, partnership blocks, and contact section. */
 /* Split animation helpers */
 .splitWrap{ display:inline-block; }
 .splitWord{ display:inline-block; white-space: pre; }
@@ -304,3 +305,4 @@
   gap: 12px;
   flex-wrap: wrap;
 }
+

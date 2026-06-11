@@ -1,3 +1,5 @@
+// Auth routes for signup, signin, sessions, OTP, and password reset.
+
 const express = require("express");
 const router = express.Router();
 const util = require("util");
@@ -30,7 +32,8 @@ const {
   verifyPassword,
   createSessionToken,
   hashToken,
-  sanitizeUser
+  sanitizeUser,
+  createPreAuthToken
 } = require("./security");
 
 const { attachAuth, requireAuth } = require("./middleware");
@@ -46,12 +49,14 @@ const PASSWORD_RESET_RESPONSE = "If the phone number is registered, an SMS reset
 SESSION CREATION
 */
 function createSessionExpiry() {
+  // Session tokens stay valid for a fixed number of days from login.
   const d = new Date();
   d.setDate(d.getDate() + SESSION_DAYS);
   return d;
 }
 
 async function createSessionForUser(user, req) {
+  // Create and store a hashed session token, then return the raw token to the client once.
   const token = createSessionToken();
   const tokenHash = hashToken(token);
   const expiresAt = createSessionExpiry();
@@ -67,6 +72,7 @@ async function createSessionForUser(user, req) {
   return { token, expiresAt };
 }
 
+// Build equivalent phone number forms so one account can be found across different stored formats.
 function buildComparablePhoneSet(phone) {
   const raw = String(phone || "").trim();
   const normalized = normalizePhoneNumber(raw);
@@ -89,6 +95,7 @@ function buildComparablePhoneSet(phone) {
 }
 
 function phonesMatch(storedPhone, querySet) {
+  // Compare two phone values after normalizing them into the same set of possible formats.
   const storedSet = buildComparablePhoneSet(storedPhone);
   for (const value of storedSet) {
     if (querySet.has(value)) return true;
@@ -97,6 +104,7 @@ function phonesMatch(storedPhone, querySet) {
 }
 
 async function findUserByPhoneInModel(model, modelName, querySet) {
+  // Try an exact phone match first, then fall back to normalized comparisons for older records.
   const candidates = Array.from(querySet);
 
   const exact = await model.findOne({
@@ -123,6 +131,7 @@ async function findUserByPhoneInModel(model, modelName, querySet) {
 }
 
 async function findAuthUserByPhone(phone) {
+  // Password reset can target patient, current staff, or legacy staff accounts.
   const querySet = buildComparablePhoneSet(phone);
   if (!querySet.size) return null;
 
@@ -134,10 +143,12 @@ async function findAuthUserByPhone(phone) {
 }
 
 function generateResetOtp() {
+  // OTPs are six-digit numeric codes used for signup and password reset verification.
   return String(crypto.randomInt(0, 1000000)).padStart(6, "0");
 }
 
 function safeCompareHashes(aHash, bHash) {
+  // Compare hashes in constant time to reduce timing-attack leakage.
   try {
     const a = Buffer.from(String(aHash || ""), "hex");
     const b = Buffer.from(String(bHash || ""), "hex");
@@ -149,6 +160,7 @@ function safeCompareHashes(aHash, bHash) {
 }
 
 function getUserModelByName(modelName) {
+  // Resolve the model name saved in OTP records back to the correct Mongoose model.
   if (modelName === "User") return User;
   if (modelName === "StaffUser") return StaffUser;
   if (modelName === "Staff") return Staff;
@@ -156,12 +168,14 @@ function getUserModelByName(modelName) {
 }
 
 function getFrontendOrigin() {
+  // Pick a frontend base URL for links sent over SMS.
   const configuredOrigins = String(process.env.FRONTEND_ORIGIN || "").split(",").map((x) => x.trim()).filter(Boolean);
   if (configuredOrigins.length) return configuredOrigins[0];
   return "http://localhost:5173";
 }
 
 function buildPasswordResetLink({ resetId, resetToken }) {
+  // Build the link the frontend will use to open the password reset page with secure query params.
   const configuredUrl = String(process.env.PASSWORD_RESET_FRONTEND_URL || "").trim();
   let link;
 
@@ -187,6 +201,7 @@ function buildSignupOtpSmsMessage(otp) {
 }
 
 async function createSignupOtpForUser(user, pendingProfile = null) {
+  // Replace older unused signup OTPs, then send a fresh OTP to the target phone number.
   const targetPhone = String(user?.phone || pendingProfile?.phone || "").trim();
   const phoneNormalized = normalizePhoneNumber(targetPhone);
 
@@ -229,6 +244,7 @@ SIGNUP
 */
 router.post("/signup", async (req, res) => {
   try {
+    // Read and normalize the incoming patient signup fields first.
     const name = String(req.body?.name || "").trim();
     const email = normalizeEmail(req.body?.email);
     const nationalId = normalizeNationalId(req.body?.nationalId);
@@ -264,6 +280,7 @@ router.post("/signup", async (req, res) => {
       });
     }
 
+    // Only patient accounts use this signup flow.
     const existing = await User.findOne({
       $or: [{ email }, { nationalId }]
     }).select("_id email nationalId phoneVerifiedAt");
@@ -273,6 +290,7 @@ router.post("/signup", async (req, res) => {
 
     let user;
     if (existing && !existing.phoneVerifiedAt) {
+      // If a previous signup never completed phone verification, refresh that record instead of creating another one.
       user = await User.findByIdAndUpdate(
         existing._id,
         {
@@ -320,6 +338,7 @@ router.post("/signup", async (req, res) => {
 
     const verification = await createSignupOtpForUser(user);
 
+    // Signup is not complete until the phone OTP is verified.
     return res.status(202).json({
       requiresOtp: true,
       signupId: verification.signupId,
@@ -358,6 +377,7 @@ router.post("/signup/verify", async (req, res) => {
       return res.status(400).json({ message: "OTP must be a 6-digit code" });
     }
 
+    // Load the pending signup request that matches this verification attempt.
     const signupRecord = await SignupOtp.findOne({
       _id: signupId,
       consumedAt: null
@@ -371,6 +391,7 @@ router.post("/signup/verify", async (req, res) => {
       return res.status(429).json({ message: "Too many invalid attempts. Request a new OTP." });
     }
 
+    // Both the one-time token and OTP must match before the account is activated.
     const tokenOk = safeCompareHashes(hashToken(signupToken), signupRecord.signupTokenHash);
     const otpOk = safeCompareHashes(hashToken(otp), signupRecord.otpHash);
 
@@ -411,6 +432,7 @@ router.post("/signup/verify", async (req, res) => {
       consumedAt: null
     });
 
+    // After successful verification, create a normal signed-in session immediately.
     const { token, expiresAt } = await createSessionForUser(user, req);
 
     if (isSmsGatewayConfigured()) {
@@ -453,6 +475,7 @@ router.post("/signup/resend", async (req, res) => {
       return res.status(400).json({ message: "Invalid verification request" });
     }
 
+    // Resend only works for an existing, still-pending signup verification flow.
     const signupRecord = await SignupOtp.findOne({
       _id: signupId,
       consumedAt: null
@@ -504,6 +527,7 @@ router.post("/signin", async (req, res) => {
       });
     }
 
+    // Login can authenticate across patients, current staff, and legacy staff collections.
     let user = null;
     let userModel = null;
 
@@ -537,6 +561,7 @@ router.post("/signin", async (req, res) => {
       });
     }
 
+    // Passwords are verified against the stored salt/hash pair.
     const passwordValid = verifyPassword(
       password,
       user.passwordSalt,
@@ -550,32 +575,33 @@ router.post("/signin", async (req, res) => {
       });
     }
 
-    // Check if 2FA is required for this user (staff & admin)
+    // Staff-side accounts may require a second factor before session creation.
     const requiresTwoFactor = user.role === 'staff' || user.role === 'admin';
     
     if (requiresTwoFactor) {
       try {
         const twoFactorStatus = await twoFactorService.getTwoFactorStatus(user._id, userModel);
         
-        // If 2FA is enabled but no code provided, prompt for it
-        if (twoFactorStatus.isEnabled && !totpCode) {
+        // If 2FA is enabled but no code is sent yet, stop here and ask the client for it.
+        if (twoFactorStatus.enabled && !totpCode) {
           logAudit(req, 'authentication', 'signin_2fa_required', {
             userId: String(user._id),
             email: user.email,
             userRole: user.role
           });
-          
+
+          const preAuthToken = createPreAuthToken(String(user._id), userModel);
+
           return res.status(403).json({
             message: "Two-factor authentication required",
             requires2FA: true,
-            userId: String(user._id),
-            userModel: userModel,
+            preAuthToken,
             hint: "Please provide TOTP code or backup code"
           });
         }
 
-        // If 2FA is enabled and code is provided, verify it
-        if (twoFactorStatus.isEnabled && totpCode) {
+        // If the client supplied a code, verify it before allowing the login to continue.
+        if (twoFactorStatus.enabled && totpCode) {
           try {
             const verifyResult = await twoFactorService.verifyCode(user._id, totpCode, userModel);
             
@@ -620,6 +646,7 @@ router.post("/signin", async (req, res) => {
     }
 
     try {
+      // Update simple login statistics after authentication succeeds.
 
       if (!user.username && user.email) {
         user.username = user.email.split("@")[0];
@@ -637,6 +664,7 @@ router.post("/signin", async (req, res) => {
     let token, expiresAt;
 
     try {
+      // Session creation is the final step that turns a verified login into an active session.
       ({ token, expiresAt } = await createSessionForUser(user, req));
     } catch (sessErr) {
       console.error("session creation error", sessErr);
@@ -691,6 +719,7 @@ router.post("/forgot-password/request", async (req, res) => {
       return res.status(400).json({ message: "Valid phone number is required" });
     }
 
+    // Find the account by phone across all supported user collections.
     const account = await findAuthUserByPhone(phone);
 
     if (!account || account.user?.isActive === false) {
@@ -710,6 +739,7 @@ router.post("/forgot-password/request", async (req, res) => {
       return res.status(400).json({ message: "Matched account has no valid phone number" });
     }
 
+    // Replace older unused reset requests with one fresh request.
     await PasswordResetOtp.deleteMany({
       userId: account.user._id,
       userModel: account.modelName,
@@ -729,6 +759,7 @@ router.post("/forgot-password/request", async (req, res) => {
       expiresAt
     });
 
+    // The SMS contains both a reset link and a short OTP for verification.
     const resetLink = buildPasswordResetLink({
       resetId: String(resetRecord._id),
       resetToken
@@ -775,6 +806,7 @@ router.post("/forgot-password/reset", async (req, res) => {
       });
     }
 
+    // Load the pending reset request and confirm it is still valid.
     const resetRecord = await PasswordResetOtp.findOne({
       _id: resetId,
       consumedAt: null
@@ -788,6 +820,7 @@ router.post("/forgot-password/reset", async (req, res) => {
       return res.status(429).json({ message: "Too many invalid attempts. Request a new reset link." });
     }
 
+    // The reset link token and the OTP must both match this stored reset request.
     const tokenOk = safeCompareHashes(hashToken(resetToken), resetRecord.resetTokenHash);
     const otpOk = safeCompareHashes(hashToken(otp), resetRecord.otpHash);
 
@@ -807,6 +840,7 @@ router.post("/forgot-password/reset", async (req, res) => {
       return res.status(400).json({ message: "Invalid reset request" });
     }
 
+    // Replace the old password with a newly generated salt/hash pair.
     const { salt, hash } = hashPassword(newPassword);
     await accountModel.updateOne(
       { _id: account._id },
@@ -827,6 +861,7 @@ router.post("/forgot-password/reset", async (req, res) => {
       consumedAt: null
     });
 
+    // Invalidate old sessions so the user signs in again with the new password.
     await Session.deleteMany({ userId: account._id });
 
     return res.json({ message: "Password reset successful. Please sign in again." });
@@ -840,6 +875,7 @@ router.post("/forgot-password/reset", async (req, res) => {
 CURRENT USER
 */
 router.get("/me", attachAuth, requireAuth, async (req, res) => {
+  // Return the authenticated user that attachAuth already resolved from the session token.
   res.json({ user: req.authUser });
 });
 
@@ -848,6 +884,7 @@ LOGOUT
 */
 router.post("/logout", attachAuth, requireAuth, async (req, res) => {
   try {
+    // Remove only the current session token, not every session for the user.
     await Session.deleteOne({ tokenHash: req.authTokenHash });
     res.json({ ok: true });
   } catch (err) {
@@ -856,8 +893,18 @@ router.post("/logout", attachAuth, requireAuth, async (req, res) => {
 });
 
 /*
+CSRF TOKEN
+*/
+const csrfProtection = require("../middleware/csrf");
+
+router.get("/csrf-token", attachAuth, requireAuth, csrfProtection.generateToken, (req, res) => {
+  res.json({ csrfToken: req.csrfToken });
+});
+
+/*
 2FA ROUTES
 */
 router.use("/", twoFactorRouter);
 
 module.exports = router;
+

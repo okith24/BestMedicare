@@ -1,10 +1,12 @@
+// Mongoose model for stored payment tokens.
+
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 
 /**
- * ============================================================
+
  * PAYMENT TOKEN MODEL - SECURE CARD TOKEN STORAGE
- * ============================================================
+
  * 
  * Stores encrypted card tokens from Cybersource TMS
  * NOT actual credit card numbers (PCI-DSS compliant)
@@ -13,9 +15,9 @@ const crypto = require('crypto');
 
 const paymentTokenSchema = new mongoose.Schema(
   {
-    // ============================================================
+   
     // CUSTOMER RELATIONSHIP
-    // ============================================================
+    
 
     /**
      * Patient/Customer who owns this token
@@ -28,9 +30,9 @@ const paymentTokenSchema = new mongoose.Schema(
       index: true
     },
 
-    // ============================================================
+   
     // TOKEN STORAGE (ENCRYPTED)
-    // ============================================================
+    
 
     /**
      * Cybersource token (encrypted)
@@ -64,9 +66,9 @@ const paymentTokenSchema = new mongoose.Schema(
       maxlength: 50
     },
 
-    // ============================================================
+  
     // CARD INFORMATION (NON-SENSITIVE)
-    // ============================================================
+   
 
     /**
      * Last 4 digits of card (for display only)
@@ -124,7 +126,7 @@ const paymentTokenSchema = new mongoose.Schema(
 
     // ============================================================
     // TOKEN STATUS & LIFECYCLE
-    // ============================================================
+
 
     /**
      * Current status of token
@@ -519,3 +521,4 @@ paymentTokenSchema.post('save', function(doc) {
 // ============================================================
 
 module.exports = mongoose.model('PaymentToken', paymentTokenSchema);
+

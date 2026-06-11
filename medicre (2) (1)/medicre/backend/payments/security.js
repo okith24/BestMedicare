@@ -1,9 +1,11 @@
+// Payment-specific security helpers.
+
 const crypto = require('crypto');
 
 /**
- * ============================================================
+
  * PAYMENT SECURITY MODULE - HMAC-SHA256 SIGNING & VERIFICATION
- * ============================================================
+ 
  * 
  * Prevents payment data tampering during transmission
  * All requests to Cybersource must be digitally signed
@@ -15,9 +17,9 @@ const ALGORITHM = 'sha256';
 const ENCODING = 'hex';
 
 /**
- * ============================================================
+
  * REQUEST SIGNING - Sign payment data before sending to Cybersource
- * ============================================================
+ 
  */
 
 /**
@@ -271,3 +273,4 @@ module.exports = {
   // Audit
   createSecurityAuditLog
 };
+

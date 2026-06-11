@@ -1,3 +1,4 @@
+﻿// Persists locally registered patient user records in browser storage.
 const KEY = "bmn_patient_users";
 
 function readList() {
@@ -42,3 +43,4 @@ export function savePatientUser(user) {
   writeList(list);
   return next;
 }
+

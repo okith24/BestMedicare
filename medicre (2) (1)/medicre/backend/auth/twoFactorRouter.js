@@ -1,9 +1,12 @@
+// Routes for two-factor authentication setup and verification.
+
 const express = require('express');
 const router = express.Router();
 const { requireAuth } = require('./middleware');
 const twoFactorService = require('./twoFactorService');
 const { set2FACookie, clearCookie } = require('../middleware/cookieConfig');
 const { logAudit, logSecurityEvent } = require('../middleware/audit');
+const { verifyPreAuthToken } = require('./security');
 
 /**
  * ============================================================
@@ -115,36 +118,39 @@ router.post('/2fa/setup/complete', requireAuth, async (req, res) => {
 
 /**
  * POST /api/auth/2fa/verify
- * Verify a TOTP code during login or session
- * Body: { code: "123456" }
+ * Verify a TOTP code during login (called with preAuthToken issued after password check)
+ * Body: { code: "123456", preAuthToken: "..." }
  * Response: Sets 2FA cookie
  */
 router.post('/2fa/verify', async (req, res) => {
   try {
-    const { code, userId, userModel } = req.body;
+    const { code, preAuthToken } = req.body;
 
-    if (!code || !userId) {
-      return res.status(400).json({ error: 'Code and userId required' });
+    if (!code || !preAuthToken) {
+      return res.status(400).json({ error: 'Code and preAuthToken required' });
     }
 
     if (!code.match(/^\d{6}$/)) {
       return res.status(400).json({ error: 'Code must be 6 digits' });
     }
 
+    const claims = verifyPreAuthToken(preAuthToken);
+    if (!claims) {
+      return res.status(401).json({ error: 'Invalid or expired pre-auth token. Please sign in again.' });
+    }
+
     const result = await twoFactorService.verifyCode(
-      userId,
+      claims.userId,
       code,
-      userModel || 'User'
+      claims.userModel
     );
 
-    // Set 2FA verified cookie (valid for 5 minutes during login)
     set2FACookie(res, 'twoFAVerified', 'true');
 
-    // Log successful 2FA
     await logAudit(req, 'auth', '2FA_VERIFIED', {
       description: 'User successfully verified 2FA code',
       result: 'success',
-      userId
+      userId: claims.userId
     });
 
     res.json(result);
@@ -157,21 +163,26 @@ router.post('/2fa/verify', async (req, res) => {
 
 /**
  * POST /api/auth/2fa/backup-verify
- * Verify a backup code (for recovery)
- * Body: { code: "BACKUP123456" }
+ * Verify a backup code during login (called with preAuthToken issued after password check)
+ * Body: { code: "BACKUP123456", preAuthToken: "..." }
  */
 router.post('/2fa/backup-verify', async (req, res) => {
   try {
-    const { code, userId, userModel } = req.body;
+    const { code, preAuthToken } = req.body;
 
-    if (!code || !userId) {
-      return res.status(400).json({ error: 'Code and userId required' });
+    if (!code || !preAuthToken) {
+      return res.status(400).json({ error: 'Code and preAuthToken required' });
+    }
+
+    const claims = verifyPreAuthToken(preAuthToken);
+    if (!claims) {
+      return res.status(401).json({ error: 'Invalid or expired pre-auth token. Please sign in again.' });
     }
 
     const result = await twoFactorService.verifyBackupCode(
-      userId,
+      claims.userId,
       code.toUpperCase(),
-      userModel || 'User'
+      claims.userModel
     );
 
     set2FACookie(res, 'twoFAVerified', 'true');
@@ -319,3 +330,4 @@ router.delete('/2fa/device/:deviceId', requireAuth, async (req, res) => {
 });
 
 module.exports = router;
+

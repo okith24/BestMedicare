@@ -1,3 +1,4 @@
+﻿/* Styles the animated why-us or virtual-tour marketing page sections. */
 /* Split words */
 .splitWrap{ display:inline-block; }
 .splitWord{ display:inline-block; white-space: pre; }
@@ -181,3 +182,4 @@
   justify-content:center;
   flex-wrap: wrap;
 }
+

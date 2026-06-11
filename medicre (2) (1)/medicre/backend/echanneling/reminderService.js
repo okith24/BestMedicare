@@ -1,3 +1,5 @@
+// Reminder sending logic for upcoming appointments.
+
 const mongoose = require('mongoose');
 
 const Appointment = require('./appointmentModel');
@@ -249,3 +251,4 @@ module.exports = {
   startAppointmentReminderService,
   processAppointmentReminders
 };
+

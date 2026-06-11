@@ -1,4 +1,5 @@
-export default function ClientList({ clients = [] }) {
+﻿export default function ClientList({ clients = [] }) {
+  // Renders the dashboard list of frequent patients.
   return (
     <div className="glass card clients">
       <h3>Most Visited Clients</h3>
@@ -19,3 +20,10 @@ export default function ClientList({ clients = [] }) {
     </div>
   );
 }
+
+
+
+
+
+
+

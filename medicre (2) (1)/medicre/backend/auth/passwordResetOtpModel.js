@@ -1,3 +1,5 @@
+// Mongoose model for password reset OTP records.
+
 const mongoose = require("mongoose");
 
 const PasswordResetOtpSchema = new mongoose.Schema(
@@ -41,3 +43,4 @@ PasswordResetOtpSchema.index({ phoneNormalized: 1, createdAt: -1 });
 PasswordResetOtpSchema.index({ userId: 1, userModel: 1, createdAt: -1 });
 
 module.exports = mongoose.model("PasswordResetOtp", PasswordResetOtpSchema);
+

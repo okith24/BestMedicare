@@ -1,3 +1,5 @@
+// Audit logging middleware and helper functions.
+
 const AuditLog = require('../models/AuditLog');
 
 function normalizeAuditCategory(category) {
@@ -42,16 +44,28 @@ function defaultResourceTypeForCategory(category) {
  * Usage: app.use(attachAuditContext);
  */
 function attachAuditContext(req, res, next) {
-  req.auditContext = {
-    ipAddress: req.ip || req.connection.remoteAddress || 'unknown',
+  // Store only static request metadata here. userId/role are resolved lazily
+  // from req.authUser at log-time so they are accurate even though auth
+  // middleware runs after this middleware.
+  const staticContext = {
+    ipAddress: req.ip || req.connection?.remoteAddress || 'unknown',
     userAgent: req.headers['user-agent'] || '',
     method: req.method,
     endpoint: req.path,
-    timestamp: new Date(),
-    userId: req.authUser?._id || null,
-    userRole: req.authUser?.role || 'anonymous',
-    userIdentifier: req.authUser?.email || req.authUser?.phone || null
+    timestamp: new Date()
   };
+
+  Object.defineProperty(req, 'auditContext', {
+    get() {
+      return {
+        ...staticContext,
+        userId: req.authUser?.id || req.authUser?._id || null,
+        userRole: req.authUser?.role || 'anonymous',
+        userIdentifier: req.authUser?.email || req.authUser?.phone || null
+      };
+    },
+    configurable: true
+  });
 
   next();
 }
@@ -228,3 +242,4 @@ module.exports = {
   logSecurityEvent,
   detectSuspiciousActivity
 };
+

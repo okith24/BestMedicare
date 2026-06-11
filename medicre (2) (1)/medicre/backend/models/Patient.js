@@ -1,3 +1,5 @@
+// Mongoose model for patient records.
+
 const mongoose = require('mongoose');
 
 const PatientSchema = new mongoose.Schema({

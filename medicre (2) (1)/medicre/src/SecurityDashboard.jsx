@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Security Dashboard Component
  * Real-time monitoring interface for security events, alerts, and user activity
  */
@@ -8,6 +8,7 @@ import axios from "axios";
 import "./securityDashboard.css";
 
 const SecurityDashboard = () => {
+  // Holds the selected tab and fetched monitoring data.
   const [activeTab, setActiveTab] = useState("overview");
   const [auditLogs, setAuditLogs] = useState([]);
   const [alerts, setAlerts] = useState([]);
@@ -120,7 +121,7 @@ const SecurityDashboard = () => {
 
         <div className="card">
           <h3>Data Protection</h3>
-          <p className="large-number" style={{ color: "#00aa00" }}>✓</p>
+          <p className="large-number" style={{ color: "#00aa00" }}>âœ“</p>
           <p>All systems secured</p>
         </div>
 
@@ -338,7 +339,7 @@ const SecurityDashboard = () => {
   return (
     <div className="security-dashboard">
       <div className="dashboard-header">
-        <h1>🔒 Security Dashboard</h1>
+        <h1>ðŸ”’ Security Dashboard</h1>
         <p className="header-subtitle">Real-time monitoring and security event tracking</p>
       </div>
 
@@ -382,3 +383,9 @@ const SecurityDashboard = () => {
 };
 
 export default SecurityDashboard;
+
+
+
+
+
+

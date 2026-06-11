@@ -1,8 +1,11 @@
+// Core appointment model for e-channeling bookings.
+
 const mongoose = require('mongoose');
 const AppointmentCounter = require('./appointmentCounterModel');
 
 const MAX_DAILY_APPOINTMENTS_PER_SERVICE = 100;
 
+// Small formatting helpers keep generated IDs consistent.
 function pad2(v) {
   return String(v).padStart(2, '0');
 }
@@ -11,6 +14,7 @@ function pad3(v) {
   return String(v).padStart(3, '0');
 }
 
+// Normalize the service name so appointment numbers stay predictable.
 function normalizeServiceKey(service) {
   const normalized = String(service || 'OPD')
     .trim()
@@ -21,6 +25,7 @@ function normalizeServiceKey(service) {
   return normalized || 'OPD';
 }
 
+// Convert different date inputs into the YYYYMMDD key used in numbering.
 function normalizeDateKey(dateValue) {
   const raw = String(dateValue || '').trim();
 
@@ -37,6 +42,7 @@ function normalizeDateKey(dateValue) {
   return `${now.getFullYear()}${pad2(now.getMonth() + 1)}${pad2(now.getDate())}`;
 }
 
+// Return a reusable conflict error when the daily limit is reached.
 function createDailyLimitError(serviceKey) {
   const error = new Error(
     `Daily booking limit reached (${MAX_DAILY_APPOINTMENTS_PER_SERVICE}) for ${serviceKey}. Please choose another date or service.`
@@ -46,6 +52,7 @@ function createDailyLimitError(serviceKey) {
   return error;
 }
 
+// Increment the daily counter safely, even if two bookings arrive together.
 async function getNextDailySequence(counterKey, serviceKey) {
   while (true) {
     const updated = await AppointmentCounter.findOneAndUpdate(
@@ -76,6 +83,7 @@ async function getNextDailySequence(counterKey, serviceKey) {
   }
 }
 
+// Build the final human-readable appointment number.
 async function generateAppointmentNumber({ date, service }) {
   const dateKey = normalizeDateKey(date);
   const serviceKey = normalizeServiceKey(service);
@@ -84,16 +92,19 @@ async function generateAppointmentNumber({ date, service }) {
   return `${serviceKey}-${dateKey}-${pad3(sequence)}`;
 }
 
+// Core appointment record used for channeling, billing, and reminders.
 const AppointmentSchema = new mongoose.Schema(
   {
     appointmentNumber: { type: String, trim: true, unique: true, sparse: true },
     patientMode: { type: String, enum: ['id', 'name'], default: 'id' },
     patientId: { type: String, trim: true, default: '' },
     name: { type: String, trim: true, default: '' },
+    // Reporting screens use these fields for demographic breakdowns.
     age: { type: Number, min: 0, max: 130, default: null },
     gender: { type: String, enum: ['male', 'female'], default: '' },
     phone: { type: String, trim: true, required: true },
     bookedByEmail: { type: String, trim: true, lowercase: true, required: true },
+    // Service, payment method, and status feed dashboard and report aggregations.
     service: { type: String, trim: true, required: true },
     doctor: { type: String, trim: true, required: true },
     date: { type: String, trim: true, required: true },
@@ -116,6 +127,7 @@ const AppointmentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Auto-generate the appointment number only for new records.
 AppointmentSchema.pre('validate', async function setAppointmentNumber() {
   if (!this.isNew || this.appointmentNumber) return;
   this.appointmentNumber = await generateAppointmentNumber({
@@ -124,8 +136,10 @@ AppointmentSchema.pre('validate', async function setAppointmentNumber() {
   });
 });
 
+// Indexes speed up common staff, patient, and reminder queries.
 AppointmentSchema.index({ doctor: 1, date: 1, time: 1, status: 1 });
 AppointmentSchema.index({ bookedByEmail: 1, date: 1 });
 AppointmentSchema.index({ date: 1, time: 1, status: 1, reminderSentAt: 1 });
 
 module.exports = mongoose.model('Appointment', AppointmentSchema);
+

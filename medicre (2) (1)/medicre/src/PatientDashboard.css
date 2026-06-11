@@ -1,3 +1,4 @@
+﻿/* Styles the patient dashboard summary cards, appointments, and invoice sections. */
 .pdPage{ padding-top: 22px; }
 
 .pdTop{
@@ -275,3 +276,4 @@
   font-weight: 900;
   cursor: pointer;
 }
+

@@ -1,3 +1,5 @@
+// Authentication and role guard middleware.
+
 const Session = require('./sessionModel');
 const User = require('./userModel'); // Patients
 const StaffUser = require('../models/StaffUser'); // Staff users
@@ -11,6 +13,7 @@ ATTACH AUTH USER
 */
 async function attachAuth(req, res, next) {
   try {
+    // Read the Bearer token from the Authorization header if one was sent.
     const header = String(req.headers.authorization || '');
 
     if (!header.startsWith('Bearer ')) return next();
@@ -18,6 +21,7 @@ async function attachAuth(req, res, next) {
     const token = header.slice('Bearer '.length).trim();
     if (!token) return next();
 
+    // Sessions store only the hashed token, so hash the incoming token before lookup.
     const tokenHash = hashToken(token);
 
     const session = await Session.findOne({
@@ -27,6 +31,7 @@ async function attachAuth(req, res, next) {
 
     if (!session) return next();
 
+    // A valid session may belong to a patient, current staff user, or legacy staff user.
     let user = null;
 
     // Patient users
@@ -44,6 +49,7 @@ async function attachAuth(req, res, next) {
 
     if (!user || !user.isActive) return next();
 
+    // Store the resolved auth details on the request for later middleware/routes.
     req.authToken = token;
     req.authTokenHash = tokenHash;
     req.authSession = session;
@@ -52,6 +58,9 @@ async function attachAuth(req, res, next) {
     next();
 
   } catch (err) {
+    // Unexpected DB/system errors during session lookup — log but don't silently
+    // grant anonymous access. Clear auth and continue; requireAuth will reject if needed.
+    console.error('attachAuth lookup error:', err?.message || err);
     req.authToken = null;
     req.authTokenHash = null;
     req.authSession = null;
@@ -67,6 +76,7 @@ AUTH REQUIRED
 
 */
 function requireAuth(req, res, next) {
+  // Block the request unless attachAuth already found a signed-in user.
   if (!req.authUser) {
     return res.status(401).json({ message: 'Unauthorized. Please sign in.' });
   }
@@ -79,6 +89,7 @@ PATIENT ONLY
 
 */
 function requirePatient(req, res, next) {
+  // Only authenticated users with the patient role can pass this guard.
   if (!req.authUser) {
     return res.status(401).json({ message: 'Unauthorized. Please sign in.' });
   }
@@ -96,6 +107,7 @@ STAFF ONLY
 
 */
 function requireStaff(req, res, next) {
+  // Allow the staff-side working roles through this guard.
   if (!req.authUser) {
     return res.status(401).json({ message: 'Unauthorized. Please sign in.' });
   }
@@ -113,6 +125,7 @@ ADMIN ONLY
 
 */
 function requireAdmin(req, res, next) {
+  // Allow only admin-level users for protected management routes.
   if (!req.authUser) {
     return res.status(401).json({ message: 'Unauthorized. Please sign in.' });
   }
@@ -130,6 +143,7 @@ SUPER ADMIN ONLY
 
 */
 function requireSuperAdmin(req, res, next) {
+  // Restrict the route to the highest admin role only.
   if (!req.authUser) {
     return res.status(401).json({ message: 'Unauthorized. Please sign in.' });
   }
@@ -147,6 +161,7 @@ FLEXIBLE ROLE CHECK
 
 */
 function requireRole(...roles) {
+  // Build a reusable middleware that checks whether the user has one of the allowed roles.
   return (req, res, next) => {
     if (!req.authUser) {
       return res.status(401).json({ message: 'Unauthorized. Please sign in.' });

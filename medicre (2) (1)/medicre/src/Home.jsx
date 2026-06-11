@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+﻿import React, { useMemo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./auth/AuthContext.jsx";
@@ -46,6 +46,7 @@ const popInView = (d = 0) => ({
 });
 
 export default function Home() {
+  // Handles homepage navigation helpers and service card data.
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -77,7 +78,7 @@ export default function Home() {
   const services = [
     {
       title: "OPD",
-      text: "General consultations, quick diagnosis, and expert guidance — same day care.",
+      text: "General consultations, quick diagnosis, and expert guidance â€” same day care.",
       img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1600&q=70",
     },
     {
@@ -92,7 +93,7 @@ export default function Home() {
     },
     {
       title: "Counselling",
-      text: "Professional counselling for individuals & families — calm, clear, supportive.",
+      text: "Professional counselling for individuals & families â€” calm, clear, supportive.",
       img: "https://images.unsplash.com/photo-1527137342181-19aab11a8ee8?auto=format&fit=crop&w=1600&q=70",
     },
     {
@@ -110,7 +111,7 @@ export default function Home() {
           {/* Left */}
           <motion.div {...fadeUp(0)} className="homeNeo-left">
             <div className="kicker">
-              <span className="dot" /> Smart Care • Trusted Doctors • Modern Tech
+              <span className="dot" /> Smart Care â€¢ Trusted Doctors â€¢ Modern Tech
             </div>
 
             <h1 className="h1 homeNeo-title">
@@ -197,7 +198,7 @@ export default function Home() {
           <motion.div {...fadeUp(0)} className="homeNeo-head">
             <h2 className="homeNeo-h2">Our Specialised Services</h2>
             <div className="homeNeo-line" />
-            <p className="homeNeo-muted">Choose a service — we’ll handle the rest.</p>
+            <p className="homeNeo-muted">Choose a service â€” weâ€™ll handle the rest.</p>
           </motion.div>
 
           <div className="homeNeo-serviceGrid">
@@ -234,7 +235,7 @@ export default function Home() {
                       }}
                       aria-label={`Book ${s.title}`}
                     >
-                      →
+                      â†’
                     </button>
                   </div>
                   <div className="homeNeo-serviceText">{s.text}</div>
@@ -261,7 +262,7 @@ export default function Home() {
                 Get prescribed medicines instantly. We keep a reliable inventory of local & imported meds.
               </div>
               <button className="btnGhost homeNeo-linkBtn" onClick={() => goToProtected("/echanneling")}>
-                View Pharmacy Services →
+                View Pharmacy Services â†’
               </button>
 
               <div className="homeNeo-partImg">
@@ -278,15 +279,15 @@ export default function Home() {
                 Lab Testing by <span className="homeNeo-blue">Kings & Naweloka</span>
               </div>
               <div className="homeNeo-partText">
-                Precision diagnostics powered by trusted lab services — accurate and fast reporting.
+                Precision diagnostics powered by trusted lab services â€” accurate and fast reporting.
               </div>
               <button className="btnGhost homeNeo-linkBtn" onClick={() => goToProtected("/echanneling")}>
-                Schedule Lab Test →
+                Schedule Lab Test â†’
               </button>
 
               <div className="homeNeo-partImg">
                 <img
-                  src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1600&q=70"
+                  src="/images/lab-testing.webp"
                   alt="Lab"
                 />
               </div>
@@ -333,3 +334,10 @@ export default function Home() {
     </div>
   );
 }
+
+
+
+
+
+
+

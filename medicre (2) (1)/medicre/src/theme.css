@@ -1,3 +1,4 @@
+﻿/* Defines shared theme tokens, utility classes, and app-wide visual variables. */
 html{ scroll-behavior: smooth; }
 
 :root{
@@ -183,3 +184,4 @@ textarea{
   border: 1px solid rgba(31,113,191,0.22);
   font-size: 18px;
 }
+

@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./auth/AuthContext.jsx";
 
@@ -19,9 +19,7 @@ import StaffReports from "./StaffReports.jsx";
 import ChatbotControlRoom from "./ChatbotControlRoom.jsx";
 import ChatbotLauncher from "./ChatbotLauncher.jsx";
 
-/* 
-   Role Protection (Reusable)
-*/
+// Reusable guard for routes that only specific roles can open.
 function RequireRole({ roles, children }) {
   const { user } = useAuth();
 
@@ -31,9 +29,7 @@ function RequireRole({ roles, children }) {
   return children;
 }
 
-/* 
-   Auth Protection
- */
+// Reusable guard for routes that only need a signed-in user.
 function RequireAuth({ children }) {
   const { user } = useAuth();
   const location = useLocation();
@@ -51,10 +47,9 @@ function RequireAuth({ children }) {
   return children;
 }
 
-/* 
-   Main App
- */
+// Main route tree for public, patient, staff, and superadmin views.
 export default function App() {
+  // Decides which shared layout pieces show for each route.
   const location = useLocation();
   const { user } = useAuth();
 
@@ -65,6 +60,7 @@ export default function App() {
     <>
       <div className="bg-glow" />
       {!hideNavbar && <NavBar />}
+      {/* Keep the chatbot available on most signed-in pages except the staff dashboard. */}
       {user && (!hideNavbar || user.role === "superadmin") && location.pathname !== "/staffdashboard" && (
         <ChatbotLauncher />
       )}
@@ -80,6 +76,7 @@ export default function App() {
           path="/chatbot-control"
           element={
             <RequireAuth>
+              {/* Any signed-in user can open the chatbot page; role-based controls are handled inside it. */}
               <ChatbotControlRoom />
             </RequireAuth>
           }
@@ -163,3 +160,10 @@ export default function App() {
     </>
   );
 }
+
+
+
+
+
+
+

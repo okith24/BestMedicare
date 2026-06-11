@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+﻿import React, { useMemo } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./auth/AuthContext.jsx";
@@ -12,6 +12,7 @@ function SplitWords({ text, delay = 0 }) {
 
   if (reduce) return <span>{text}</span>;
 
+  // Why-us page UI.
   return (
     <span className="splitWrap" aria-label={text}>
       {words.map((w, i) => (
@@ -48,6 +49,7 @@ const pop = (d = 0) => ({
 });
 
 export default function Whyus() {
+  // Keeps showcase content and protected navigation helpers together.
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -59,14 +61,14 @@ export default function Whyus() {
     navigate("/signup", { state: { from: path } });
   };
 
-  // Smooth “floating” effect while user scrolls
+  // Smooth â€œfloatingâ€ effect while user scrolls
   const { scrollYProgress } = useScroll();
   const floatY = useTransform(scrollYProgress, [0, 1], [0, -30]);
 
   // Customize these texts only
   const owner = {
     name: "Dr. Asanka Weerasinghe",
-    role: "Hospital Director • Medical Services",
+    role: "Hospital Director â€¢ Medical Services",
     msg:
       "I recommend our hospital because we treat every patient like family. " +
       "We focus on accurate diagnosis, honest guidance, transparent treatment plans, " +
@@ -84,7 +86,7 @@ export default function Whyus() {
     },
     {
       year: "2025",
-      title: "Miss Teen Sri Lanka 2025",
+      title: "Official Skin Care partner - Miss Teen Sri Lanka 2025",
       img: "/images/award-02.jpeg",
     },
     {
@@ -94,7 +96,7 @@ export default function Whyus() {
     },
     {
       year: "2025",
-      title: "Miss Earth Sri Lanka 2025",
+      title: "Official Skin Care partner - Miss Earth Sri Lanka 2025",
       img: "/images/award-04.jpeg",
     },
   ];
@@ -118,7 +120,7 @@ export default function Whyus() {
           {/* LEFT */}
           <div>
             <motion.div {...fadeUp(0)} className="kicker">
-              <span className="dot" /> Trusted Care • Modern Facilities • Expert Team
+              <span className="dot" /> Trusted Care â€¢ Modern Facilities â€¢ Expert Team
             </motion.div>
 
             <h1 className="h1 wyNeo-title">
@@ -130,7 +132,7 @@ export default function Whyus() {
             </h1>
 
             <motion.p {...fadeUp(0.12)} className="p">
-              We combine <b>specialist doctors</b>, patient-first care, and high-standard technology to deliver treatment you can trust —
+              We combine <b>specialist doctors</b>, patient-first care, and high-standard technology to deliver treatment you can trust â€”
               from consultation to recovery.
             </motion.p>
 
@@ -155,7 +157,7 @@ export default function Whyus() {
               <div className="wyNeo-ownerRole">{owner.role}</div>
 
               <div className="wyNeo-ownerMsg">
-                “{owner.msg}”
+                â€œ{owner.msg}â€
               </div>
 
               <div className="wyNeo-scrollHint">Scroll down for awards + patient comments</div>
@@ -227,7 +229,7 @@ export default function Whyus() {
                 <div className="wyNeo-commentTop">
                   <div>
                     <div className="wyNeo-name">{c.name}</div>
-                    <div className="wyNeo-stars">5/5 ⭐</div>
+                    <div className="wyNeo-stars">5/5 â­</div>
                   </div>
                 </div>
                 <div className="cardText" style={{ marginTop: 10 }}>{c.text}</div>
@@ -236,7 +238,7 @@ export default function Whyus() {
           </div>
 
           <motion.div className="glass wyNeo-cta" {...pop(0.06)}>
-            <div className="wyNeo-ctaTitle">Need care now? We’re open 24/7</div>
+            <div className="wyNeo-ctaTitle">Need care now? Weâ€™re open 24/7</div>
             <div className="wyNeo-ctaBtns">
               <button className="btnPrimary" onClick={() => goToProtected("/echanneling")}>
                 Book Appointment
@@ -251,3 +253,10 @@ export default function Whyus() {
     </div>
   );
 }
+
+
+
+
+
+
+

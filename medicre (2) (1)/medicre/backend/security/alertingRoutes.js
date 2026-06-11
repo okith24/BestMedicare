@@ -5,7 +5,9 @@
 
 const express = require("express");
 const router = express.Router();
-const { requireAuth, requireAdmin } = require("../auth/middleware");
+const { attachAuth, requireAuth, requireAdmin } = require("../auth/middleware");
+
+router.use(attachAuth);
 const {
   sendEmailAlert,
   sendSlackAlert,
@@ -27,7 +29,7 @@ router.get("/config", requireAuth, requireAdmin, async (req, res) => {
     const config = {
       emailConfigured: !!process.env.EMAIL_USER,
       slackConfigured: !!process.env.SLACK_WEBHOOK_URL,
-      adminEmails: process.env.ADMIN_ALERT_EMAILS,
+      adminEmailsConfigured: !!(process.env.ADMIN_ALERT_EMAILS),
       alerts: Object.entries(ALERTS).map(([key, value]) => ({
         type: key,
         threshold: value.threshold || "N/A",
@@ -62,8 +64,8 @@ router.post("/test", requireAuth, requireAdmin, async (req, res) => {
     // Log the test alert action
     await PaymentAudit.create({
       action: "TEST_SECURITY_ALERT_SENT",
-      adminId: req.user.id,
-      adminEmail: req.user.email,
+      adminId: req.authUser.id,
+      adminEmail: req.authUser.email,
       details: {
         result,
         timestamp: new Date(),
@@ -196,8 +198,8 @@ router.post(
       // Log the custom alert
       await PaymentAudit.create({
         action: "CUSTOM_SECURITY_ALERT",
-        adminId: req.user.id,
-        adminEmail: req.user.email,
+        adminId: req.authUser.id,
+        adminEmail: req.authUser.email,
         details: {
           subject,
           details,

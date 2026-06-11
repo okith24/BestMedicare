@@ -1,3 +1,5 @@
+// Billing and invoice payment routes for staff workflows.
+
 const express = require('express');
 const router = express.Router();
 const Invoice = require('../models/Invoice');
@@ -271,3 +273,4 @@ router.post('/finalize', requireStaff, async (req, res) => {
 });
 
 module.exports = router;
+

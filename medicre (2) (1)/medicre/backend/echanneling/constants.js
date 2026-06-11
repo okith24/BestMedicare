@@ -1,3 +1,5 @@
+// Shared e-channeling constants and defaults.
+
 const SERVICE_FEES = {
   OPD: 1500,
   Psychiatric: 3000,
@@ -21,3 +23,4 @@ module.exports = {
   SERVICE_FEES,
   DOCTORS
 };
+

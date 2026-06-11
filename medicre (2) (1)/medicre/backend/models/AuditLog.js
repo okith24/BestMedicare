@@ -1,9 +1,11 @@
+// Mongoose model for security and audit log records.
+
 const mongoose = require('mongoose');
 
 /**
- * ============================================================
+ * 
  * AUDIT LOG MODEL - COMPLIANCE & SECURITY TRACKING
- * ============================================================
+ * 
  * 
  * Tracks all sensitive operations for:
  * - HIPAA compliance (healthcare data access logs)
@@ -16,9 +18,9 @@ const mongoose = require('mongoose');
 
 const auditLogSchema = new mongoose.Schema(
   {
-    // ============================================================
+    // 
     // WHO (User Information)
-    // ============================================================
+    // 
     
     /**
      * User who performed the action (null for anonymous)
@@ -50,9 +52,8 @@ const auditLogSchema = new mongoose.Schema(
       trim: true
     },
 
-    // ============================================================
     // WHAT (Action Details)
-    // ============================================================
+  
 
     /**
      * Category of action
@@ -118,9 +119,9 @@ const auditLogSchema = new mongoose.Schema(
       sparse: true
     },
 
-    // ============================================================
+    
     // RESOURCE (What was affected)
-    // ============================================================
+    
 
     /**
      * Type of resource affected
@@ -160,9 +161,9 @@ const auditLogSchema = new mongoose.Schema(
       sparse: true
     },
 
-    // ============================================================
+    
     // SENSITIVE DATA LOGGING (PCI/HIPAA)
-    // ============================================================
+    
 
     /**
      * For payment actions: last 4 digits of card
@@ -212,9 +213,9 @@ const auditLogSchema = new mongoose.Schema(
       }
     ],
 
-    // ============================================================
+    
     // CONTEXT (How & Where)
-    // ============================================================
+    
 
     /**
      * IP address of requester
@@ -262,9 +263,9 @@ const auditLogSchema = new mongoose.Schema(
       sparse: true
     },
 
-    // ============================================================
+    
     // SECURITY FLAGS
-    // ============================================================
+    
 
     /**
      * Was there a security concern with this action?
@@ -310,9 +311,9 @@ const auditLogSchema = new mongoose.Schema(
   }
 );
 
-// ============================================================
+
 // INDEXES FOR QUERY PERFORMANCE
-// ============================================================
+
 
 // Fast lookups by user and time
 auditLogSchema.index({ userId: 1, createdAt: -1 });
@@ -338,9 +339,8 @@ auditLogSchema.index({ containsSensitiveData: 1, createdAt: -1 });
 // Time-based queries for compliance reports
 auditLogSchema.index({ createdAt: -1 });
 
-// ============================================================
 // INSTANCE METHODS
-// ============================================================
+
 
 /**
  * Log a successful action
@@ -416,3 +416,4 @@ auditLogSchema.statics.findSuspiciousActivity = async function(limit = 50) {
 };
 
 module.exports = mongoose.model('AuditLog', auditLogSchema);
+

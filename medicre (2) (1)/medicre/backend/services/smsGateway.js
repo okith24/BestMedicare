@@ -1,3 +1,5 @@
+// SMS gateway helpers for OTPs and notifications.
+
 const { URL, URLSearchParams } = require("url");
 
 const DEFAULT_SMS_API_URL = "https://app.notify.lk/api/v1/send";
@@ -155,4 +157,5 @@ module.exports = {
   isSmsGatewayConfigured,
   sendSms
 };
+
 

@@ -1,3 +1,5 @@
+// Booking rules and fee breakdowns for services.
+
 const Clinic = require("../models/Clinic");
 const Doctor = require("../models/Doctor");
 const StaffUser = require("../models/StaffUser");
@@ -511,3 +513,4 @@ module.exports = {
   resolveServicePricing,
   resolveDoctorNameForBooking
 };
+

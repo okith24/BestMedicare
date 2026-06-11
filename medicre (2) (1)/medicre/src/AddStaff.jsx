@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { useAuth } from "./auth/AuthContext";
 import { Navigate, useNavigate } from "react-router-dom";
 import { apiFetch } from "./api";
 import "./AddStaff.css";
 
 const AddStaff = () => {
+  // Holds the add-staff form state and actions.
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -117,6 +118,7 @@ const AddStaff = () => {
     }
   };
 
+  // Main page UI.
   return (
     <div className="addstaff-container">
       <div className="addstaff-card">
@@ -239,3 +241,10 @@ const AddStaff = () => {
 };
 
 export default AddStaff;
+
+
+
+
+
+
+

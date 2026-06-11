@@ -1,3 +1,5 @@
+// TOTP helpers used by the 2FA flow.
+
 const crypto = require('crypto');
 
 /**
@@ -130,32 +132,26 @@ function getCurrentCode(secret) {
 /**
  * Generate backup codes for account recovery
  * @param {number} count - Number of codes to generate (default: 10)
- * @returns {string[]} Array of backup codes
+ * @returns {string[]} Array of backup codes (20 hex chars = 80 bits entropy)
  */
 function generateBackupCodes(count = 10) {
   const codes = [];
-
   for (let i = 0; i < count; i++) {
-    // Generate 8-character alphanumeric codes
-    const code = crypto
-      .randomBytes(6)
-      .toString('hex')
-      .toUpperCase()
-      .substring(0, 8);
-
-    codes.push(code);
+    codes.push(crypto.randomBytes(10).toString('hex').toUpperCase());
   }
-
   return codes;
 }
 
 /**
- * Hash a backup code for storage
+ * Hash a backup code for storage using HMAC-SHA256 with the app secret.
+ * This acts as a keyed hash (salt) so a DB dump alone cannot rainbow-table
+ * the codes without also knowing the secret.
  */
 function hashBackupCode(code) {
+  const secret = process.env.SESSION_SECRET || process.env.JWT_SECRET || 'fallback-change-me';
   return crypto
-    .createHash('sha256')
-    .update(code)
+    .createHmac('sha256', secret)
+    .update(String(code))
     .digest('hex');
 }
 
@@ -219,3 +215,4 @@ module.exports = {
   TIME_STEP,
   DIGIT_COUNT
 };
+

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { apiFetch } from "./api.js";
@@ -7,6 +7,7 @@ import "./auth-glass.css";
 const ease = [0.22, 1, 0.36, 1];
 
 export default function ForgotPassword() {
+  // Tracks the request step and the reset step.
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -221,3 +222,10 @@ export default function ForgotPassword() {
     </div>
   );
 }
+
+
+
+
+
+
+

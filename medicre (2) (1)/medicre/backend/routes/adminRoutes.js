@@ -1,3 +1,5 @@
+// Super admin routes for staff and doctor management.
+
 const express = require("express");
 const router = express.Router();
 
@@ -5,20 +7,20 @@ const StaffUser = require("../models/StaffUser");
 const Doctor = require("../models/Doctor");
 
 const { hashPassword, normalizeEmail } = require("../auth/security");
-const { attachAuth, requireAdmin } = require("../auth/middleware");
+const { attachAuth, requireSuperAdmin } = require("../auth/middleware");
 
 /*
-================================
-ADMIN AUTH PROTECTION
-================================
+
+ADMIN AUTH PROTECTION — superadmin only for staff/doctor CRUD
+
 */
 
-router.use(attachAuth, requireAdmin);
+router.use(attachAuth, requireSuperAdmin);
 
 /*
-================================
+
 HELPER FUNCTIONS
-================================
+
 */
 
 function buildDoctorIdFromStaff(staffDoc) {
@@ -38,11 +40,12 @@ function buildConsultationFromDepartment(department) {
 }
 
 /*
-================================
+
 STAFF ROUTES
-================================
+
 */
 
+// Return the full staff list for the superadmin dashboard.
 router.get("/staff", async (req, res) => {
   try {
 
@@ -62,6 +65,7 @@ router.get("/staff", async (req, res) => {
 });
 
 
+// Create a new staff login account and store a hashed password.
 router.post("/staff", async (req, res) => {
 
   try {
@@ -133,6 +137,7 @@ router.post("/staff", async (req, res) => {
 });
 
 
+// Delete a staff account and remove the linked doctor profile when needed.
 router.delete("/staff/:id", async (req, res) => {
 
   try {
@@ -177,6 +182,7 @@ router.delete("/staff/:id", async (req, res) => {
 });
 
 
+// Toggle whether a staff member can actively sign in and appear available.
 router.patch("/staff/:id/status", async (req, res) => {
 
   try {
@@ -219,11 +225,12 @@ router.patch("/staff/:id/status", async (req, res) => {
 });
 
 /*
-================================
+
 DOCTOR ROUTES
-================================
+
 */
 
+// Return doctor records used by admin and booking screens.
 router.get("/doctors", async (req, res) => {
 
   try {
@@ -246,6 +253,7 @@ router.get("/doctors", async (req, res) => {
 });
 
 
+// Create a standalone doctor record for appointment selection and reporting.
 router.post("/doctors", async (req, res) => {
 
   try {
@@ -301,6 +309,7 @@ router.post("/doctors", async (req, res) => {
 });
 
 
+// Remove a doctor record from the doctors collection.
 router.delete("/doctors/:id", async (req, res) => {
 
   try {
@@ -332,3 +341,4 @@ router.delete("/doctors/:id", async (req, res) => {
 });
 
 module.exports = router;
+

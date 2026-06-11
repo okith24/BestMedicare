@@ -1,3 +1,5 @@
+// Mongoose model for two-factor authentication settings.
+
 const mongoose = require('mongoose');
 
 /**
@@ -384,3 +386,4 @@ twoFactorSchema.methods.getTrustedDevices = function() {
 };
 
 module.exports = mongoose.model('TwoFactorAuth', twoFactorSchema);
+

@@ -1,3 +1,4 @@
+// Centralizes API requests, auth headers, and backend fallback behavior for the frontend.
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 function inferredBackendBaseUrl() {
@@ -12,6 +13,15 @@ function inferredBackendBaseUrl() {
 
 function extractHtmlErrorMessage(payload) {
   const text = String(payload || "");
+  if (/<title>\s*502 Bad Gateway\s*<\/title>|<h1>\s*502 Bad Gateway\s*<\/h1>/i.test(text)) {
+    return "The API server is temporarily unavailable. Please check that the backend process is running on port 5000 and that nginx can reach it.";
+  }
+  if (/<title>\s*504 Gateway Time-out\s*<\/title>|<h1>\s*504 Gateway Time-out\s*<\/h1>/i.test(text)) {
+    return "The API server took too long to respond. Please check the backend logs and database connection.";
+  }
+  if (/<html[\s>]/i.test(text)) {
+    return "The server returned an unexpected HTML error page. Please check the nginx and backend logs.";
+  }
   const cannotMatch = text.match(/Cannot\s+(GET|POST|PUT|PATCH|DELETE)\s+([^\s<]+)/i);
   if (cannotMatch) {
     return `${cannotMatch[1].toUpperCase()} ${cannotMatch[2]} is not available on the active backend server`;
@@ -90,3 +100,4 @@ export async function apiFetch(path, options = {}) {
 
   return payload;
 }
+

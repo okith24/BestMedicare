@@ -1,21 +1,25 @@
-import React from "react";
+﻿import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./chatbot-launcher.css";
 
 export default function ChatbotLauncher({ variant = "floating" }) {
+  // Chooses the launcher behavior for floating and header use.
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Hide the launcher on the chatbot page itself to avoid duplicate entry points.
   if (location.pathname === "/chatbot-control") {
     return null;
   }
 
+  // The same component supports floating and header placements.
   const isHeader = variant === "header";
 
   return (
     <button
       type="button"
       className={`chatbot-launcher${isHeader ? " chatbot-launcher--header" : ""}`}
+      // Both launcher variants open the same chatbot control room route.
       onClick={() => navigate("/chatbot-control")}
       aria-label="Open chatbot control room"
     >
@@ -28,3 +32,10 @@ export default function ChatbotLauncher({ variant = "floating" }) {
     </button>
   );
 }
+
+
+
+
+
+
+

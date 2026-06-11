@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { apiFetch } from "./api.js";
 import { useAuth } from "./auth/AuthContext.jsx";
+import TermsModal from "./TermsModal.jsx";
 import "./auth-glass.css";
 
 const ease = [0.22, 1, 0.36, 1];
 const SIGNUP_VERIFY_STORAGE_KEY = "bmn_signup_verify";
 
 export default function SignUp() {
+  // Stores signup values and starts the OTP flow.
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
@@ -24,6 +26,7 @@ export default function SignUp() {
   const [gender, setGender] = useState("");
   const [password, setPassword] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
   const [status, setStatus] = useState({ type: "idle", msg: "" });
   const [loading, setLoading] = useState(false);
 
@@ -179,9 +182,18 @@ export default function SignUp() {
           <div className="authRow">
             <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <input type="checkbox" checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} />
-              I agree to Terms and Privacy
+              I agree to the{" "}
+              <button
+                type="button"
+                onClick={() => setShowTerms(true)}
+                style={{ background: "none", border: "none", padding: 0, color: "rgba(52,143,219,0.95)", fontWeight: 900, fontSize: "inherit", cursor: "pointer", textDecoration: "underline" }}
+              >
+                Terms &amp; Conditions
+              </button>
             </label>
           </div>
+
+          {showTerms && <TermsModal onClose={() => setShowTerms(false)} />}
 
           {status.type !== "idle" ? (
             <div className={status.type === "error" ? "echAlert bad" : "echAlert ok"} style={{ marginTop: 12 }}>
@@ -207,3 +219,10 @@ export default function SignUp() {
     </div>
   );
 }
+
+
+
+
+
+
+

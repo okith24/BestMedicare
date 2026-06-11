@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 
 function monthValue(date = new Date()) {
   return new Date(date).toISOString().slice(0, 7);
@@ -16,12 +16,14 @@ export default function ReportGenerator({
   loadingMonthly = false,
   loadingDaily = false,
 }) {
+  // Keeps the selected report period and summary helpers together.
   const [month, setMonth] = useState(monthValue());
   const [date, setDate] = useState(dateValue());
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (!onGenerateMonthly) return;
+    // Auto-refresh when the selected month changes so parent containers can keep results in sync.
     onGenerateMonthly(month).catch((err) => {
       setError(err?.message || "Failed to load monthly report");
     });
@@ -29,6 +31,7 @@ export default function ReportGenerator({
 
   useEffect(() => {
     if (!onGenerateDaily) return;
+    // Daily report follows the same pattern for the selected date.
     onGenerateDaily(date).catch((err) => {
       setError(err?.message || "Failed to load report");
     });
@@ -42,6 +45,7 @@ export default function ReportGenerator({
   const monthlyTotals = monthlyReport?.totals || {};
   const dailyTotals = dailyReport?.totals || {};
 
+  // Report filter and summary UI.
   return (
     <div className="glass card">
       <h3>Daily & Monthly Appointment Report</h3>
@@ -132,3 +136,10 @@ export default function ReportGenerator({
     </div>
   );
 }
+
+
+
+
+
+
+

@@ -1,3 +1,4 @@
+﻿/* Styles the appointment booking experience, slot picker, and pricing sidebar. */
 /* split text */
 .splitWrap{ display:inline-block; }
 .splitWord{ display:inline-block; white-space: pre; }
@@ -390,4 +391,5 @@ select.echInput{
     grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
   }
 }
+
 

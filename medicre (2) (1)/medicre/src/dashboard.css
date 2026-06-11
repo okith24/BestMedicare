@@ -1,3 +1,4 @@
+﻿/* Styles the staff dashboard layout, cards, filters, and appointment views. */
 .dashboard {
   padding: 22px 0 48px;
   color: var(--text);
@@ -340,3 +341,4 @@
     grid-template-columns: 1fr;
   }
 }
+
