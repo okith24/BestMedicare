@@ -652,6 +652,14 @@ router.post("/signin", async (req, res) => {
         user.username = user.email.split("@")[0];
       }
 
+      // Transparently upgrade hashes still on scrypt's old cost params.
+      const { hash: currentParamsHash } = hashPassword(password, user.passwordSalt);
+      if (currentParamsHash !== user.passwordHash) {
+        const rehashed = hashPassword(password);
+        user.passwordSalt = rehashed.salt;
+        user.passwordHash = rehashed.hash;
+      }
+
       user.lastLoginAt = new Date();
       user.loginCount = (user.loginCount || 0) + 1;
 

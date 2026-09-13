@@ -33,8 +33,9 @@ function hashPassword(password, saltHex) {
     saltHex || crypto.randomBytes(SALT_BYTES).toString("hex");
 
   // N=65536 is OWASP-recommended for medical applications storing PHI.
+  // maxmem must cover scrypt's ~128*N*r byte requirement (64MB here) or Node throws.
   const hash = crypto
-    .scryptSync(String(password || ""), salt, HASH_KEYLEN, { N: 65536, r: 8, p: 1 })
+    .scryptSync(String(password || ""), salt, HASH_KEYLEN, { N: 65536, r: 8, p: 1, maxmem: 128 * 1024 * 1024 })
     .toString("hex");
 
   return { salt, hash };
@@ -48,14 +49,22 @@ function verifyPassword(password, saltHex, expectedHashHex) {
 
     if (!normalizedSalt || !normalizedExpectedHash) return false;
 
-    const { hash } = hashPassword(password, normalizedSalt);
-
-    const a = Buffer.from(hash, "hex");
     const b = Buffer.from(normalizedExpectedHash, "hex");
 
-    if (a.length !== b.length) return false;
+    const { hash } = hashPassword(password, normalizedSalt);
+    const a = Buffer.from(hash, "hex");
+    if (a.length === b.length && crypto.timingSafeEqual(a, b)) return true;
 
-    return crypto.timingSafeEqual(a, b);
+    // Hashes created before the N=65536 cost upgrade used scrypt's old
+    // defaults (N=16384). Accept those too so existing accounts aren't
+    // locked out; callers should rehash with hashPassword() on success.
+    const legacyHash = crypto
+      .scryptSync(String(password), normalizedSalt, HASH_KEYLEN)
+      .toString("hex");
+    const c = Buffer.from(legacyHash, "hex");
+    if (c.length === b.length && crypto.timingSafeEqual(c, b)) return true;
+
+    return false;
   } catch {
     return false;
   }

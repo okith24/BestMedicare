@@ -61,14 +61,14 @@ export default function Whyus() {
     navigate("/signup", { state: { from: path } });
   };
 
-  // Smooth â€œfloatingâ€ effect while user scrolls
+  // Smooth “floating” effect while user scrolls
   const { scrollYProgress } = useScroll();
   const floatY = useTransform(scrollYProgress, [0, 1], [0, -30]);
 
   // Customize these texts only
   const owner = {
     name: "Dr. Asanka Weerasinghe",
-    role: "Hospital Director â€¢ Medical Services",
+    role: "Hospital Director • Medical Services",
     msg:
       "I recommend our hospital because we treat every patient like family. " +
       "We focus on accurate diagnosis, honest guidance, transparent treatment plans, " +
@@ -120,7 +120,7 @@ export default function Whyus() {
           {/* LEFT */}
           <div>
             <motion.div {...fadeUp(0)} className="kicker">
-              <span className="dot" /> Trusted Care â€¢ Modern Facilities â€¢ Expert Team
+              <span className="dot" /> Trusted Care • Modern Facilities • Expert Team
             </motion.div>
 
             <h1 className="h1 wyNeo-title">
@@ -132,7 +132,7 @@ export default function Whyus() {
             </h1>
 
             <motion.p {...fadeUp(0.12)} className="p">
-              We combine <b>specialist doctors</b>, patient-first care, and high-standard technology to deliver treatment you can trust â€”
+              We combine <b>specialist doctors</b>, patient-first care, and high-standard technology to deliver treatment you can trust —
               from consultation to recovery.
             </motion.p>
 
@@ -157,7 +157,7 @@ export default function Whyus() {
               <div className="wyNeo-ownerRole">{owner.role}</div>
 
               <div className="wyNeo-ownerMsg">
-                â€œ{owner.msg}â€
+                “{owner.msg}”
               </div>
 
               <div className="wyNeo-scrollHint">Scroll down for awards + patient comments</div>
@@ -229,7 +229,7 @@ export default function Whyus() {
                 <div className="wyNeo-commentTop">
                   <div>
                     <div className="wyNeo-name">{c.name}</div>
-                    <div className="wyNeo-stars">5/5 â­</div>
+                    <div className="wyNeo-stars">5/5 ⭐</div>
                   </div>
                 </div>
                 <div className="cardText" style={{ marginTop: 10 }}>{c.text}</div>
@@ -238,7 +238,7 @@ export default function Whyus() {
           </div>
 
           <motion.div className="glass wyNeo-cta" {...pop(0.06)}>
-            <div className="wyNeo-ctaTitle">Need care now? Weâ€™re open 24/7</div>
+            <div className="wyNeo-ctaTitle">Need care now? We’re open 24/7</div>
             <div className="wyNeo-ctaBtns">
               <button className="btnPrimary" onClick={() => goToProtected("/echanneling")}>
                 Book Appointment
