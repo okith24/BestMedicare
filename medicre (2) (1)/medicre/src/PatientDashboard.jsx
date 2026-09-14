@@ -50,6 +50,7 @@ export default function PatientDashboard() {
   }, [user, loadSummary]);
 
   const records = useMemo(() => summary?.records || [], [summary]);
+  const history = useMemo(() => summary?.history || [], [summary]);
   const invoices = useMemo(() => summary?.invoices || [], [summary]);
   const upcoming = summary?.upcoming || null;
   const loyalty = summary?.loyalty || { visitsCount: 0, starPoints: 0, nextStarIn: 10 };
@@ -171,6 +172,40 @@ export default function PatientDashboard() {
             <div className="pdFootNote">
               Bills are view-only for patients. Only staff can edit and finalize billing.
             </div>
+          </div>
+        </div>
+
+        <div className="glass pdCard pdHistoryCard">
+          <div className="pdCardHead">
+            <div className="pdCardTitle">Appointment History</div>
+            <div className="pdMiniLink">Moves here automatically once the channeled day ends</div>
+          </div>
+
+          <div className="pdList">
+            {!loading && history.length === 0 ? (
+              <div className="pdEmpty">No past appointments yet.</div>
+            ) : (
+              history.slice(0, 6).map((a) => (
+                <div key={a.id} className="pdAppt pdApptPast">
+                  <div className="pdApptLeft">
+                    <div className="pdDoc">{a.doctor || "Doctor"}</div>
+                    <div className="pdMeta">
+                      <span>{a.appointmentNumber || "-"}</span>
+                      <span>{niceDate(a.date)}</span>
+                      <span>{niceTime(a.time)}</span>
+                      <span className="pdTag">{a.service}</span>
+                      <span className="pdTag">{a.status}</span>
+                    </div>
+                  </div>
+
+                  <div className="pdApptRight">
+                    <span className={a.paymentStatus === "PAID" ? "pdBadge paid" : "pdBadge pending"}>
+                      {a.paymentStatus === "PAID" ? "PAID" : "PENDING"}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./auth/AuthContext.jsx";
+import heroImage from "./assets/hero.webp";
 import "./home.css";
 
 const ease = [0.22, 1, 0.36, 1];
@@ -31,7 +32,8 @@ function SplitWords({ text, delay = 0 }) {
 
 const fadeUp = (d = 0) => ({
   initial: { opacity: 0, y: 16 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.6, delay: d, ease } },
+  whileInView: { opacity: 1, y: 0, transition: { duration: 0.6, delay: d, ease } },
+  viewport: { once: true, amount: 0.25 },
 });
 
 const popInView = (d = 0) => ({
@@ -78,7 +80,7 @@ export default function Home() {
   const services = [
     {
       title: "OPD",
-      text: "General consultations, quick diagnosis, and expert guidance â€” same day care.",
+      text: "General consultations, quick diagnosis, and expert guidance - same day care.",
       img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1600&q=70",
     },
     {
@@ -93,7 +95,7 @@ export default function Home() {
     },
     {
       title: "Counselling",
-      text: "Professional counselling for individuals & families â€” calm, clear, supportive.",
+      text: "Professional counselling for individuals & families - calm, clear, supportive.",
       img: "https://images.unsplash.com/photo-1527137342181-19aab11a8ee8?auto=format&fit=crop&w=1600&q=70",
     },
     {
@@ -107,88 +109,82 @@ export default function Home() {
     <div className="page">
       {/* HERO */}
       <section className="homeNeo-hero">
-        <div className="container homeNeo-grid">
-          {/* Left */}
-          <motion.div {...fadeUp(0)} className="homeNeo-left">
-            <div className="kicker">
-              <span className="dot" /> Smart Care â€¢ Trusted Doctors â€¢ Modern Tech
-            </div>
+        <div className="homeNeo-heroBg">
+          <img src={heroImage} alt="Best Medicare Nawala" />
+        </div>
+        <div className="homeNeo-heroScrim" />
 
-            <h1 className="h1 homeNeo-title">
-              <SplitWords text="Compassionate Care," delay={0.08} />
-              <br />
-              <span className="accent">
-                <SplitWords text="Advanced Technology" delay={0.22} />
-              </span>
-            </h1>
+        <div className="container homeNeo-heroContent">
+          <h1 className="h1 homeNeo-heroTitle">
+            <SplitWords text="Welcome to" delay={0.08} />
+            <br />
+            <span className="accent">
+              <SplitWords text="BEST MEDICARE NAWALA" delay={0.22} />
+            </span>
+          </h1>
 
-            <motion.p {...fadeUp(0.35)} className="p">
-              Experience world-class healthcare with specialist doctors and patient-first service.
-              We deliver accurate diagnosis, honest guidance, and smooth recovery support.
-            </motion.p>
+          <motion.p {...fadeUp(0.3)} className="p homeNeo-heroText">
+            Experience world-class healthcare with specialist doctors and patient-first service.
+            We deliver accurate diagnosis, honest guidance, and smooth recovery support.
+          </motion.p>
 
-            <motion.div {...fadeUp(0.45)} className="homeNeo-actions">
-              <button className="btnPrimary" onClick={() => goToProtected("/echanneling")}>
-                Book Appointment
-              </button>
-              <button className="btnGhost" onClick={() => navigate("/whyus")}>
-                Virtual Tour
-              </button>
-            </motion.div>
-
-            <motion.div {...fadeUp(0.55)} className="pills">
-              <div className="pill">
-                <span className="dot" /> 24/7 Emergency Support
-              </div>
-              <div className="pill">
-                <span className="dot" /> Advanced Diagnostics
-              </div>
-              <div className="pill">
-                <span className="dot" /> Transparent Plans
-              </div>
-            </motion.div>
+          <motion.div {...fadeUp(0.4)} className="homeNeo-actions">
+            <button className="btnPrimary" onClick={() => goToProtected("/echanneling")}>
+              Book Appointment
+            </button>
+            <button className="btnGhost" onClick={() => navigate("/whyus")}>
+              Virtual Tour
+            </button>
           </motion.div>
 
-          {/* Right (Hero Card) */}
-          <motion.div
-            className="glass homeNeo-heroCard"
-            initial={{ opacity: 0, x: 18, scale: 0.98 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            transition={{ duration: 0.75, ease }}
-          >
-            <div className="homeNeo-heroGlow" />
-            <div className="homeNeo-heroMedia">
-              <img
-                src="https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1800&q=70"
-                alt="Medical Team"
-              />
-            </div>
+          <motion.div {...fadeUp(0.5)} className="pills">
+            <div className="pill">24/7 Emergency Support</div>
+            <div className="pill">Advanced Diagnostics</div>
+            <div className="pill">Transparent Plans</div>
+          </motion.div>
 
-            <div className="homeNeo-live">
-              <span className="homeNeo-liveDot" />
-              Live assistance available
-            </div>
+          <motion.div {...fadeUp(0.6)} className="homeNeo-live homeNeo-liveStandalone">
+            <span className="homeNeo-liveDot" />
+            Live assistance available
+          </motion.div>
 
-            <div className="homeNeo-miniRow">
-              <div className="glass homeNeo-miniCard">
-                <div className="homeNeo-miniTop">
-                  <div>
-                    <div className="homeNeo-miniTitle">Fast Booking</div>
-                    <div className="homeNeo-miniText">E-channelling in minutes</div>
-                  </div>
+          <motion.div {...fadeUp(0.7)} className="homeNeo-miniRow homeNeo-miniRowStandalone">
+            <div className="glass homeNeo-miniCard">
+              <div className="homeNeo-miniTop">
+                <div className="homeNeo-miniIcon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="homeNeo-miniTitle">Fast Booking</div>
+                  <div className="homeNeo-miniText">E-channelling in minutes</div>
                 </div>
               </div>
+            </div>
 
-              <div className="glass homeNeo-miniCard">
-                <div className="homeNeo-miniTop">
-                  <div>
-                    <div className="homeNeo-miniTitle">Clear Reports</div>
-                    <div className="homeNeo-miniText">Digital results + follow up</div>
-                  </div>
+            <div className="glass homeNeo-miniCard">
+              <div className="homeNeo-miniTop">
+                <div className="homeNeo-miniIcon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 11l3 3L22 4" />
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="homeNeo-miniTitle">Clear Reports</div>
+                  <div className="homeNeo-miniText">Digital results + follow up</div>
                 </div>
               </div>
             </div>
           </motion.div>
+        </div>
+
+        <div className="homeNeo-scrollHint">
+          <span>Scroll</span>
+          <svg className="homeNeo-scrollChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
         </div>
       </section>
 
@@ -198,7 +194,7 @@ export default function Home() {
           <motion.div {...fadeUp(0)} className="homeNeo-head">
             <h2 className="homeNeo-h2">Our Specialised Services</h2>
             <div className="homeNeo-line" />
-            <p className="homeNeo-muted">Choose a service â€” weâ€™ll handle the rest.</p>
+            <p className="homeNeo-muted">Choose a service - we'll handle the rest.</p>
           </motion.div>
 
           <div className="homeNeo-serviceGrid">
@@ -235,7 +231,9 @@ export default function Home() {
                       }}
                       aria-label={`Book ${s.title}`}
                     >
-                      â†’
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 12h14M13 5l7 7-7 7" />
+                      </svg>
                     </button>
                   </div>
                   <div className="homeNeo-serviceText">{s.text}</div>
@@ -262,7 +260,10 @@ export default function Home() {
                 Get prescribed medicines instantly. We keep a reliable inventory of local & imported meds.
               </div>
               <button className="btnGhost homeNeo-linkBtn" onClick={() => goToProtected("/echanneling")}>
-                View Pharmacy Services â†’
+                View Pharmacy Services
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M13 5l7 7-7 7" />
+                </svg>
               </button>
 
               <div className="homeNeo-partImg">
@@ -279,10 +280,13 @@ export default function Home() {
                 Lab Testing by <span className="homeNeo-blue">Kings & Naweloka</span>
               </div>
               <div className="homeNeo-partText">
-                Precision diagnostics powered by trusted lab services â€” accurate and fast reporting.
+                Precision diagnostics powered by trusted lab services - accurate and fast reporting.
               </div>
               <button className="btnGhost homeNeo-linkBtn" onClick={() => goToProtected("/echanneling")}>
-                Schedule Lab Test â†’
+                Schedule Lab Test
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M13 5l7 7-7 7" />
+                </svg>
               </button>
 
               <div className="homeNeo-partImg">

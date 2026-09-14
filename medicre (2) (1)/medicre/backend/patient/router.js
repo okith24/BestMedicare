@@ -38,6 +38,16 @@ function toDateTime(appointment) {
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
+// Today's calendar date as YYYY-MM-DD in the hospital's own timezone
+// (matching the format stored on appointment.date), so "end of the
+// channeled day" is judged by Nawala's clock rather than wherever the
+// server process happens to be deployed/hosted.
+const HOSPITAL_TIMEZONE = 'Asia/Colombo';
+
+function todayDateString() {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: HOSPITAL_TIMEZONE }).format(new Date());
+}
+
 function normalizePaymentMethod(value) {
   return String(value || 'cash').toLowerCase() === 'card' ? 'card' : 'cash';
 }
@@ -515,10 +525,21 @@ router.get('/dashboard', attachAuth, requirePatient, async (req, res) => {
       status: 'Finalized'
     });
 
+    // Once an appointment's channeled day has fully ended, it moves out of
+    // "My Appointments" and into appointment history automatically.
+    const today = todayDateString();
+    const active = [];
+    const history = [];
+    for (const a of appointments) {
+      (a.date && a.date < today ? history : active).push(a);
+    }
+    history.sort((a, b) => (toDateTime(b) || 0) - (toDateTime(a) || 0));
+
     res.json({
       user: req.authUser,
       upcoming: upcoming ? mapAppointment(upcoming) : null,
-      records: appointments.map(mapAppointment),
+      records: active.map(mapAppointment),
+      history: history.map(mapAppointment),
       invoices
     });
 

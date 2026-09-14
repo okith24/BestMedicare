@@ -674,8 +674,9 @@ export default function Echanneling() {
                     className="echInput"
                   >
                     <option value="cash">Cash (Pay at Hospital)</option>
-                    <option value="card">Visa / Card (Pay Online)</option>
+                    <option value="card" disabled>Visa / Card (Pay Online) — Locked</option>
                   </select>
+                  <div className="echHint">Card payments will be available soon. Please pay with cash at the hospital for now.</div>
                 </div>
 
                 {form.paymentMethod === "card" ? (

@@ -233,6 +233,9 @@
   font-weight: 750;
   font-size: 12px;
 }
+
+.pdHistoryCard{ margin-top: 14px; }
+.pdApptPast{ opacity: 0.72; }
 .pdModalOverlay{
   position: fixed;
   inset: 0;
