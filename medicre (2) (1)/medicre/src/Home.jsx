@@ -80,27 +80,27 @@ export default function Home() {
     {
       title: "OPD",
       text: "General consultations, quick diagnosis, and expert guidance - same day care.",
-      img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1600&q=70",
+      img: "/images/services/opd.jpg",
     },
     {
       title: "Psychiatric",
       text: "Mental health support, evaluations, and therapy plans with compassionate care.",
-      img: "https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?auto=format&fit=crop&w=1600&q=70",
+      img: "/images/services/psychiatric.jpg",
     },
     {
       title: "Physiotherapy",
       text: "Rehab and recovery programs to restore mobility and reduce pain safely.",
-      img: "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1600&q=70",
+      img: "/images/services/physiotherapy.jpg",
     },
     {
       title: "Counselling",
       text: "Professional counselling for individuals & families - calm, clear, supportive.",
-      img: "https://images.unsplash.com/photo-1527137342181-19aab11a8ee8?auto=format&fit=crop&w=1600&q=70",
+      img: "/images/services/counselling.jpg",
     },
     {
       title: "Aesthetic",
       text: "Advanced aesthetic treatments and dermatology procedures for confidence.",
-      img: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&w=1600&q=70",
+      img: "/images/services/aesthetic.jpg",
     },
   ];
 
@@ -272,7 +272,7 @@ export default function Home() {
 
               <div className="homeNeo-partImg">
                 <img
-                  src="https://images.unsplash.com/photo-1580281657527-47f249e8f4df?auto=format&fit=crop&w=1600&q=70"
+                  src="/images/services/pharmacy.jpg"
                   alt="Pharmacy"
                 />
               </div>
