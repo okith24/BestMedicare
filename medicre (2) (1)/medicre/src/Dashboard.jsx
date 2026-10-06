@@ -94,7 +94,7 @@ export default function Dashboard() {
         day: "numeric",
         year: "numeric",
       });
-    return `Showing week: ${fmt(wr.start)} â€“ ${fmt(wr.end)}`;
+    return `Showing week: ${fmt(wr.start)} – ${fmt(wr.end)}`;
   }, [dashboard]);
 
   return (
