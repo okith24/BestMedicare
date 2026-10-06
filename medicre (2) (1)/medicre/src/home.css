@@ -13,24 +13,11 @@
   padding: 96px 0 84px;
 }
 
+/* Hero backdrop is transparent so the page background image shows through. */
 .homeNeo-heroBg{
   position: absolute;
   inset: 0;
   z-index: 0;
-}
-.homeNeo-heroBg img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  filter: saturate(1.05) contrast(1.05);
-}
-
-.homeNeo-heroScrim{
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: linear-gradient(180deg, rgba(8,18,32,0.12) 0%, rgba(8,18,32,0.42) 55%, rgba(8,18,32,0.82) 100%);
 }
 
 .homeNeo-heroContent{
@@ -40,7 +27,7 @@
 }
 
 .homeNeo-heroTitle{
-  color: #fff;
+  color: var(--text);
   font-size: 76px;
 }
 .homeNeo-heroTitle .accent{ color: #7ec8ff; }
@@ -52,7 +39,7 @@
 }
 
 .homeNeo-heroText{
-  color: rgba(255,255,255,0.86);
+  color: var(--muted);
   max-width: 620px;
 }
 
@@ -66,7 +53,7 @@
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  color: rgba(255,255,255,0.85);
+  color: var(--muted);
   font-size: 11px;
   font-weight: 900;
   letter-spacing: 1px;
@@ -161,80 +148,98 @@
 .homeNeo-section{ padding: 22px 0; }
 .homeNeo-head{ margin-bottom: 14px; }
 .homeNeo-h2{ margin: 0; font-size: 26px; font-weight: 950; }
-.homeNeo-line{
-  margin-top: 10px;
-  width: 54px;
-  height: 4px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #1F71BF, #348FDB);
-}
 .homeNeo-muted{ margin-top: 10px; color: rgba(28,46,66,0.62); }
 
 .homeNeo-serviceGrid{
-  display:grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 14px;
-}
-@media (max-width: 980px){
-  .homeNeo-serviceGrid{ grid-template-columns: 1fr; }
-  .homeNeo-serviceCard,
-  .homeNeo-serviceCard:nth-child(4),
-  .homeNeo-serviceCard:nth-child(5){ grid-column: auto; }
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
 }
 
-/* 5 cards -> 3 on row one, 2 on row two. Each card spans 2 of 6 columns by
-   default (3 per row); the last two cards span 3 columns each so the final
-   row stretches edge-to-edge instead of leaving a gap. */
+/* Every service card is the same width and height (3 per row, last row centred). */
 .homeNeo-serviceCard{
-  grid-column: span 2;
-  overflow:hidden;
+  flex: 0 0 calc((100% - 36px) / 3);
+  max-width: calc((100% - 36px) / 3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   border-radius: 22px;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease;
 }
-.homeNeo-serviceCard:nth-child(4),
-.homeNeo-serviceCard:nth-child(5){ grid-column: span 3; }
+.homeNeo-serviceCard:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 24px 48px rgba(40,70,100,0.16);
+}
 .homeNeo-serviceImg{
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  flex-shrink: 0;
   background: rgba(255,255,255,0.78);
+  border-bottom: 1px solid rgba(127,149,171,0.22);
 }
 .homeNeo-serviceImg img{
-  width:100%;
+  width: 100%;
   height: 170px;
   object-fit: cover;
-  display:block;
-  filter: saturate(1.05) contrast(1.05);
+  display: block;
 }
-.homeNeo-serviceBody{ padding: 14px; }
+.homeNeo-serviceBody{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+}
 
 .homeNeo-serviceTop{
-  display:flex;
-  align-items:center;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 10px;
 }
 .homeNeo-serviceTitle{
-  display:flex;
-  align-items:center;
-  gap: 10px;
   font-weight: 950;
-  font-size: 16px;
+  font-size: 17px;
+  color: var(--text);
 }
 .homeNeo-arrow{
+  flex-shrink: 0;
   width: 36px; height: 36px;
-  border-radius: 14px;
-  display:grid; place-items:center;
-  background: rgba(31,113,191,0.14);
+  border-radius: 12px;
+  display: grid; place-items: center;
+  background: rgba(31,113,191,0.12);
   border: 1px solid rgba(31,113,191,0.22);
-  color: rgba(28,46,66,0.92);
-  font-weight: 950;
+  color: var(--p);
   cursor: pointer;
   padding: 0;
   line-height: 1;
+  transition: background .15s ease, color .15s ease;
+}
+.homeNeo-arrow:hover{
+  background: var(--p);
+  color: #fff;
 }
 .homeNeo-serviceText{
   margin-top: 10px;
-  font-size: 13px;
+  font-size: 13.5px;
   line-height: 1.6;
-  color: rgba(28,46,66,0.64);
+  color: rgba(28,46,66,0.66);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 980px){
+  .homeNeo-serviceCard{
+    flex-basis: calc((100% - 18px) / 2);
+    max-width: calc((100% - 18px) / 2);
+  }
+}
+@media (max-width: 600px){
+  .homeNeo-serviceCard{
+    flex-basis: 100%;
+    max-width: 100%;
+  }
 }
 
 .homeNeo-partGrid{
@@ -379,3 +384,94 @@
   flex-wrap: wrap;
 }
 
+
+/* Floating look: cards and panels lift off the light backdrop with soft shadows. */
+.homeNeo-hero .glass,
+.homeNeo-section .glass,
+.homeNeo-live{
+  box-shadow: 0 18px 40px rgba(40,70,100,0.12), 0 2px 6px rgba(40,70,100,0.06);
+}
+.homeNeo-hero .homeNeo-miniCard:hover{
+  box-shadow: 0 24px 46px rgba(70, 103, 136, 0.24);
+}
+
+/* Full-page background image across the whole home page, with content floating on top. */
+.homeNeo-page{
+  background-color: #eef5fb;
+  background-image: url("/images/home-background.webp");
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* Outline on product cards (services + partnerships). */
+.homeNeo-serviceCard,
+.homeNeo-partCard{
+  outline: 1.5px solid rgba(31,113,191,0.38);
+  outline-offset: 0;
+}
+
+/* Hero layout: photo collage on the left, hero content on the right. */
+.homeNeo-heroGrid{
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+@media (max-width: 900px){
+  .homeNeo-heroGrid{ grid-template-columns: 1fr; gap: 28px; }
+}
+
+.homeNeo-collage{
+  position: relative;
+  height: 500px;
+}
+.homeNeo-photo{
+  position: absolute;
+  margin: 0;
+  padding: 10px;
+  border-radius: 24px;
+}
+.homeNeo-photo img{
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+}
+.homeNeo-photoBack{
+  top: 0;
+  left: 0;
+  width: 78%;
+  height: 72%;
+}
+.homeNeo-photoFront{
+  right: 0;
+  bottom: 0;
+  width: 60%;
+  height: 52%;
+}
+@media (max-width: 900px){
+  .homeNeo-collage{ height: 400px; }
+}
+@media (max-width: 480px){
+  .homeNeo-collage{ height: 320px; }
+}
+
+/* Fade the home page in on load. */
+.homeNeo-page{ animation: homeFadeIn 0.9s ease-out both; }
+@keyframes homeFadeIn{
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce){
+  .homeNeo-page{ animation: none; }
+}
+
+/* CTA: title first, button sits underneath it. */
+.homeNeo-cta .homeNeo-ctaGetStarted{
+  margin-top: 14px;
+}

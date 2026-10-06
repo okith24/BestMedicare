@@ -2,7 +2,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./auth/AuthContext.jsx";
-import heroImage from "./assets/hero.webp";
 import "./home.css";
 
 const ease = [0.22, 1, 0.36, 1];
@@ -106,15 +105,22 @@ export default function Home() {
   ];
 
   return (
-    <div className="page">
+    <div className="page homeNeo-page">
       {/* HERO */}
       <section className="homeNeo-hero">
-        <div className="homeNeo-heroBg">
-          <img src={heroImage} alt="Best Medicare Nawala" />
-        </div>
-        <div className="homeNeo-heroScrim" />
+        <div className="homeNeo-heroBg" aria-hidden="true" />
 
-        <div className="container homeNeo-heroContent">
+        <div className="container homeNeo-heroGrid">
+          <div className="homeNeo-collage">
+            <figure className="glass homeNeo-photo homeNeo-photoBack">
+              <img src="/images/home-care.webp" alt="Doctor holding a patient's hand" />
+            </figure>
+            <figure className="glass homeNeo-photo homeNeo-photoFront">
+              <img src="/images/home-team.webp" alt="Smiling medical team in a hospital corridor" />
+            </figure>
+          </div>
+
+        <div className="homeNeo-heroContent">
           <h1 className="h1 homeNeo-heroTitle">
             <SplitWords text="Welcome to" delay={0.08} />
             <br />
@@ -179,6 +185,7 @@ export default function Home() {
             </div>
           </motion.div>
         </div>
+        </div>
 
         <div className="homeNeo-scrollHint">
           <span>Scroll</span>
@@ -193,8 +200,6 @@ export default function Home() {
         <div className="container">
           <motion.div {...fadeUp(0)} className="homeNeo-head">
             <h2 className="homeNeo-h2">Our Specialised Services</h2>
-            <div className="homeNeo-line" />
-            <p className="homeNeo-muted">Choose a service - we'll handle the rest.</p>
           </motion.div>
 
           <div className="homeNeo-serviceGrid">
@@ -249,7 +254,6 @@ export default function Home() {
         <div className="container">
           <motion.div {...fadeUp(0)} className="homeNeo-head">
             <h2 className="homeNeo-h2">Our Partnerships</h2>
-            <p className="homeNeo-muted">Working with trusted partners for better care.</p>
           </motion.div>
 
           <div className="homeNeo-partGrid">
@@ -301,13 +305,10 @@ export default function Home() {
           <motion.div className="glass homeNeo-cta" {...popInView(0.08)}>
             <div className="homeNeo-ctaHead">
               <div className="homeNeo-ctaTitle">Ready to book an appointment?</div>
-              <button className="btnPrimary homeNeo-ctaGetStarted" onClick={() => goToProtected("/echanneling")}>
-                Get Started
-              </button>
             </div>
-            <div className="homeNeo-ctaText">
-              Manage appointments, services, pharmacy and lab results in one place.
-            </div>
+            <button className="btnPrimary homeNeo-ctaGetStarted" onClick={() => goToProtected("/echanneling")}>
+              Get Started
+            </button>
           </motion.div>
         </div>
       </section>

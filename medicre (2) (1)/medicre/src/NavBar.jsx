@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useMemo, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import "./nav.css";
 import { useAuth } from "./auth/AuthContext.jsx";
@@ -8,6 +8,8 @@ export default function NavBar() {
   // Builds the role-aware navigation header.
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isHome = location.pathname === "/";
   // Only these 3 texts will animate
   const subtitles = useMemo(
     () => ["Trusted Care", "Modern Tech", "24/7 Support"],
@@ -37,13 +39,14 @@ export default function NavBar() {
   }, [user]);
 
   return (
-    <header className="nb-wrap">
+    <header className={isHome ? "nb-wrap nb-wrapHome" : "nb-wrap"}>
       <motion.div
         className="container nb"
         initial={{ opacity: 0, y: -14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.55 }}
       >
+        <div className="nb-top">
         {/* LEFT: Logo + Name */}
         <NavLink to="/" className="nb-brand">
           <div className="nb-logoImg">
@@ -71,6 +74,28 @@ export default function NavBar() {
           </div>
         </NavLink>
 
+        {/* RIGHT: Actions */}
+        <div className="nb-actions">
+          {!user ? (
+            <>
+              <NavLink to="/signin" className="nb-btn nb-btnGhost">
+                Sign in
+              </NavLink>
+
+              <NavLink to="/signup" className="nb-btn nb-btnPrimary">
+                Sign up
+              </NavLink>
+            </>
+          ) : null}
+
+          {user ? (
+            <button type="button" className="nb-btn nb-btnGhost nb-btnLogout" onClick={handleLogout}>
+              Logout
+            </button>
+          ) : null}
+        </div>
+        </div>
+
         {/* CENTER: Links */}
         <nav className="nb-links">
           {user && dashboardPath ? (
@@ -97,27 +122,6 @@ export default function NavBar() {
           </NavLink>
 
         </nav>
-
-        {/* RIGHT: Actions */}
-        <div className="nb-actions">
-          {!user ? (
-            <>
-              <NavLink to="/signin" className="nb-btn nb-btnGhost">
-                Sign in
-              </NavLink>
-
-              <NavLink to="/signup" className="nb-btn nb-btnPrimary">
-                Sign up
-              </NavLink>
-            </>
-          ) : null}
-
-          {user ? (
-            <button type="button" className="nb-btn nb-btnGhost nb-btnLogout" onClick={handleLogout}>
-              Logout
-            </button>
-          ) : null}
-        </div>
       </motion.div>
     </header>
   );
